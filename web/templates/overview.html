@@ -1,0 +1,149 @@
+<meta charset="utf-8">
+
+<head>
+    <style>
+        .add {
+           background-color: #00BC00;
+            color: white;
+            text-align: center;
+            display: inline-block;
+            font-size: 75%;
+            margin-top: 5px;
+            margin-right: 2px;
+        }
+        .del {
+        	 background-color: #BC0000;
+            color: white;
+            display: inline-block;
+            font-size: 75%;
+            float: right;
+            margin-top: 5px;
+            margin-right: 5px;
+        }
+        .del_floor {
+        	 background-color: #BC0000;
+            color: white;
+            text-align: center;
+            display: inline-block;
+            font-size: 75%;
+            float: right;
+            margin-top: -10px;
+            margin-right: 2px;
+        }
+        .house {
+            float: left;
+            width: 33%;
+            background-color: #ddd;
+            border: 2px solid #bbb;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .floor {
+            width: 95%;
+            background-color: #eee;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            font-size: 95%;
+            display: inline-block;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .flat {
+            display: inline-block;
+            width: 95%;
+            background-color: #fff;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 90%;
+            text-align: center;
+            margin-bottom: 2px;
+        }
+        .node {
+            display: inline-block;
+            width: 31.7%;
+            border: 2px solid #bbb;
+            border-radius: 5px;
+            margin-bottom: 2px;
+        }
+        .flat_name{
+          font-size: 90%;
+
+        }
+        .house_name{
+          font-size: 125%;
+        }
+        .floor_name{
+
+        }
+        .footer {
+            background-color: #f1f1f1;
+            padding: 10px;
+            text-align: center;
+        }
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        @media (max-width: 600px) {
+        .house {
+            width: 100%;
+        }
+    </style>
+</head>
+<div class='row'>
+    <h2>Houses</h2>
+    {% for house in houses %}
+      <div class='house'><div class='house_name'>{{ house.name }}</div>
+          {% for floor in sorted(house.floors, key=attrgetter('level')) %}
+          <div class='floor'>
+              <div class='floor_name'>{{ floor.level }}</div>
+              <form method='post'>
+                <input type='hidden' value='del_floor' name='action'>
+                <input type='hidden' name='floor_id' value='{{ floor.id }}'>
+                <input type='submit' value='del' action='submit' class='del_floor'>
+              </form>
+              <form method='post'>
+                <input type='text' placeholder='new flat' name='name'>
+                <input type='hidden' value='add_flat' name='action'>
+                <input type='hidden' name='floor_id' value='{{ floor.id }}'>
+                <input type='submit' value='add' class='add'>
+              </form>
+              {% for flat in floor.flats %}
+              <div class='flat'>
+                  <form method='post'>
+                    <input type='hidden' value='del_flat' name='action'>
+                    <input type='hidden' name='flat_id' value='{{ flat.id }}'>
+                    <input type='submit' value='del' action='submit' class='del'>
+                  </form>
+                  <div class='flat_name'>{{ flat.name }}</div>
+                  <div class='row'>
+                      {% for node in flat.nodes %}
+                      <div class='node' style="background-color:{{ node.state.color }};"><a href='node_info?node_id={{ node.id }}'>{{ node.id }}</a></div>
+                      {% endfor %}
+                  </div>
+              </div>
+              {% endfor %}
+          </div>
+          {% endfor %}
+          <form method='post'>
+            <input type='number' name='level' placeholder='new level'>
+            <input type='hidden' value='add_floor' name='action'>
+            <input type='hidden' name='house_id' value='{{ house.id }}'>
+            <input type='submit' value='add' class='add'>
+          </form>
+      </div>
+    {% endfor %}
+</div>
+<div class='footer'>
+    <form method='post'>
+    <p>New House</p>
+    <p><input placeholder='name' type='text' name='name'></p>
+    <p><input type='text' name='gps', placeholder='gps'></p>
+    <p><input type='text' name='adress', placeholder='adress'></p>
+    <p><input type='number' name='interval', placeholder='interval'></p>
+    <p><input type='number' name='length', placeholder='length'></p>
+    <input type='hidden' value='add_house' name='action'><input class='add' type='submit' value='add'>
+    </form>
+</div>
