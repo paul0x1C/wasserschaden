@@ -69,11 +69,9 @@ def check_timeouts(session):
                     close_valve(node.id)
             elif node.state_id == 5:
                 set_state(node.id, 9)
-                alert = models.Alert(added = now(), content="Node %s in House '%s' on floor %s in flat '%s' not responding…" % (node.id, node.flat.floor.house.name, node.flat.floor.level, node.flat.name))
-                session.add(alert)
             elif node.state_id == 9:
                 publish_to_node(node.id, "ping")
-                
+
 @db_connect
 def on_message(mqttc, obj, msg, session):
     payload = msg.payload.decode()
@@ -103,16 +101,15 @@ def on_message(mqttc, obj, msg, session):
                     set_state(from_node, 9)
             elif payload == "connected":
                 set_state(from_node, 1)
-                if old_state == 9:
-                    alert = models.Alert(added = now(), content="Node %s in House '%s' on floor %s in flat '%s' is back online <3" % (node.id, node.flat.floor.house.name, node.flat.floor.level, node.flat.name))
-                    session.add(alert)
         else:
             flat_id = session.query(models.Setting).filter(models.Setting.id == 1).first().state
             flat = session.query(models.Flat).filter(models.Flat.id == flat_id).first()
             print(from_node, flat.id, now())
-            new_node = models.Node(id = from_node, flat_id = flat.id, state_id = 1, last_change = now())
+            new_node = models.Node(id = from_node, flat_id = flat.id, state_id = 1, last_change = now(), reported_offline = False)
             logger.info("New node %s connect for the first time, adding to flat %s in house %s" % (from_node, flat.name, flat.floor.house.name))
             session.add(new_node)
+            alert = models.Alert(added = now(), content="Node %s connected for the first time! Addded to flat '%s'" % (from_node, flat.name))
+            session.add(alert)
             session.commit()
             set_state(new_node.id, 5)
             publish_to_node(from_node, "ping")

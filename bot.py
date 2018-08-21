@@ -103,6 +103,12 @@ def button(bot, update, session):
         set_setting(1, data[1])
         bot.sendMessage(chat_id, "Okay")
 
+@db_connect
+def send_alerts(bot, job, session):
+    alerts = session.query(models.Alert).filter(models.Alert.sent == None)
+    for alert in alerts:
+        bot.sendMessage(chat_id, alert.content)
+        alert.sent = now()
 
 @db_connect
 @access_conrol
@@ -142,6 +148,10 @@ def main():
     dp.add_handler(CallbackQueryHandler(button))
 
     dp.add_handler(MessageHandler(Filters.text, msg))
+
+    j = updater.job_queue
+    j.run_repeating(send_alerts,1.0,1.0)
+    j.start()
 
     dp.add_error_handler(error)
 

@@ -60,16 +60,22 @@ def overview(session):
 
 @app.route('/node_info', methods=['GET', 'POST'])
 def node_info():
-    if request.form.get('action') == "ping":
-        node_id = int(request.form.get('node_id'))
-        publish_to_node(node_id, "ping")
-        set_state(node_id, 5)
-    return get_node_info(request.args.get('node_id'))
+    return get_node_info(request)
 
 @db_connect
-def get_node_info(node_id, session):
+def get_node_info(request, session):
+    node_id = int(request.args.get('node_id'))
+    if request.form.get('action') == "ping":
+        publish_to_node(node_id, "ping")
+        set_state(node_id, 5)
+    elif request.form.get('action') == "move":
+        node = session.query(models.Node).filter(models.Node.id == node_id).first()
+        node.flat_id = int(request.form.get('flat_id'))
     node = session.query(models.Node).filter(models.Node.id == node_id).first()
-    return render_template('node_info.html', node = node)
+    houses = session.query(models.House)
+    reports = node.reports[-20:]
+    reports.reverse()
+    return render_template('node_info.html', node = node, houses = houses, reports = reports)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=80)

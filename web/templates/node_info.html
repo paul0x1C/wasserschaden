@@ -1,7 +1,7 @@
 <meta charset="utf-8">
 <head>
   <style>
-  .main_info {
+  .block {
     background-color: #ddd;
     border: 2px solid #aaa;
     border-radius: 5px;
@@ -16,16 +16,55 @@
   </style>
 </head>
 <h1 style="background-color:{{ node.state.color }}">Node {{ node.id }}</h1>
-<div class="main_info">
+
+<div class="block">
+  <h3>Info</h3>
   <p>house: {{ node.flat.floor.house.name }}</p>
   <p>floor: {{ node.flat.floor.level }}</p>
   <p>flat: {{ node.flat.name }}</p>
   <p>state: {{ node.state.name }}</p>
   <p>last change: {{ node.last_change }}</p>
 </div>
-<form method='post'>
-  <input type='hidden' value='ping' name='action'>
-  <input type='hidden' name='node_id' value='{{ node.id }}'>
-  <input type='submit' value='ping' class='add'>
-</form>
-<a class="back" href='./overview'>overview</a>
+
+<div class="block">
+  <h3>Move Node</h3>
+    {% for house in houses %}
+    <form method='post'>
+    <p>
+      {{ house.name }}
+      <select name='flat_id'>
+        {% for floor in house.floors %}
+          {% for flat in floor.flats %}
+            <option value="">-</option>
+            <option value="{{ flat.id }}">{{ floor.level }} {{ flat.name }}</option>
+          {% endfor %}
+        {% endfor %}
+      </select>
+      <input type='hidden' name='action' value='move'>
+      <input type='hidden' name='node_id' value='{{ node.id }}'>
+      <input type='submit' value='move'>
+    </form>
+    </p>
+    {% endfor %}
+</div>
+
+<div class="block">
+  <h3>Reports</h3>
+    <table>
+    {% for report in reports %}
+    <tr style="background-color: {{ report.state.color }};">
+      <td>{{ report.time }}</td>
+      <td>{{ report.state_id }}</td>
+      <td>{{ report.state.name }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+<div class="block">
+  <form method='post'>
+    <input type='hidden' value='ping' name='action'>
+    <input type='hidden' name='node_id' value='{{ node.id }}'>
+    <input type='submit' value='ping' class='add'>
+  </form>
+  <a class="back" href='./overview'>overview</a>
+</div>

@@ -38,6 +38,7 @@ class Node(Base):
     name = Column(String(50))
     state_id = Column(Integer, ForeignKey('states.id'))
     state = relationship("State", foreign_keys=[state_id], backref="nodes")
+    reported_offline = Column(Boolean)
     last_change = Column(DateTime)
 
 class Report(Base):
