@@ -91,12 +91,12 @@ def on_message(mqttc, obj, msg, session):
                     session.delete(listing)
             elif payload == "pong":
                 if old_state == 6:
-                    set_state(from_node, 3, False)
+                    set_state(from_node, 3, update_time = False)
                 elif not old_state == 3:
                     set_state(from_node, 1)
             elif payload == "dropped":
                 if old_state == 3:
-                    set_state(from_node, 6, False)
+                    set_state(from_node, 6, update_time = False)
                 else:
                     set_state(from_node, 9)
             elif payload == "connected":
