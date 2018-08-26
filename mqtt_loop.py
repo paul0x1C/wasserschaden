@@ -36,18 +36,22 @@ def on_message(mqttc, obj, msg, session):
                 set_state(from_node, 1)
                 for listing in node.queue:
                     session.delete(listing)
-            elif payload == "pong":
-                if old_state == 6:
+            elif payload[:4] == "pong":
+                if payload[-1:] == "1":
                     set_state(from_node, 3, update_time = False)
-                elif not old_state == 3:
+                else:
                     set_state(from_node, 1)
             elif payload == "dropped":
                 if old_state == 3:
                     set_state(from_node, 6, update_time = False)
                 else:
                     set_state(from_node, 9)
-            elif payload == "connected":
-                set_state(from_node, 1)
+            elif payload[:3] == "con":
+                if payload[-1:] == "1":
+                    set_state(from_node, 3, update_time = False)
+                    logger.info("Node %s reconnected and is still open")
+                else:
+                    set_state(from_node, 1)
         else:
             flat_id = session.query(models.Setting).filter(models.Setting.id == 1).first().state
             flat = session.query(models.Flat).filter(models.Flat.id == flat_id).first()
