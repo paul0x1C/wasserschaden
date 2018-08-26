@@ -13,9 +13,6 @@ db_connect = wrapper.db_connect
 
 app = Flask(__name__)
 
-utf8 = """<meta charset="utf-8">"""
-
-
 def decorate(decorater, text, args = []):
     arg_string = ""
     for arg in args:
@@ -25,8 +22,9 @@ def decorate(decorater, text, args = []):
 @app.route('/overview', methods=['GET', 'POST'])
 @db_connect
 def overview(session):
-    content = utf8
+    content = ""
     # content += str(request.form)
+    autorefresh = check_autorefesh(request)
     if request.form.get('action') == "add_house":
         house = models.House(
             name = request.form.get('name'),
@@ -56,14 +54,20 @@ def overview(session):
         content += "removed flat"
         session.delete(flat)
     houses = session.query(models.House)
-    return content+render_template('overview.html', houses = houses, sorted=sorted, attrgetter=attrgetter)
+    return content+render_template('overview.html', autorefresh = autorefresh, base_template = 'base.html', houses = houses, sorted=sorted, attrgetter=attrgetter, node_id=0, int=int)
 
 @app.route('/node_info', methods=['GET', 'POST'])
 def node_info():
     return get_node_info(request)
 
+def check_autorefesh(request):
+    if request.args.get('autorefresh'):
+        return True
+    return False
+
 @db_connect
 def get_node_info(request, session):
+    autorefresh = check_autorefesh(request)
     node_id = int(request.args.get('node_id'))
     if request.form.get('action') == "ping":
         publish_to_node(node_id, "ping")
@@ -75,7 +79,7 @@ def get_node_info(request, session):
     houses = session.query(models.House)
     reports = node.reports[-20:]
     reports.reverse()
-    return render_template('node_info.html', node = node, houses = houses, reports = reports)
+    return render_template('node_info.html', autorefresh = autorefresh, base_template = 'base.html', node = node, houses = houses, reports = reports, node_id = node.id, int=int)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=80)

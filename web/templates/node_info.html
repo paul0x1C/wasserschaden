@@ -1,41 +1,6 @@
-<meta charset="utf-8">
-<head>
-  <div class="setting" data-toggle="buttons" role="group">
-    Auto Refresh
-    <br><input id = "auto-refresh" name = "auto-refesh" type="radio" autocomplete="off" value="autorefreshon" checked/> ON
-    <br><input id = "auto-refresh" name = "auto-refesh" type="radio" autocomplete="off" value="autorefreshoff" /> OFF
-  </div>
-  <script type='text/javascript'>
-  function reloadPage(){
-    var refreshEnabled = document.getElementById('auto-refresh');
-    if(refreshEnabled.checked) {
-      window.location.reload(1);
-    }
-  }
-  setInterval(reloadPage, 1000);
-  </script>
-  <style>
-  .block {
-    background-color: #ddd;
-    border: 2px solid #aaa;
-    border-radius: 5px;
-    padding: 5px;
-    float: left;
-  }
-  .back{
-    float: left;
-    background-color: #ddd;
-    border: 2px solid #aaa;
-  }
-  .setting {
-    /* background-color: #ddd; */
-    border: 2px solid #aaa;
-    border-radius: 5px;
-    padding: 5px;
-    float: right;
-  }
-  </style>
-</head>
+{% extends "base.html" %}
+{% block title %}Node {{ node.id }}{% endblock %}
+{% block content %}
 <h1 style="background-color:{{ node.state.color }}">Node {{ node.id }}</h1>
 
 <div class="block">
@@ -87,5 +52,6 @@
     <input type='hidden' name='node_id' value='{{ node.id }}'>
     <input type='submit' value='ping' class='add'>
   </form>
-  <a class="back" href='./overview'>overview</a>
+  <a class="back" href='./overview?autorefresh={{ int(autorefresh) }}'>overview</a>
 </div>
+{% endblock %}

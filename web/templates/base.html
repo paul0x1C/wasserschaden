@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html lang="en">
+<head>
+  {% if autorefresh %}
+  <meta http-equiv="refresh" content="1" >
+  {% endif %}
+  <title>{% block title %}{% endblock %} - Gebäudespülung</title>
+  <div class="setting">
+    {% if autorefresh %}
+    <a href="?node_id={{ node_id }}">Auto Refresh OFF</a>
+    {% else %}
+    <a href="?autorefresh=1&node_id={{ node_id }}">Auto Refresh ON</a>
+    {% endif %}
+  </div>
+</head>
+<body>
+    <div id="content">{% block content %}{% endblock %}</div>
+</body>
+</html>
+<style>
+.block {
+  background-color: #ddd;
+  border: 2px solid #aaa;
+  border-radius: 5px;
+  padding: 5px;
+  float: left;
+}
+.back{
+  float: left;
+  background-color: #ddd;
+  border: 2px solid #aaa;
+}
+.add {
+   background-color: #00BC00;
+    color: white;
+    text-align: center;
+    display: inline-block;
+    font-size: 75%;
+    margin-top: 5px;
+    margin-right: 2px;
+}
+.del {
+   background-color: #BC0000;
+    color: white;
+    display: inline-block;
+    font-size: 75%;
+    float: right;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+.del_floor {
+   background-color: #BC0000;
+    color: white;
+    text-align: center;
+    display: inline-block;
+    font-size: 75%;
+    float: right;
+    margin-top: -10px;
+    margin-right: 2px;
+}
+.house {
+    float: left;
+    width: 33%;
+    background-color: #ddd;
+    border: 2px solid #bbb;
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom: 5px;
+}
+.floor {
+    width: 95%;
+    background-color: #eee;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-size: 95%;
+    display: inline-block;
+    text-align: center;
+    margin-bottom: 5px;
+}
+.flat {
+    display: inline-block;
+    width: 95%;
+    background-color: #fff;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 90%;
+    text-align: center;
+    margin-bottom: 2px;
+}
+.node {
+    display: inline-block;
+    width: 31.7%;
+    border: 2px solid #bbb;
+    border-radius: 5px;
+    margin-bottom: 2px;
+}
+.flat_name{
+  font-size: 90%;
+
+}
+.house_name{
+  font-size: 125%;
+}
+.floor_name{
+
+}
+.footer {
+    background-color: #f1f1f1;
+    padding: 10px;
+    text-align: center;
+}
+.setting {
+  /* background-color: #ddd; */
+  border: 2px solid #aaa;
+  border-radius: 5px;
+  padding: 5px;
+  float: right;
+}
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+@media (max-width: 600px) {
+.house {
+    width: 100%;
+}
+</style

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+{% if autorefresh %}
+<meta id="autorefresh" http-equiv="refresh" content="1" >
+{% endif %}
+</head>
+<body>
+
+<button onclick="myFunction()">Try it</button>
+
+<script>
+function myFunction() {
+    var x = document.getElementById("autorefresh");
+   	console.log(x);
+    if (x.content === "1") {
+        x.content = "9999";
+    } else {
+        x.content = "1";
+    }
+}
+</script>
+
+</body>
+</html>
