@@ -82,4 +82,4 @@ def get_node_info(request, session):
     return render_template('node_info.html', autorefresh = autorefresh, base_template = 'base.html', node = node, houses = houses, reports = reports, node_id = node.id, int=int)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=80)
+    app.run(debug=True, port=8080)
