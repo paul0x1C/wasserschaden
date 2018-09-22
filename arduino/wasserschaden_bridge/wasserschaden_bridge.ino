@@ -18,7 +18,7 @@ char* message_buff;
 IPAddress getlocalIP();
 
 IPAddress myIP(0,0,0,0);
-IPAddress mqttBroker(192, 168, 178, 155);
+IPAddress mqttBroker(10, 10, 10, 23);
 
 painlessMesh  mesh;
 WiFiClient wifiClient;
