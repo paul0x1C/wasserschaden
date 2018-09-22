@@ -65,7 +65,7 @@ def on_message(mqttc, obj, msg, session):
             set_state(new_node.id, 5)
             publish_to_node(from_node, "ping")
 
-c = mqtt.Client("python-backend", clean_session = False)
+c = mqtt.Client("python-backend-", clean_session = False)
 c.connect("localhost", 1883)
 c.on_connect = on_connect
 c.on_disconnect = on_disconnect
