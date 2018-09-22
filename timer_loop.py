@@ -42,6 +42,7 @@ def check_houses(session):
 def check_timeouts(session):
     nodes = session.query(models.Node)
     for node in nodes:
+        logger.info("Checking node '%s' with state '%s'" % (node.id, node.state.name))
         if (now() - node.last_change).seconds > 10:
             if node.state_id == 2:
                 publish_to_node(node.id, "open")
