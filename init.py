@@ -1,3 +1,5 @@
+## -*- coding: utf-8 -*-
+
 from db import models, wrapper
 
 db_connect = wrapper.db_connect

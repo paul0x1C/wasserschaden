@@ -1,3 +1,5 @@
+## -*- coding: utf-8 -*-
+
 import paho.mqtt.client as mqtt
 import time, logging, datetime
 from db import models
