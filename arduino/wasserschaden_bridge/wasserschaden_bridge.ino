@@ -4,6 +4,13 @@
 #include <WiFiClient.h>
 #include "settings.cpp" //contains passwords
 
+#define POWER_LED D0
+#define WLAN_LED D2
+#define MESH_LED D5
+#define MQTT_LED D6
+#define MQTT_RX_LED D1
+#define MESH_RX_LED D3
+
 #define   MESH_PORT       5555
 
 #define HOSTNAME "MQTT_Bridge"
@@ -12,21 +19,23 @@
 void receivedCallback( const uint32_t &from, const String &msg );
 void mqttCallback(char* topic, byte* payload, unsigned int length);
 void mqttConnect();
+void mqtt_led_off();
 
 char* message_buff;
 
 IPAddress getlocalIP();
 
 IPAddress myIP(0,0,0,0);
-IPAddress mqttBroker(10, 10, 10, 23);
+IPAddress mqttBroker(10, 8, 0, 1);
 
 painlessMesh  mesh;
 WiFiClient wifiClient;
 PubSubClient mqttClient(mqttBroker, 1883, mqttCallback, wifiClient);
 
+
 Scheduler userScheduler;
 Task reconnect(1000, TASK_FOREVER, &mqttConnect);
-
+Task mqtt_blink(50, 1, &mqtt_led_off);
 
 char* convert_for_mqtt(int input){
   String pubString = String(input);
@@ -35,8 +44,14 @@ char* convert_for_mqtt(int input){
 }
 
 void setup() {
+  pinMode(POWER_LED, OUTPUT);
+  pinMode(WLAN_LED, OUTPUT);
+  pinMode(MESH_LED, OUTPUT);
+  pinMode(MQTT_LED, OUTPUT);
+  pinMode(MQTT_RX_LED, OUTPUT);
+  pinMode(MESH_RX_LED, OUTPUT);
   Serial.begin(115200);
-
+  digitalWrite(POWER_LED, HIGH);
   mesh.setDebugMsgTypes( ERROR | STARTUP | CONNECTION );  // set before init() so that you can see startup messages
 
   // Channel set to 6. Make sure to use the same channel for your mesh and for you other
@@ -45,6 +60,7 @@ void setup() {
   mesh.onReceive(&receivedCallback);
   
   mesh.onNewConnection([](const uint32_t nodeId) {
+    digitalWrite(MESH_LED, HIGH);
     if(nodeId != 0){
       String topic = "painlessMesh/from/" + String(nodeId);
       mqttClient.publish((topic.c_str()), "connected");
@@ -58,20 +74,35 @@ void setup() {
       mqttClient.publish(topic.c_str(), "dropped");
       Serial.printf("Dropped Connection %u\n", nodeId);
     }
+    if(mesh.subConnectionJson().length() < 3){
+      digitalWrite(MESH_LED, LOW);
+    }
   });
 
   mesh.stationManual(STATION_SSID, STATION_PASSWORD);
   mesh.setHostname(HOSTNAME);
 
+  userScheduler.addTask(mqtt_blink);
   userScheduler.addTask(reconnect);
 }
 
 void mqttConnect(){
   if (mqttClient.connect("pmC")) {
+      digitalWrite(MQTT_LED, HIGH);
       Serial.println("connected to mqtt");
       mqttClient.publish("painlessMesh/from/gateway","Ready!");
       mqttClient.subscribe("painlessMesh/to/#", 0);
       reconnect.disable();
+  }else{
+     digitalWrite(MQTT_LED, LOW);
+  }
+}
+
+void mqtt_led_off(){
+   if (mqtt_blink.isLastIteration()){
+    digitalWrite(MQTT_RX_LED, LOW);
+    mqtt_blink.disable();
+    mqtt_blink.setIterations(2);
   }
 }
 
@@ -80,6 +111,7 @@ void loop() {
   mqttClient.loop();
 
   if(myIP != getlocalIP()){
+    digitalWrite(WLAN_LED, HIGH);
     myIP = getlocalIP();
     Serial.println("My IP is " + myIP.toString());
     mqttConnect();
@@ -92,12 +124,15 @@ void loop() {
 }
 
 void receivedCallback( const uint32_t &from, const String &msg ) {
+  digitalWrite(MESH_RX_LED, HIGH);
   Serial.printf("bridge: Received from %u msg=%s\n", from, msg.c_str());
   String topic = "painlessMesh/from/" + String(from);
   mqttClient.publish(topic.c_str(), msg.c_str());
+  digitalWrite(MESH_RX_LED, LOW);
 }
 
 void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
+  digitalWrite(MQTT_RX_LED, HIGH);
   char* cleanPayload = (char*)malloc(length+1);
   payload[length] = '\0';
   memcpy(cleanPayload, payload, length+1);
@@ -130,6 +165,7 @@ void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
       mqttClient.publish("painlessMesh/from/gateway", "Client not connected!");
     }
   }
+  mqtt_blink.enable();
 }
 
 IPAddress getlocalIP() {
