@@ -1,4 +1,6 @@
-import time, logging, datetime
+## -*- coding: utf-8 -*-
+
+import time, logging, datetime, pdb
 from db import models
 from db import wrapper
 from actions import *
@@ -42,6 +44,7 @@ def check_houses(session):
 def check_timeouts(session):
     nodes = session.query(models.Node)
     for node in nodes:
+        #pdb.set_trace()
         logger.info("Checking node '%s' with state '%s'" % (node.id, node.state.name))
         if (now() - node.last_change).seconds > 10:
             if node.state_id == 2:

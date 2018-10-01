@@ -1,3 +1,5 @@
+## -*- coding: utf-8 -*-
+
 import paho.mqtt.client as mqtt
 import time, logging, datetime
 from db import models
@@ -62,8 +64,8 @@ def on_message(mqttc, obj, msg, session):
             alert = models.Alert(added = now(), content="Node %s connected for the first time! Addded to flat '%s'" % (from_node, flat.name))
             session.add(alert)
             session.commit()
-            set_state(new_node.id, 5)
-            publish_to_node(from_node, "ping")
+            # set_state(new_node.id, 5)
+            # publish_to_node(from_node, "ping")
 
 c = mqtt.Client("python-backend-", clean_session = False)
 c.connect("localhost", 1883)
