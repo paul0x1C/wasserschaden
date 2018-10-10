@@ -12,6 +12,7 @@
 #define MESH_RX_LED D3
 
 #define   MESH_PORT       5555
+
 #define HOSTNAME "MQTT_Bridge"
 
 // Prototypes
@@ -64,7 +65,7 @@ void setup() {
   mesh.onNewConnection([](const uint32_t nodeId) {
     digitalWrite(MESH_LED, HIGH);
     if (nodeId != 0) {
-      String topic = String(MQTT_TOPIC)+"/from/" + String(nodeId);
+      String topic = "painlessMesh/from/" + String(nodeId);
       mqttClient.publish((topic.c_str()), "connected");
       Serial.printf("New Connection \n", nodeId);
     }
@@ -72,7 +73,7 @@ void setup() {
 
   mesh.onDroppedConnection([](const uint32_t nodeId) {
     if (nodeId != 0) {
-      String topic = String(MQTT_TOPIC)+"/from/" + String(nodeId);
+      String topic = "painlessMesh/from/" + String(nodeId);
       mqttClient.publish(topic.c_str(), "dropped");
       Serial.printf("Dropped Connection %u\n", nodeId);
     }
@@ -93,8 +94,8 @@ void mqttConnect() {
   if (mqttClient.connect("pmC")) {
     digitalWrite(MQTT_LED, HIGH);
     Serial.println("connected to mqtt");
-    mqttClient.publish(MQTT_TOPIC+"/from/gateway", "Ready!");
-    mqttClient.subscribe(String(MQTT_TOPIC)+"/to/#", 0);
+    mqttClient.publish("painlessMesh/from/gateway", "Ready!");
+    mqttClient.subscribe("painlessMesh/to/#", 0);
     reconnect.disable();
   } else {
     digitalWrite(MQTT_LED, LOW);
@@ -142,7 +143,7 @@ void loop() {
 void receivedCallback( const uint32_t &from, const String &msg ) {
   digitalWrite(MESH_RX_LED, HIGH);
   Serial.printf("bridge: Received from %u msg=%s\n", from, msg.c_str());
-  String topic = String(MQTT_TOPIC)+"/from/" + String(from);
+  String topic = "painlessMesh/from/" + String(from);
   mqttClient.publish(topic.c_str(), msg.c_str());
   mesh_blink.enable();
 }
@@ -162,7 +163,7 @@ void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
     if (msg == "getNodes")
     {
       //Serial.println( mesh.subConnectionJson().c_str());
-      mqttClient.publish(String(MQTT_TOPIC)+"/from/gateway", mesh.subConnectionJson().c_str());
+      mqttClient.publish("painlessMesh/from/gateway", mesh.subConnectionJson().c_str());
     }
   }
   else if (targetStr == "broadcast")
@@ -178,7 +179,7 @@ void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
     }
     else
     {
-      mqttClient.publish(String(MQTT_TOPIC)+"/from/gateway", "Client not connected!");
+      mqttClient.publish("painlessMesh/from/gateway", "Client not connected!");
     }
   }
   mqtt_blink.enable();
