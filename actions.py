@@ -13,7 +13,7 @@ def now():
     return datetime.datetime.now()
 
 def publish_to_node(node, msg):
-    os.system("""mosquitto_pub -t "painlessMesh/to/%s" -m "%s" """ % (node, msg))
+    os.system("""mosquitto_pub -t "%s/to/%s" -m "%s" """ % (node.flat.floor.house.mqtt_topic, node.id, msg))
 
 @db_connect
 def set_state(node_id, state_id, session, update_time = True):
@@ -48,7 +48,7 @@ def set_setting(setting_id, state, session):
 def close_valve(node_id,session):
     node = session.query(models.Node).filter(models.Node.id == node_id).one()
     set_state(node_id, 4)
-    publish_to_node(node.id, "close")
+    publish_to_node(node, "close")
     logger.info("Sending close command to node %s" % node_id)
 
 @db_connect
@@ -62,7 +62,7 @@ def open_valve(node_id,session):
     if open_nodes == 0:
         if node.state_id == 1:
             set_state(node_id, 2)
-            publish_to_node(node.id, "open")
+            publish_to_node(node, "open")
             logger.info("Sending open command to node %s" % node_id)
             return True
     return False

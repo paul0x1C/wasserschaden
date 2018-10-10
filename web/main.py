@@ -29,6 +29,7 @@ def overview(session):
         house = models.House(
             name = request.form.get('name'),
             gps = request.form.get('gps'),
+            mqtt_topic = request.form.get('mqtt_topic'),
             adress = request.form.get('adress'),
             interval = int(request.form.get('interval')),
             length = int(request.form.get('length'))
