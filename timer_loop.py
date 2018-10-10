@@ -48,32 +48,32 @@ def check_timeouts(session):
         logger.info("Checking node '%s' with state '%s'" % (node.id, node.state.name))
         if (now() - node.last_change).seconds > 10:
             if node.state_id == 2:
-                publish_to_node(node.id, "open")
+                publish_to_node(node, "open")
                 set_state(node.id, 21)
                 logger.warning("open retry 1 for node %s"%node.id)
             elif node.state_id == 21:
-                publish_to_node(node.id, "open")
+                publish_to_node(node, "open")
                 logger.warning("open retry 2 for node %s"%node.id)
                 set_state(node.id, 22)
             elif node.state_id == 4:
-                publish_to_node(node.id, "close")
+                publish_to_node(node, "close")
                 logger.warning("close retry 1 for node %s"%node.id)
                 set_state(node.id, 41)
             elif node.state_id == 41:
-                publish_to_node(node.id, "close")
+                publish_to_node(node, "close")
                 logger.warning("close retry 2 for node %s"%node.id)
                 set_state(node.id, 42)
             elif node.state_id in [22,42]:
                 logger.warning("ping timeout for node %s"%node.id)
                 set_state(node.id, 5)
-                publish_to_node(node.id, "ping")
+                publish_to_node(node, "ping")
             elif node.state_id == 3:
                 if node.flat.floor.house.length < (now() - node.last_change).seconds:
                     close_valve(node.id)
             elif node.state_id == 5:
                 set_state(node.id, 9)
             elif node.state_id == 9:
-                publish_to_node(node.id, "ping")
+                publish_to_node(node, "ping")
 
 
 loop()

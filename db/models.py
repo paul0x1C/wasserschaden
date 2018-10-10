@@ -15,6 +15,7 @@ class House(Base):
     length = Column(Integer)
     last_flush = Column(DateTime)
     adress = Column(String(100))
+    mqtt_topic = Column(String(100))
 
 class Floor(Base):
     __tablename__ = 'floors'
