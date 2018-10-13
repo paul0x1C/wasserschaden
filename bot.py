@@ -110,25 +110,6 @@ def send_alerts(bot, job, session):
         bot.sendMessage(chat_id, alert.content)
         alert.sent = now()
 
-@db_connect
-@access_conrol
-def Ihouse(bot, update, session):
-    pass
-
-@db_connect
-@access_conrol
-def Ifloor(bot, update, session):
-    pass
-
-@db_connect
-@access_conrol
-def Iflat(bot, update, session):
-    pass
-
-@db_connect
-@access_conrol
-def Inode(bot, update, session):
-    pass
 
 def error(bot, update, error):
     """Log Errors caused by Updates."""
@@ -141,10 +122,6 @@ def main():
 
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("list_houses", list_houses))
-    dp.add_handler(CommandHandler("Ihouse", Ihouse))
-    dp.add_handler(CommandHandler("Ifloor", Ifloor))
-    dp.add_handler(CommandHandler("Iflat", Iflat))
-    dp.add_handler(CommandHandler("Inode", Inode))
     dp.add_handler(CallbackQueryHandler(button))
 
     dp.add_handler(MessageHandler(Filters.text, msg))
