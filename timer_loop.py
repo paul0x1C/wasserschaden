@@ -31,7 +31,7 @@ def check_houses(session):
     for house in houses:
         if house.last_flush == None:
             house.last_flush = datetime.datetime(1,1,1)
-        if (now() - house.last_flush).seconds > house.interval:
+        if (now() - house.last_flush).seconds > house.interval and not house.interval == 0:
             logger.info("Initiating new flush for house '%s'" % house.name)
             for floor in house.floors:
                 for flat in floor.flats:
