@@ -35,7 +35,11 @@ def on_message(mqttc, obj, msg, session):
     except:
         logger.warning("Got message from not matching bridge '%s'" % bridge)
     else:
-        house.gateway_state = True
+        if from_node == "gateway" and payload == "dead":
+            house.gateway_state = False
+            logger.info("gateway '%s' went offline" % bridge)
+        else:
+            house.gateway_state = True
         house.gateway_updated = now()
     if from_node == "gateway":
         pass

@@ -102,7 +102,7 @@ def get_node_info(request, session):
     autorefresh = check_autorefesh(request)
     node_id = int(request.args.get('node_id'))
     if request.form.get('action') == "ping":
-        publish_to_node(node_id, "ping")
+        publish_to_node(session.query(models.Node).filter(models.Node.id == node_id).one(), "ping")
         set_state(node_id, 5)
     elif request.form.get('action') == "move":
         node = session.query(models.Node).filter(models.Node.id == node_id).first()

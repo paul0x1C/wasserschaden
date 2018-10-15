@@ -70,7 +70,7 @@ def open_valve(node_id,session):
     nodes = session.query(models.Node)
     open_nodes = 0
     for n in nodes:
-        if n.state_id in [2,21,22,3] and node.flat.floor.house.id ==  n.flat.floor.house.id:
+        if n.state_id in [2, 21, 22, 3, 41, 42] and node.flat.floor.house.id ==  n.flat.floor.house.id:
             open_nodes += 1
     if open_nodes == 0:
         if node.state_id == 1:
