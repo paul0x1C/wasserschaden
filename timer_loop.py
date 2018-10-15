@@ -11,8 +11,11 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+system_module = SystemModule(1, "timer_loop")
+
 def loop():
     while True:
+        system_module.update(1)
         check_timeouts()
         check_houses()
         process_queue()

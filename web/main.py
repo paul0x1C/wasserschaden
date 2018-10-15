@@ -10,7 +10,6 @@ from actions import *
 
 db_connect = wrapper.db_connect
 
-
 app = Flask(__name__)
 
 def decorate(decorater, text, args = []):
@@ -46,20 +45,52 @@ def overview(session):
             floor_id = int(request.form.get('floor_id')))
         content += "added flat"
         session.add(flat)
+    elif request.form.get('action') == "del_house":
+        house = session.query(models.House).filter(models.House.id == int(request.form.get('house_id'))).first()
+        content += "removed house"
+        for object in delete_house(house):
+            session.delete(object)
     elif request.form.get('action') == "del_floor":
         floor = session.query(models.Floor).filter(models.Floor.id == int(request.form.get('floor_id'))).first()
         content += "removed floor"
-        session.delete(floor)
+        delete_floor(floor)
     elif request.form.get('action') == "del_flat":
         flat = session.query(models.Flat).filter(models.Flat.id == int(request.form.get('flat_id'))).first()
         content += "removed flat"
-        session.delete(flat)
+        delete_flat(flat)
     houses = session.query(models.House)
-    return content+render_template('overview.html', autorefresh = autorefresh, base_template = 'base.html', houses = houses, sorted=sorted, attrgetter=attrgetter, node_id=0, int=int)
+    system_modules = session.query(models.System)
+    return content+render_template('overview.html',system_modules=system_modules, autorefresh = autorefresh, base_template = 'base.html', houses = houses, sorted=sorted, attrgetter=attrgetter, node_id=0, int=int)
 
 @app.route('/node_info', methods=['GET', 'POST'])
 def node_info():
     return get_node_info(request)
+
+def delete_house(house, to_delete):
+    for floor in house.floors:
+        to_delete.append(floor)
+    to_delete.append(house)
+    return to_delete
+
+def delete_floor(floor, to_delete):
+    for flat in floor.flats:
+        to_delete.append(flat)
+    to_delete.append(floor)
+    return to_delete
+
+def delete_flat(flat, to_delete):
+    for node in flat.nodes:
+        to_delete.append(node)
+    to_delete.append(flat)
+    return to_delete
+
+def delete_node(node, to_delete):
+    for report in node.reports:
+        to_delete.append(report)
+    for que in node.queue:
+        to_delete.append(que)
+    to_delete.append(node)
+    return to_delete
 
 def check_autorefesh(request):
     if request.args.get('autorefresh'):

@@ -12,6 +12,9 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+system_module = SystemModule(2, "mqtt_loop")
+system_module.update(1)
+
 def on_connect(client, userdata, flags, rc):
     logger.info("MQTT connected")
     c.on_message = on_message;
@@ -23,8 +26,17 @@ def on_disconnect(client, userdata, rc):
 
 @db_connect
 def on_message(mqttc, obj, msg, session):
+    system_module.update(1)
     payload = msg.payload.decode()
+    bridge = msg.topic.split('/')[0]
     from_node = msg.topic.split('/')[2]
+    try:
+        house = session.query(models.House).filter(models.House.mqtt_topic == bridge).one()
+    except:
+        logger.warning("Got message from not matching bridge '%s'" % bridge)
+    else:
+        house.gateway_state = True
+        house.gateway_updated = now()
     if from_node == "gateway":
         pass
     else:

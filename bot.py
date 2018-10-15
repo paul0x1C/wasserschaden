@@ -11,6 +11,9 @@ import logging
 db_connect = wrapper.db_connect
 chat_id = -255683761
 
+system_module = SystemModule(3, "telegram_bot")
+system_module.update(1)
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
@@ -105,6 +108,7 @@ def button(bot, update, session):
 
 @db_connect
 def send_alerts(bot, job, session):
+    system_module.update(1)
     alerts = session.query(models.Alert).filter(models.Alert.sent == None)
     for alert in alerts:
         bot.sendMessage(chat_id, alert.content)

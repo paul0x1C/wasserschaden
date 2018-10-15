@@ -16,6 +16,8 @@ class House(Base):
     last_flush = Column(DateTime)
     adress = Column(String(100))
     mqtt_topic = Column(String(100))
+    gateway_state = Column(Boolean)
+    gateway_updated = Column(DateTime)
 
 class Floor(Base):
     __tablename__ = 'floors'
@@ -44,7 +46,7 @@ class Node(Base):
 
 class Report(Base):
     __tablename__ = 'reports'
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     node_id = Column(BigInteger, ForeignKey('nodes.id'))
     node = relationship("Node", foreign_keys=[node_id], backref="reports")
     state_id = Column(Integer, ForeignKey('states.id'))
@@ -53,7 +55,7 @@ class Report(Base):
 
 class Alert(Base):
     __tablename__ = 'alerts'
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     priority = Column(Integer)
     added = Column(DateTime)
     sent = Column(DateTime)
@@ -64,6 +66,7 @@ class State(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
     color = Column(String(8))
+    timeout = Column(Integer)
 
 class Queue(Base):
     __tablename__ = 'queue'
@@ -71,6 +74,13 @@ class Queue(Base):
     node_id = Column(BigInteger, ForeignKey('nodes.id'))
     node = relationship("Node", foreign_keys=[node_id], backref="queue")
     added = Column(DateTime)
+
+class System(Base):
+    __tablename__ = 'systems' # hm
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    updated = Column(DateTime)
+    status = Column(Integer)
+    name = Column(String(50))
 
 class Setting(Base):
     __tablename__ = 'settings'
