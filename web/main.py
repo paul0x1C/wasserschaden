@@ -50,6 +50,11 @@ def overview(session):
         house.length = int(request.form.get('length'))
         house.interval = int(request.form.get('interval'))
         house.mqtt_topic = request.form.get('mqtt_topic')
+    elif request.form.get('action') == "clear_queue":
+        queue = session.query(models.Queue)
+        for que in queue:
+            if que.node.flat.floor.house.id == int(request.form.get('house_id')):
+                session.delete(que)
     elif request.form.get('action') == "del_house":
         house = session.query(models.House).filter(models.House.id == int(request.form.get('house_id'))).one()
         content += "removed house"
@@ -92,13 +97,13 @@ def get_csv(house_id, session):
         column.append("%s: %s-%s" % (node.flat.floor.level, node.flat.name, node.id))
     columns.append(column)
     for report in reports:
-        if report.state_id in [1,3]:
+        if report.state_id in [3,4]:
             column = [str(report.time)]
             for x in range(nodes.index(report.node)):
                 column.append("-")
-            if report.state_id == 1:
+            if report.state_id == 3:
                 column.append("open")
-            elif report.state_id == 3:
+            elif report.state_id == 4:
                 column.append("close")
             for x in range(len(nodes) - (nodes.index(report.node)+1)):
                 column.append("-")

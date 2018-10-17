@@ -49,7 +49,14 @@
           </form>
           <div class = "gateway">
               <p> Gateway '{{ house.mqtt_topic }}': {{ house.gateway_state }} since {{ house.gateway_updated }}</p>
-              <p> Queue length: {{ queue_length(house) }}</p>
+              <p>
+                <form method='post'>
+                  <input type='hidden' name='house_id' value='{{ house.id }}'>
+                  <input type='hidden' value='clear_queue' name='action'>
+                  Queue length: {{ queue_length(house) }}
+                  <input type='submit' value='clear' class='clear'>
+                </form>
+              </p>
           </div>
           <div class = "settings">
             <form method='post'>
