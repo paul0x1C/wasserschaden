@@ -51,51 +51,55 @@ def overview(session):
         house.interval = int(request.form.get('interval'))
         house.mqtt_topic = request.form.get('mqtt_topic')
     elif request.form.get('action') == "del_house":
-        house = session.query(models.House).filter(models.House.id == int(request.form.get('house_id'))).first()
+        house = session.query(models.House).filter(models.House.id == int(request.form.get('house_id'))).one()
         content += "removed house"
-        for object in delete_house(house):
-            session.delete(object)
+        delete_house(house, session)
     elif request.form.get('action') == "del_floor":
-        floor = session.query(models.Floor).filter(models.Floor.id == int(request.form.get('floor_id'))).first()
+        floor = session.query(models.Floor).filter(models.Floor.id == int(request.form.get('floor_id'))).one()
         content += "removed floor"
-        delete_floor(floor)
+        delete_floor(floor, session)
     elif request.form.get('action') == "del_flat":
-        flat = session.query(models.Flat).filter(models.Flat.id == int(request.form.get('flat_id'))).first()
+        flat = session.query(models.Flat).filter(models.Flat.id == int(request.form.get('flat_id'))).one()
         content += "removed flat"
-        delete_flat(flat)
+        delete_flat(flat, session)
     houses = session.query(models.House)
     system_modules = session.query(models.System)
-    return content+render_template('overview.html',system_modules=system_modules, autorefresh = autorefresh, base_template = 'base.html', houses = houses, sorted=sorted, attrgetter=attrgetter, node_id=0, int=int)
+    return content+render_template('overview.html',system_modules=system_modules, autorefresh = autorefresh, base_template = 'base.html', houses = houses, sorted=sorted, attrgetter=attrgetter, node_id=0, int=int, queue_length=queue_length)
 
 @app.route('/node_info', methods=['GET', 'POST'])
 def node_info():
     return get_node_info(request)
 
-def delete_house(house, to_delete):
+def delete_house(house, session):
     for floor in house.floors:
-        to_delete.append(floor)
-    to_delete.append(house)
-    return to_delete
+        delete_floor(floor, session)
+    session.delete(house)
 
-def delete_floor(floor, to_delete):
+def delete_floor(floor, session):
     for flat in floor.flats:
-        to_delete.append(flat)
-    to_delete.append(floor)
-    return to_delete
+        delete_flat(flat, session)
+    session.delete(floor)
 
-def delete_flat(flat, to_delete):
+def delete_flat(flat, session):
     for node in flat.nodes:
-        to_delete.append(node)
-    to_delete.append(flat)
-    return to_delete
+        delete_node(node, session)
+    session.delete(flat)
 
-def delete_node(node, to_delete):
+def delete_node(node, session):
     for report in node.reports:
-        to_delete.append(report)
+        session.delete(report)
     for que in node.queue:
-        to_delete.append(que)
-    to_delete.append(node)
-    return to_delete
+        session.delete(que)
+    session.delete(node)
+
+@db_connect
+def queue_length(house, session):
+    counter = 0
+    queue = session.query(models.Queue)
+    for que in queue:
+        if que.node.flat.floor.house.id == house.id:
+            counter += 1
+    return counter
 
 def check_autorefesh(request):
     if request.args.get('autorefresh'):
