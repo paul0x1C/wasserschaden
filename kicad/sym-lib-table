@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name wasserschaden-rescue)(type Legacy)(uri ${KIPRJMOD}/wasserschaden-rescue.lib)(options "")(descr ""))
+)
