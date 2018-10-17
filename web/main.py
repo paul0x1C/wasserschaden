@@ -45,6 +45,11 @@ def overview(session):
             floor_id = int(request.form.get('floor_id')))
         content += "added flat"
         session.add(flat)
+    elif request.form.get('action') == "edit_house":
+        house = session.query(models.House).filter(models.House.id == int(request.form.get('house_id'))).one()
+        house.length = int(request.form.get('length'))
+        house.interval = int(request.form.get('interval'))
+        house.mqtt_topic = request.form.get('mqtt_topic')
     elif request.form.get('action') == "del_house":
         house = session.query(models.House).filter(models.House.id == int(request.form.get('house_id'))).first()
         content += "removed house"

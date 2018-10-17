@@ -50,6 +50,16 @@
           <div class = "gateway">
               <p> Gateway '{{ house.mqtt_topic }}': {{ house.gateway_state }} since {{ house.gateway_updated }}</p>
           </div>
+          <div class = "settings">
+            <form method='post'>
+              <p>mqtt_topic: <input type='text' name='mqtt_topic', value='{{ house.mqtt_topic }}'></p>
+              <p>interval: <input type='number' name='interval', value='{{ house.interval }}'></p>
+              <p>length: <input type='number' name='length', value='{{ house.length }}'></p>
+              <input type='hidden' value='edit_house' name='action'>
+              <input type='hidden' value='{{ house.id}}' name='house_id'>
+              <input type='submit' value='save'>
+            </form>
+          </div>
       </div>
     {% endfor %}
 </div>

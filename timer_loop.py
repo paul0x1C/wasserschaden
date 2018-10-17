@@ -49,7 +49,8 @@ def check_timeouts(session):
     for node in nodes:
         #pdb.set_trace()
         logger.info("Checking node '%s' with state '%s'" % (node.id, node.state.name))
-        if (now() - node.last_change).seconds > 10:
+        last_change = (now() - node.last_change).seconds
+        if last_change > 10:
             if node.state_id == 2:
                 publish_to_node(node, "open")
                 set_state(node.id, 21)
@@ -71,7 +72,7 @@ def check_timeouts(session):
                 set_state(node.id, 5)
                 publish_to_node(node, "ping")
             elif node.state_id == 3:
-                if node.flat.floor.house.length < (now() - node.last_change).seconds:
+                if node.flat.floor.house.length <= last_change:
                     close_valve(node.id)
             elif node.state_id == 5:
                 set_state(node.id, 9)
