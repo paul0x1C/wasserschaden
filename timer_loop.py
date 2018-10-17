@@ -1,6 +1,6 @@
 ## -*- coding: utf-8 -*-
 
-import time, logging, datetime, pdb
+import time, logging, datetime, pdb, random
 from db import models
 from db import wrapper
 from actions import *
@@ -77,7 +77,9 @@ def check_timeouts(session):
             elif node.state_id == 5:
                 set_state(node.id, 9)
             elif node.state_id == 9:
-                publish_to_node(node, "ping")
+                if last_change > 600:
+                    if random.randint(1,25) == 5: #don't send so many pings when disconnected for a long time
+                        publish_to_node(node, "ping")
 
 
 loop()
