@@ -15,6 +15,19 @@ def now():
 def publish_to_node(node, msg):
     os.system("""mosquitto_pub -t "%s/to/%s" -m "%s" """ % (node.flat.floor.house.mqtt_topic, node.id, msg))
 
+class SystemModule():
+    @db_connect
+    def __init__(self, sys_id, name, session):
+        self.id = sys_id
+        self.name = name
+        if session.query(models.System).filter(models.System.id == self.id).count() == 0:
+            new_system_module = models.System(id = sys_id, name = name)
+            session.add(new_system_module)
+    @db_connect
+    def update(self, status, session):
+        system_module = session.query(models.System).filter(models.System.id == self.id).one()
+        system_module.updated = now()
+        system_module.status = status
 @db_connect
 def set_state(node_id, state_id, session, update_time = True):
     node = session.query(models.Node).filter(models.Node.id == node_id).one()
@@ -57,7 +70,7 @@ def open_valve(node_id,session):
     nodes = session.query(models.Node)
     open_nodes = 0
     for n in nodes:
-        if n.state_id in [2,21,22,3] and node.flat.floor.house.id ==  n.flat.floor.house.id:
+        if n.state_id in [2, 21, 22, 3, 41, 42] and node.flat.floor.house.id ==  n.flat.floor.house.id:
             open_nodes += 1
     if open_nodes == 0:
         if node.state_id == 1:

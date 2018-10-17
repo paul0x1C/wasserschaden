@@ -1,6 +1,6 @@
 ## -*- coding: utf-8 -*-
 
-import time, logging, datetime, pdb
+import time, logging, datetime, pdb, random
 from db import models
 from db import wrapper
 from actions import *
@@ -11,8 +11,11 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+system_module = SystemModule(1, "timer_loop")
+
 def loop():
     while True:
+        system_module.update(1)
         check_timeouts()
         check_houses()
         process_queue()
@@ -46,7 +49,8 @@ def check_timeouts(session):
     for node in nodes:
         #pdb.set_trace()
         logger.info("Checking node '%s' with state '%s'" % (node.id, node.state.name))
-        if (now() - node.last_change).seconds > 10:
+        last_change = (now() - node.last_change).seconds
+        if last_change > 10:
             if node.state_id == 2:
                 publish_to_node(node, "open")
                 set_state(node.id, 21)
@@ -68,12 +72,14 @@ def check_timeouts(session):
                 set_state(node.id, 5)
                 publish_to_node(node, "ping")
             elif node.state_id == 3:
-                if node.flat.floor.house.length < (now() - node.last_change).seconds:
+                if node.flat.floor.house.length <= last_change:
                     close_valve(node.id)
             elif node.state_id == 5:
                 set_state(node.id, 9)
             elif node.state_id == 9:
-                publish_to_node(node, "ping")
+                if last_change > 600:
+                    if random.randint(1,25) == 5: #don't send so many pings when disconnected for a long time
+                        publish_to_node(node, "ping")
 
 
 loop()

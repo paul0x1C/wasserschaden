@@ -11,6 +11,9 @@ import logging
 db_connect = wrapper.db_connect
 chat_id = -255683761
 
+system_module = SystemModule(3, "telegram_bot")
+system_module.update(1)
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
@@ -105,30 +108,12 @@ def button(bot, update, session):
 
 @db_connect
 def send_alerts(bot, job, session):
+    system_module.update(1)
     alerts = session.query(models.Alert).filter(models.Alert.sent == None)
     for alert in alerts:
         bot.sendMessage(chat_id, alert.content)
         alert.sent = now()
 
-@db_connect
-@access_conrol
-def Ihouse(bot, update, session):
-    pass
-
-@db_connect
-@access_conrol
-def Ifloor(bot, update, session):
-    pass
-
-@db_connect
-@access_conrol
-def Iflat(bot, update, session):
-    pass
-
-@db_connect
-@access_conrol
-def Inode(bot, update, session):
-    pass
 
 def error(bot, update, error):
     """Log Errors caused by Updates."""
@@ -141,10 +126,6 @@ def main():
 
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("list_houses", list_houses))
-    dp.add_handler(CommandHandler("Ihouse", Ihouse))
-    dp.add_handler(CommandHandler("Ifloor", Ifloor))
-    dp.add_handler(CommandHandler("Iflat", Iflat))
-    dp.add_handler(CommandHandler("Inode", Inode))
     dp.add_handler(CallbackQueryHandler(button))
 
     dp.add_handler(MessageHandler(Filters.text, msg))
