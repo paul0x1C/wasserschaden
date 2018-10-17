@@ -1,7 +1,7 @@
 ## -*- coding: utf-8 -*-
 
 import sys
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, Response
 from operator import attrgetter
 sys.path.append("..")
 from db import models
@@ -70,6 +70,43 @@ def overview(session):
 def node_info():
     return get_node_info(request)
 
+@app.route('/csv', methods=['GET'])
+def csv():
+    csv = get_csv(request.args.get('house_id'))
+    return Response(csv, mimetype="text/csv")
+
+@db_connect
+def get_csv(house_id, session):
+    columns = []
+    report_query = session.query(models.Report)
+    reports = []
+    for report in report_query:
+        if report.node.flat.floor.house.id == int(house_id):
+            reports.append(report)
+    nodes = []
+    for report in reports:
+        if not report.node in nodes:
+            nodes.append(report.node)
+    column = ["time"]
+    for node in nodes:
+        column.append("%s: %s-%s" % (node.flat.floor.level, node.flat.name, node.id))
+    columns.append(column)
+    for report in reports:
+        if report.state_id in [1,3]:
+            column = [str(report.time)]
+            for x in range(nodes.index(report.node)):
+                column.append("-")
+            if report.state_id == 1:
+                column.append("open")
+            elif report.state_id == 3:
+                column.append("close")
+            for x in range(len(nodes) - (nodes.index(report.node)+1)):
+                column.append("-")
+            columns.append(column)
+    csv_string = ""
+    for column in columns:
+        csv_string += ",".join(column) + "\n"
+    return csv_string
 def delete_house(house, session):
     for floor in house.floors:
         delete_floor(floor, session)

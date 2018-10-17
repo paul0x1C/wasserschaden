@@ -4,7 +4,7 @@
 <div class='row'>
     <h2>Houses</h2>
     {% for house in houses %}
-      <div class='house'><div class='house_name'>{{ house.name }}</div>
+      <div class='house'><div class='house_name'><a href='csv?house_id={{ house.id }}'>{{ house.name }}</a></div>
       <form method='post'>
         <input type='hidden' value='del_house' name='action'>
         <input type='hidden' name='house_id' value='{{ house.id }}'>
