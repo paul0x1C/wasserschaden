@@ -92,7 +92,7 @@ void setup() {
 }
 
 void mqttConnect() {
-  if (mqttClient.connect(String("pmC_"+String(MQTT_TOPIC)).c_str())) {
+  if (mqttClient.connect(String("pmC_"+String(MQTT_TOPIC)).c_str()),from_gateway,1,false,"dead") {
     digitalWrite(MQTT_LED, HIGH);
     Serial.println("connected to mqtt");
     mqttClient.publish(from_gateway.c_str(), "Ready!");
