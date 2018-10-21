@@ -12,12 +12,6 @@ db_connect = wrapper.db_connect
 
 app = Flask(__name__)
 
-def decorate(decorater, text, args = []):
-    arg_string = ""
-    for arg in args:
-        arg_string += " %s='%s'" % (arg[0], arg[1])
-    return "<%s%s>%s</%s>" % (decorater,arg_string,text,decorater)
-
 @app.route('/overview', methods=['GET', 'POST'])
 @db_connect
 def overview(session):
@@ -71,35 +65,25 @@ def overview(session):
     return content+render_template('overview.html', system_modules=system_modules, base_template = 'base.html', houses = houses, sorted=sorted, attrgetter=attrgetter, node_id=0, int=int, str=str)
 
 @app.route('/node_info', methods=['GET', 'POST'])
-def node_info():
-    return get_node_info(request)
+@db_connect
+def node_info(session):
+    node_id = int(request.args.get('node_id'))
+    if request.form.get('action') == "ping":
+        publish_to_node(session.query(models.Node).filter(models.Node.id == node_id).one(), "ping")
+        set_state(node_id, 5)
+    elif request.form.get('action') == "move":
+        node = session.query(models.Node).filter(models.Node.id == node_id).first()
+        node.flat_id = int(request.form.get('flat_id'))
+    node = session.query(models.Node).filter(models.Node.id == node_id).first()
+    houses = session.query(models.House)
+    reports = node.reports[-20:]
+    reports.reverse()
+    return render_template('node_info.html', base_template = 'base.html', node = node, houses = houses, reports = reports, node_id = node.id, int=int)
 
 @app.route('/csv', methods=['GET'])
-def csv():
-    csv = get_csv(request.args.get('house_id'))
-    return Response(csv, mimetype="text/csv")
-
-@app.route('/auto_update')
-def auto_update(): # returns all the self updateing stuff
-    session = models.connection.Session()
-    nodes = session.query(models.Node)
-    houses = session.query(models.House)
-    modules = session.query(models.System)
-    result = {"html": [], "bgColor": []}
-    for node in nodes:
-        result['bgColor'].append(("Nco" + str(node.id), node.state.color))
-    for house in houses:
-        result['html'].append(("Hst" + str(house.id), house.gateway_state))
-        result['html'].append(("Hsi" + str(house.id), house.gateway_updated))
-        result['html'].append(("Hqu" + str(house.id), queue_length(house)))
-    for module in modules:
-        result['html'].append(("Mst" + str(module.id), module.status))
-        result['html'].append(("Msi" + str(module.id), module.updated))
-    session.close()
-    return jsonify(result)
-
 @db_connect
-def get_csv(house_id, session):
+def csv(session):
+    house_id = request.args.get('house_id')
     columns = []
     report_query = session.query(models.Report)
     reports = []
@@ -129,7 +113,27 @@ def get_csv(house_id, session):
     csv_string = ""
     for column in columns:
         csv_string += ",".join(column) + "\n"
-    return csv_string
+    return Response(csv_string, mimetype="text/csv")
+
+@app.route('/auto_update')
+@db_connect
+def auto_update(session): # returns all the self updateing stuff
+    nodes = session.query(models.Node)
+    houses = session.query(models.House)
+    modules = session.query(models.System)
+    result = {"html": [], "bgColor": []}
+    for node in nodes:
+        result['bgColor'].append(("Nco" + str(node.id), node.state.color))
+    for house in houses:
+        result['html'].append(("Hst" + str(house.id), house.gateway_state))
+        result['html'].append(("Hsi" + str(house.id), house.gateway_updated))
+        result['html'].append(("Hqu" + str(house.id), queue_length(house)))
+    for module in modules:
+        result['html'].append(("Mst" + str(module.id), module.status))
+        result['html'].append(("Msi" + str(module.id), module.updated))
+    return jsonify(result)
+
+
 def delete_house(house, session):
     for floor in house.floors:
         delete_floor(floor, session)
@@ -160,21 +164,6 @@ def queue_length(house, session):
         if que.node.flat.floor.house.id == house.id:
             counter += 1
     return counter
-
-@db_connect
-def get_node_info(request, session):
-    node_id = int(request.args.get('node_id'))
-    if request.form.get('action') == "ping":
-        publish_to_node(session.query(models.Node).filter(models.Node.id == node_id).one(), "ping")
-        set_state(node_id, 5)
-    elif request.form.get('action') == "move":
-        node = session.query(models.Node).filter(models.Node.id == node_id).first()
-        node.flat_id = int(request.form.get('flat_id'))
-    node = session.query(models.Node).filter(models.Node.id == node_id).first()
-    houses = session.query(models.House)
-    reports = node.reports[-20:]
-    reports.reverse()
-    return render_template('node_info.html', base_template = 'base.html', node = node, houses = houses, reports = reports, node_id = node.id, int=int)
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000, host='0.0.0.0')
