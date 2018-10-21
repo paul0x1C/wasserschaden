@@ -2,17 +2,7 @@
 <meta charset="utf-8">
 <html lang="en">
 <head>
-  {% if autorefresh %}
-  <meta http-equiv="refresh" content="1" >
-  {% endif %}
   <title>{% block title %}{% endblock %} - Gebäudespülung</title>
-  <div class="setting">
-    {% if autorefresh %}
-    <a href="?node_id={{ node_id }}">Auto Refresh OFF</a> {# this node_id thing is pretty ugly and should be fixed #}
-    {% else %}
-    <a href="?autorefresh=1&node_id={{ node_id }}">Auto Refresh ON</a>
-    {% endif %}
-  </div>
 </head>
 <body>
     <div id="content">{% block content %}{% endblock %}</div>

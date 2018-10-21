@@ -1,7 +1,7 @@
 ## -*- coding: utf-8 -*-
 
 import sys
-from flask import Flask, request, render_template, Response
+from flask import Flask, request, render_template, Response, jsonify
 from operator import attrgetter
 sys.path.append("..")
 from db import models
@@ -23,7 +23,6 @@ def decorate(decorater, text, args = []):
 def overview(session):
     content = ""
     # content += str(request.form)
-    autorefresh = check_autorefesh(request)
     if request.form.get('action') == "add_house":
         house = models.House(
             name = request.form.get('name'),
@@ -69,7 +68,7 @@ def overview(session):
         delete_flat(flat, session)
     houses = session.query(models.House)
     system_modules = session.query(models.System)
-    return content+render_template('overview.html',system_modules=system_modules, autorefresh = autorefresh, base_template = 'base.html', houses = houses, sorted=sorted, attrgetter=attrgetter, node_id=0, int=int, queue_length=queue_length)
+    return content+render_template('overview.html', system_modules=system_modules, base_template = 'base.html', houses = houses, sorted=sorted, attrgetter=attrgetter, node_id=0, int=int, str=str)
 
 @app.route('/node_info', methods=['GET', 'POST'])
 def node_info():
@@ -79,6 +78,25 @@ def node_info():
 def csv():
     csv = get_csv(request.args.get('house_id'))
     return Response(csv, mimetype="text/csv")
+
+@app.route('/auto_update')
+def auto_update(): # returns all the self updateing stuff
+    session = models.connection.Session()
+    nodes = session.query(models.Node)
+    houses = session.query(models.House)
+    modules = session.query(models.System)
+    result = {"html": [], "bgColor": []}
+    for node in nodes:
+        result['bgColor'].append(("Nco" + str(node.id), node.state.color))
+    for house in houses:
+        result['html'].append(("Hst" + str(house.id), house.gateway_state))
+        result['html'].append(("Hsi" + str(house.id), house.gateway_updated))
+        result['html'].append(("Hqu" + str(house.id), queue_length(house)))
+    for module in modules:
+        result['html'].append(("Mst" + str(module.id), module.status))
+        result['html'].append(("Msi" + str(module.id), module.updated))
+    session.close()
+    return jsonify(result)
 
 @db_connect
 def get_csv(house_id, session):
@@ -143,14 +161,8 @@ def queue_length(house, session):
             counter += 1
     return counter
 
-def check_autorefesh(request):
-    if request.args.get('autorefresh'):
-        return True
-    return False
-
 @db_connect
 def get_node_info(request, session):
-    autorefresh = check_autorefesh(request)
     node_id = int(request.args.get('node_id'))
     if request.form.get('action') == "ping":
         publish_to_node(session.query(models.Node).filter(models.Node.id == node_id).one(), "ping")
@@ -162,7 +174,7 @@ def get_node_info(request, session):
     houses = session.query(models.House)
     reports = node.reports[-20:]
     reports.reverse()
-    return render_template('node_info.html', autorefresh = autorefresh, base_template = 'base.html', node = node, houses = houses, reports = reports, node_id = node.id, int=int)
+    return render_template('node_info.html', base_template = 'base.html', node = node, houses = houses, reports = reports, node_id = node.id, int=int)
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000, host='0.0.0.0')

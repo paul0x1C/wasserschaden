@@ -34,7 +34,7 @@
                   <div class='flat_name'>{{ flat.name }}</div>
                   <div class='row'>
                       {% for node in flat.nodes %}
-                      <div class='node' style="background-color:{{ node.state.color }};"><a href='node_info?node_id={{ node.id }}&autorefresh={{ int(autorefresh) }}'>{{ node.id }}</a></div>
+                      <div class='node' id='Nco{{ node.id }}' style="background-color:{{ node.state.color }};"><a href='node_info?node_id={{ node.id }}'>{{ node.id }}</a></div>
                       {% endfor %}
                   </div>
               </div>
@@ -48,12 +48,12 @@
             <input type='submit' value='add' class='add'>
           </form>
           <div class = "gateway">
-              <p> Gateway '{{ house.mqtt_topic }}': {{ house.gateway_state }} since {{ house.gateway_updated }}</p>
+              <p> Gateway '{{ house.mqtt_topic }}': <b id='{{"Hst" + str(house.id)}}'>{{ house.gateway_state }}</b> since <b id='{{"Hsi" + str(house.id)}}'>{{ house.gateway_updated }}</b></p>
               <p>
                 <form method='post'>
                   <input type='hidden' name='house_id' value='{{ house.id }}'>
                   <input type='hidden' value='clear_queue' name='action'>
-                  Queue length: {{ queue_length(house) }}
+                  Queue length: <b id='{{"Hqu" + str(house.id)}}'></b>
                   <input type='submit' value='clear' class='clear'>
                 </form>
               </p>
@@ -73,7 +73,7 @@
 </div>
 <div class='status'>
   {% for module in system_modules %}
-  <p>{{ module.name }}: {{ module.status }} since {{ module.updated }}</p>
+  <p>{{ module.name }}: <b id='{{"Mst" + str(module.id)}}'>{{ module.status }}</b> since <b id='{{"Msi" + str(module.id)}}'>{{ module.updated }}</b></p>
   {% endfor %}
 </div>
 <div class='footer'>
@@ -87,5 +87,23 @@
     <p><input type='number' name='length', placeholder='length'></p>
     <input type='hidden' value='add_house' name='action'><input class='add' type='submit' value='add'>
     </form>
-</div>
+  </div>
+  <script type=text/javascript>
+  	function update (){
+      fetch('/auto_update')
+      .then(res => res.json())
+      .then((data) =>  {
+        data.html.forEach(function(element) {
+          document.getElementById(element[0]).innerHTML=element[1];
+        });
+        data.bgColor.forEach(function(element) {
+          console.log(element)
+          document.getElementById(element[0]).style.backgroundColor=element[1];
+        });
+  		});
+  	};
+    setInterval(function(){
+      update() // this will run after every second
+    }, 1000);
+  </script>
 {% endblock %}
