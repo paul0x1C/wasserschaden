@@ -52,7 +52,8 @@ def overview(session):
         set_setting(int(request.form.get('setting')), int(request.form.get('value')))
     houses = session.query(models.House)
     system_modules = session.query(models.System)
-    return content+render_template('overview.html', system_modules=system_modules, base_template = 'base.html', houses = houses, sorted=sorted, attrgetter=attrgetter, node_id=0, int=int, str=str)
+    uf_new_nodes = session.query(models.Setting).filter(models.Setting.id == 1).one().state
+    return content+render_template('overview.html', system_modules=system_modules, base_template = 'base.html', houses = houses, sorted=sorted, attrgetter=attrgetter, node_id=0, int=int, str=str, uf_new_nodes=uf_new_nodes)
 
 @app.route('/node_info', methods=['GET', 'POST'])
 @db_connect
