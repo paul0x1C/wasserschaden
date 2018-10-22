@@ -53,7 +53,8 @@ def overview(session):
     houses = session.query(models.House)
     system_modules = session.query(models.System)
     uf_new_nodes = session.query(models.Setting).filter(models.Setting.id == 1).one().state
-    return content+render_template('overview.html', system_modules=system_modules, base_template = 'base.html', houses = houses, sorted=sorted, attrgetter=attrgetter, node_id=0, int=int, str=str, uf_new_nodes=uf_new_nodes)
+    n_nodes = session.query(models.Node).count()
+    return content+render_template('overview.html', system_modules=system_modules, base_template = 'base.html', houses = houses, sorted=sorted, attrgetter=attrgetter, node_id=0, int=int, str=str, uf_new_nodes=uf_new_nodes, n_nodes=n_nodes)
 
 @app.route('/node_info', methods=['GET', 'POST'])
 @db_connect
@@ -112,7 +113,9 @@ def auto_update(session): # returns all the self updateing stuff
     nodes = session.query(models.Node)
     houses = session.query(models.House)
     modules = session.query(models.System)
-    result = {"html": [], "bgColor": []}
+    result = {"html": [], "bgColor": [], "refresh": False}
+    if not int(request.args.get('n_nodes')) == nodes.count():
+        result['refresh'] = True
     for node in nodes:
         result['bgColor'].append(("Nco" + str(node.id), node.state.color))
     for house in houses:

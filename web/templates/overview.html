@@ -87,9 +87,12 @@
   </div>
   <script type=text/javascript>
   	function update (){
-      fetch('/auto_update')
+      fetch('/auto_update?n_nodes={{n_nodes}}')
       .then(res => res.json())
       .then((data) =>  {
+        if (data.refresh){
+          window.location.reload();
+        }
         data.html.forEach(function(element) {
           document.getElementById(element[0]).innerHTML=element[1];
         });
