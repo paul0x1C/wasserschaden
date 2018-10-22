@@ -47,39 +47,59 @@ def check_houses(session):
 def check_timeouts(session):
     nodes = session.query(models.Node)
     for node in nodes:
-        #pdb.set_trace()
-        logger.info("Checking node '%s' with state '%s'" % (node.id, node.state.name))
-        last_change = (now() - node.last_change).seconds
-        if last_change > 10:
-            if node.state_id == 2:
-                publish_to_node(node, "open")
-                set_state(node.id, 21)
-                logger.warning("open retry 1 for node %s"%node.id)
-            elif node.state_id == 21:
-                publish_to_node(node, "open")
-                logger.warning("open retry 2 for node %s"%node.id)
-                set_state(node.id, 22)
-            elif node.state_id == 4:
-                publish_to_node(node, "close")
-                logger.warning("close retry 1 for node %s"%node.id)
-                set_state(node.id, 41)
-            elif node.state_id == 41:
-                publish_to_node(node, "close")
-                logger.warning("close retry 2 for node %s"%node.id)
-                set_state(node.id, 42)
-            elif node.state_id in [22,42]:
-                logger.warning("ping timeout for node %s"%node.id)
-                set_state(node.id, 5)
+        last_physical_change = (now() - node.last_physical_change).seconds
+        last_connection_change = (now() - node.last_connection_change).seconds
+        last_physical_attempt = (now() - node.last_physical_attempt).seconds
+        last_connection_attempt = (now() - node.last_connection_attempt).seconds
+        if node.connection_state_id == 2:
+            if node.connection_attemps == 0:
+                if last_connection_change > 5:
+                    publish_to_node(node, "ping")
+                    add_connection_attempt(node)
+            elif node.connection_attemps == 1:
+                if last_connection_attempt > 10:
+                    publish_to_node(node, "ping")
+                    add_connection_attempt(node)
+            elif node.connection_attemps > 1:
+                if last_connection_attempt > 20:
+                    set_connection_state(node, 3)
+        elif node.connection_state_id == 3:
+            if node.connection_attemps < 5:
+                if last_connection_attempt > 100:
+                    publish_to_node(node, "ping")
+                    add_connection_attempt(node)
+            else:
+                if last_connection_attempt > 3600:
+                    publish_to_node(node, "ping")
+                    add_connection_attempt(node)
+        if node.physical_state_id == 2:
+            if node.physical_attemps == 0:
+                if last_physical_change > 5:
+                    publish_to_node(node, "open")
+                    add_physical_attempt(node)
+            elif node.physical_attemps < 3:
+                if last_physical_attempt > 10:
+                    publish_to_node(node, "open")
+                    add_physical_attempt(node)
+            else:
+                set_connection_state(node, 2)
+                set_physical_state(node, 1)
                 publish_to_node(node, "ping")
-            elif node.state_id == 3:
-                if node.flat.floor.house.length <= last_change:
-                    close_valve(node.id)
-            elif node.state_id == 5:
-                set_state(node.id, 9)
-            elif node.state_id == 9:
-                if last_change > 600:
-                    if random.randint(1,25) == 5: #don't send so many pings when disconnected for a long time
-                        publish_to_node(node, "ping")
-
-
+        elif node.physical_state_id == 4:
+            if node.physical_attemps == 0:
+                if last_physical_change > 5:
+                    publish_to_node(node, "close")
+                    add_physical_attempt(node)
+            elif node.physical_attemps < 3:
+                if last_physical_attempt > 10:
+                    publish_to_node(node, "close")
+                    add_physical_attempt(node)
+            else:
+                set_connection_state(node, 2)
+                set_physical_state(node, 1)
+                publish_to_node(node, "ping")
+        elif node.physical_state_id == 3:
+            if node.flat.floor.house.length <= last_physical_change:
+                publish_to_node(node, "close")
+                set_physical_state(node, 4)
 loop()

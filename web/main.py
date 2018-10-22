@@ -48,10 +48,13 @@ def overview(session):
         for que in queue:
             if que.node.flat.floor.house.id == int(request.form.get('house_id')):
                 session.delete(que)
+    elif request.form.get('action') == "broadcast_ping":
+        content += "broadcast_ping"
+        broadcast_ping(request.form.get('gateway_topic'))
     elif request.form.get('action') == "set_setting":
         set_setting(int(request.form.get('setting')), int(request.form.get('value')))
     houses = session.query(models.House)
-    system_modules = session.query(models.System)
+    system_modules = session.query(models.Module)
     uf_new_nodes = session.query(models.Setting).filter(models.Setting.id == 1).one().state
     n_nodes = session.query(models.Node).count()
     return content+render_template('overview.html',
@@ -106,13 +109,13 @@ def csv(session):
         column.append("%s: %s-%s" % (node.flat.floor.level, node.flat.name, node.id))
     columns.append(column)
     for report in reports:
-        if report.state_id in [3,4]:
+        if report.physical_state_id in [3,4]:
             column = [str(report.time)]
             for x in range(nodes.index(report.node)):
                 column.append("-")
-            if report.state_id == 3:
+            if report.physical_state_id == 3:
                 column.append("open")
-            elif report.state_id == 4:
+            elif report.physical_state_id == 4:
                 column.append("close")
             for x in range(len(nodes) - (nodes.index(report.node)+1)):
                 column.append("-")
@@ -127,12 +130,13 @@ def csv(session):
 def auto_update(session): # returns all the self updateing stuff
     nodes = session.query(models.Node)
     houses = session.query(models.House)
-    modules = session.query(models.System)
-    result = {"html": [], "bgColor": [], "refresh": False}
+    modules = session.query(models.Module)
+    result = {"html": [], "bgColor": [], "boColor": [], "refresh": False}
     if not int(request.args.get('n_nodes')) == nodes.count():
         result['refresh'] = True
     for node in nodes:
-        result['bgColor'].append(("Nco" + str(node.id), node.state.color))
+        result['bgColor'].append(("Nco" + str(node.id), node.physical_state.color))
+        result['boColor'].append(("Nco" + str(node.id), node.connection_state.color))
     for house in houses:
         result['html'].append(("Hst" + str(house.id), house.gateway_state))
         result['html'].append(("Hsi" + str(house.id), house.gateway_updated))

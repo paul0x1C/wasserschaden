@@ -19,7 +19,7 @@
                   <div class='flat_name'>{{ flat.name }}</div>
                   <div class='row'>
                       {% for node in flat.nodes %}
-                      <div class='node' id='Nco{{ node.id }}' style="background-color:{{ node.state.color }};"><a href='node_info?node_id={{ node.id }}'>{{ node.id }}</a></div>
+                      <div class='node' id='Nco{{ node.id }}' style="background-color:{{ node.physical_state.color }}; border-color:{{node.connection_state.color}}"><a href='node_info?node_id={{ node.id }}'>{{ node.id }}</a></div>
                       {% endfor %}
                       <form method='post'>
                         <input type='hidden' value='set_setting' name='action'>
@@ -42,7 +42,13 @@
             <input type='submit' value='add' class='add'>
           </form>
           <div class = "gateway">
-              <p> Gateway '{{ house.mqtt_topic }}': <b id='{{"Hst" + str(house.id)}}'>{{ house.gateway_state }}</b> since <b id='{{"Hsi" + str(house.id)}}'>{{ house.gateway_updated }}</b></p>
+              <p> Gateway '{{ house.mqtt_topic }}': <b id='{{"Hst" + str(house.id)}}'>{{ house.gateway_state }}</b> since <b id='{{"Hsi" + str(house.id)}}'>{{ house.gateway_updated }}</b>
+                <form method='post'>
+                  <input type='hidden' value='broadcast_ping' name='action'>
+                  <input type='hidden' name='gateway_topic' value='{{ house.mqtt_topic }}'>
+                  <input type='submit' value='broadcast ping' class='add'>
+                </form>
+              </p>
               <p>
                 <form method='post'>
                   <input type='hidden' name='house_id' value='{{ house.id }}'>
@@ -98,6 +104,9 @@
         });
         data.bgColor.forEach(function(element) {
           document.getElementById(element[0]).style.backgroundColor=element[1];
+        });
+        data.boColor.forEach(function(element) {
+          document.getElementById(element[0]).style.borderColor=element[1];
         });
   		});
   	};

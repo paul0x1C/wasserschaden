@@ -6,13 +6,13 @@ db_connect = wrapper.db_connect
 
 connection_states = [
     (1, "connected", "#19ff00"),
-    (2, "waiting for ping", "#ff004c"),
-    (3, "disconnected", "#bc0000"),
+    (2, "waiting for ping", "#FF00CC"),
+    (3, "disconnected", "#FF3300"),
 ]
 
 physical_states = [
-    (1, "closed", "#61b4e8"),
-    (2, "should open", "#00fff6"),
+    (1, "closed", "#00FF66"),
+    (2, "should open", "#00FFE5"),
     (3, "open", "#61b4e8"),
     (4, "should close", "#a83cea"),
 ]
@@ -26,4 +26,10 @@ def add_states(session):
          new_state = models.PhysicalState(id = state[0], name = state[1], color = state[2])
          session.add(new_state)
 
+@db_connect
+def add_settings(session):
+    setting = models.Setting(id = 1, state = 0)
+    session.add(setting)
+
 add_states()
+add_settings()

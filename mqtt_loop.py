@@ -47,34 +47,38 @@ def on_message(mqttc, obj, msg, session):
         from_node = int(from_node)
         if session.query(models.Node).filter(models.Node.id == from_node).count() > 0:
             node = session.query(models.Node).filter(models.Node.id == from_node).first()
-            old_state = node.state_id
             if payload == "opening valve":
-                set_state(from_node, 3)
+                set_physical_state(node, 3)
             elif payload == "closing valve":
-                set_state(from_node, 1)
+                set_physical_state(node, 1)
                 for listing in node.queue:
                     session.delete(listing)
             elif payload[:4] == "pong":
-                if payload[-1:] == "1":
-                    set_state(from_node, 3, update_time = False)
-                else:
-                    set_state(from_node, 1)
+                set_connection_state(node, 1)
+                if payload[-1:] == "1" and not node.physical_state_id == 3:
+                    set_physical_state(node, 3)
+                elif payload[-1:] == "0" and not node.physical_state_id == 1:
+                    set_physical_state(node, 1)
             elif payload == "dropped":
-                if old_state == 3:
-                    set_state(from_node, 6, update_time = False)
-                else:
-                    set_state(from_node, 9)
+                set_connection_state(node, 3)
             elif payload[:3] == "con":
-                if payload[-1:] == "1":
-                    set_state(from_node, 3, update_time = False)
-                    logger.info("Node %s reconnected and is still open")
-                else:
-                    set_state(from_node, 1)
+                set_connection_state(node, 1)
+                if payload[-1:] == "1" and not node.physical_state_id == 3:
+                    set_physical_state(node, 3)
+                elif payload[-1:] == "0" and not node.physical_state_id == 1:
+                    set_physical_state(node, 1)
         else:
             flat_id = session.query(models.Setting).filter(models.Setting.id == 1).first().state
             flat = session.query(models.Flat).filter(models.Flat.id == flat_id).first()
-            print(from_node, flat.id, now())
-            new_node = models.Node(id = from_node, flat_id = flat.id, state_id = 1, last_change = now(), reported_offline = False)
+            print(from_node, flat2.id, now())
+            new_node = models.Node(id = from_node, flat_id = flat.id,
+                                connection_state_id = 1, physical_state_id = 1,
+                                reported_offline = False,
+                                last_physical_change = now(),
+                                last_connection_change = now(),
+                                last_physical_attempt = now(),
+                                last_connection_attempt = now()
+                            )
             logger.info("New node %s connect for the first time, adding to flat %s in house %s" % (from_node, flat.name, flat.floor.house.name))
             session.add(new_node)
             alert = models.Alert(added = now(), content="Node %s connected for the first time! Addded to flat '%s'" % (from_node, flat.name))
