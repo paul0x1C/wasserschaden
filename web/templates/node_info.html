@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Node {{ node.id }}{% endblock %}
 {% block content %}
-<h1 style="background-color:{{ node.state.color }}">Node {{ node.id }}</h1>
+<h1 style="background-color:{{ node.physical_state.color }}; border: 4px solid {{ node.connection_state.color }}">Node {{ node.id }}</h1>
 
 <div class="block">
   <h3>Info</h3>
   <p>house: {{ node.flat.floor.house.name }}</p>
   <p>floor: {{ node.flat.floor.level }}</p>
   <p>flat: {{ node.flat.name }}</p>
-  <p>state: {{ node.state.name }}</p>
+  <p>connection: {{ node.connection_state.name }}</p>
+  <p>physical: {{ node.physical_state.name }}</p>
   <p>last change: {{ node.last_change }}</p>
 </div>
 
@@ -38,10 +39,10 @@
   <h3>Reports</h3>
     <table>
     {% for report in reports %}
-    <tr style="background-color: {{ report.state.color }};">
+    <tr style="background-color: {{ report.physical_state.color }};">
       <td>{{ report.time }}</td>
-      <td>{{ report.state_id }}</td>
-      <td>{{ report.state.name }}</td>
+      <td>{{ report.physical_state_id }}</td>
+      <td>{{ report.physical_state.name }}</td>
     </tr>
     {% endfor %}
   </table>

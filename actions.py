@@ -64,8 +64,8 @@ def set_physical_state(node, state_id, session, update_time = True):
     node.physical_attemps = 0
     node.physical_state_id = state_id
     logger.info("Set physical_state of node %s to %s" % (node.id, state_id))
-    # report = models.Report(node_id = node.id, physical_state_id = state_id, connection_state_id = node.connection_state_id, time = now())
-    # session.add(report)
+    report = models.Report(node_id = node.id, physical_state_id = state_id, time = now())
+    session.add(report)
 
 @db_connect
 def set_setting(setting_id, state, session):

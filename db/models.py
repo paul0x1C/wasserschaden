@@ -56,8 +56,6 @@ class Report(Base):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     node_id = Column(BigInteger, ForeignKey('nodes.id'))
     node = relationship("Node", foreign_keys=[node_id], backref="reports")
-    connection_state_id = Column(Integer, ForeignKey('connection_states.id'))
-    connection_state = relationship("ConnectionState", foreign_keys=[connection_state_id], backref="reports")
     physical_state_id = Column(Integer, ForeignKey('physical_states.id'))
     physical_state = relationship("PhysicalState", foreign_keys=[physical_state_id], backref="reports")
     time = Column(DateTime)
