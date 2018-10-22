@@ -27,7 +27,7 @@
                         <input type='hidden' name='value' value='{{flat.id}}'>
                         <input type='submit' value='use for new nodes' class='use_for_new_nodes'
                         {% if flat.id == uf_new_nodes %}
-                         disabled style='background-color: #aaaa00'
+                         disabled style='border-width: 5px; border-color: #004400'
                         {% endif %}>
                       </form>
                   </div>
@@ -91,7 +91,7 @@
       .then(res => res.json())
       .then((data) =>  {
         if (data.refresh){
-          window.location.reload();
+          window.location = window.location.href;
         }
         data.html.forEach(function(element) {
           document.getElementById(element[0]).innerHTML=element[1];

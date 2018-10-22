@@ -54,7 +54,15 @@ def overview(session):
     system_modules = session.query(models.System)
     uf_new_nodes = session.query(models.Setting).filter(models.Setting.id == 1).one().state
     n_nodes = session.query(models.Node).count()
-    return content+render_template('overview.html', system_modules=system_modules, base_template = 'base.html', houses = houses, sorted=sorted, attrgetter=attrgetter, node_id=0, int=int, str=str, uf_new_nodes=uf_new_nodes, n_nodes=n_nodes)
+    return content+render_template('overview.html',
+                                    system_modules=system_modules,
+                                    base_template = 'base.html',
+                                    houses = houses, sorted=sorted,
+                                    attrgetter=attrgetter, node_id=0,
+                                    int=int, str=str,
+                                    uf_new_nodes=uf_new_nodes,
+                                    n_nodes=n_nodes
+                                )
 
 @app.route('/node_info', methods=['GET', 'POST'])
 @db_connect
@@ -70,7 +78,14 @@ def node_info(session):
     houses = session.query(models.House)
     reports = node.reports[-20:]
     reports.reverse()
-    return render_template('node_info.html', base_template = 'base.html', node = node, houses = houses, reports = reports, node_id = node.id, int=int)
+    return render_template('node_info.html',
+                            base_template = 'base.html',
+                            node = node,
+                            houses = houses,
+                            reports = reports,
+                            node_id = node.id,
+                            int=int
+                        )
 
 @app.route('/csv', methods=['GET'])
 @db_connect
@@ -148,7 +163,12 @@ def delete(session):
         content += "removed node"
         delete_node(node, session)
     houses = session.query(models.House)
-    return content + render_template('delete.html', base_template = 'base.html', houses = houses, sorted=sorted, attrgetter=attrgetter, int=int, str=str)
+    return content + render_template('delete.html',
+                                    base_template = 'base.html',
+                                    houses = houses, sorted=sorted,
+                                    attrgetter=attrgetter,
+                                    int=int, str=str
+                                )
 
 
 def delete_house(house, session):
