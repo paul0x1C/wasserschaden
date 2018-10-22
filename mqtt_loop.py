@@ -70,7 +70,7 @@ def on_message(mqttc, obj, msg, session):
         else:
             flat_id = session.query(models.Setting).filter(models.Setting.id == 1).first().state
             flat = session.query(models.Flat).filter(models.Flat.id == flat_id).first()
-            print(from_node, flat2.id, now())
+            print(from_node, flat.id, now())
             new_node = models.Node(id = from_node, flat_id = flat.id,
                                 connection_state_id = 1, physical_state_id = 1,
                                 reported_offline = False,
@@ -83,10 +83,14 @@ def on_message(mqttc, obj, msg, session):
             session.add(new_node)
             alert = models.Alert(added = now(), content="Node %s connected for the first time! Addded to flat '%s'" % (from_node, flat.name))
             session.add(alert)
-            session.commit()
+
+
+def on_log(client, userdata, level, buff):
+    logger.warning(buff)
 
 c = mqtt.Client("python-backend-", clean_session = False)
 c.connect("localhost", 1883)
+c.on_log = on_log
 c.on_connect = on_connect
 c.on_disconnect = on_disconnect
 # c.reconnect_delay_set()
