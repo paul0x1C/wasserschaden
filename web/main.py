@@ -48,18 +48,8 @@ def overview(session):
         for que in queue:
             if que.node.flat.floor.house.id == int(request.form.get('house_id')):
                 session.delete(que)
-    elif request.form.get('action') == "del_house":
-        house = session.query(models.House).filter(models.House.id == int(request.form.get('house_id'))).one()
-        content += "removed house"
-        delete_house(house, session)
-    elif request.form.get('action') == "del_floor":
-        floor = session.query(models.Floor).filter(models.Floor.id == int(request.form.get('floor_id'))).one()
-        content += "removed floor"
-        delete_floor(floor, session)
-    elif request.form.get('action') == "del_flat":
-        flat = session.query(models.Flat).filter(models.Flat.id == int(request.form.get('flat_id'))).one()
-        content += "removed flat"
-        delete_flat(flat, session)
+    elif request.form.get('action') == "set_setting":
+        set_setting(int(request.form.get('setting')), int(request.form.get('value')))
     houses = session.query(models.House)
     system_modules = session.query(models.System)
     return content+render_template('overview.html', system_modules=system_modules, base_template = 'base.html', houses = houses, sorted=sorted, attrgetter=attrgetter, node_id=0, int=int, str=str)
@@ -132,6 +122,29 @@ def auto_update(session): # returns all the self updateing stuff
         result['html'].append(("Mst" + str(module.id), module.status))
         result['html'].append(("Msi" + str(module.id), module.updated))
     return jsonify(result)
+
+@app.route('/delete', methods=['POST','GET'])
+@db_connect
+def delete(session):
+    content = ""
+    if request.form.get('action') == "del_house":
+        house = session.query(models.House).filter(models.House.id == int(request.form.get('house_id'))).one()
+        content += "removed house"
+        delete_house(house, session)
+    elif request.form.get('action') == "del_floor":
+        floor = session.query(models.Floor).filter(models.Floor.id == int(request.form.get('floor_id'))).one()
+        content += "removed floor"
+        delete_floor(floor, session)
+    elif request.form.get('action') == "del_flat":
+        flat = session.query(models.Flat).filter(models.Flat.id == int(request.form.get('flat_id'))).one()
+        content += "removed flat"
+        delete_flat(flat, session)
+    elif request.form.get('action') == "del_node":
+        node = session.query(models.Node).filter(models.Node.id == int(request.form.get('node_id'))).one()
+        content += "removed node"
+        delete_node(node, session)
+    houses = session.query(models.House)
+    return content + render_template('delete.html', base_template = 'base.html', houses = houses, sorted=sorted, attrgetter=attrgetter, int=int, str=str)
 
 
 def delete_house(house, session):

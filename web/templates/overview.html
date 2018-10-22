@@ -5,19 +5,9 @@
     <h2>Houses</h2>
     {% for house in houses %}
       <div class='house'><div class='house_name'><a href='csv?house_id={{ house.id }}'>{{ house.name }}</a></div>
-      <form method='post'>
-        <input type='hidden' value='del_house' name='action'>
-        <input type='hidden' name='house_id' value='{{ house.id }}'>
-        <input type='submit' value='del' action='submit' class='del_house'>
-      </form>
-          {% for floor in sorted(house.floors, key=attrgetter('level')) %}
+        {% for floor in sorted(house.floors, key=attrgetter('level')) %}
           <div class='floor'>
               <div class='floor_name'>{{ floor.level }}</div>
-              <form method='post'>
-                <input type='hidden' value='del_floor' name='action'>
-                <input type='hidden' name='floor_id' value='{{ floor.id }}'>
-                <input type='submit' value='del' action='submit' class='del_floor'>
-              </form>
               <form method='post'>
                 <input type='text' placeholder='new flat' name='name'>
                 <input type='hidden' value='add_flat' name='action'>
@@ -26,11 +16,6 @@
               </form>
               {% for flat in floor.flats %}
               <div class='flat'>
-                  <form method='post'>
-                    <input type='hidden' value='del_flat' name='action'>
-                    <input type='hidden' name='flat_id' value='{{ flat.id }}'>
-                    <input type='submit' value='del' action='submit' class='del'>
-                  </form>
                   <div class='flat_name'>{{ flat.name }}</div>
                   <div class='row'>
                       {% for node in flat.nodes %}
@@ -87,6 +72,9 @@
     <p><input type='number' name='length', placeholder='length'></p>
     <input type='hidden' value='add_house' name='action'><input class='add' type='submit' value='add'>
     </form>
+  </div>
+  <div class='status'>
+    <a href='delete'>delete stuff</a>
   </div>
   <script type=text/javascript>
   	function update (){
