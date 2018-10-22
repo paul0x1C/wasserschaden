@@ -6,13 +6,13 @@ db_connect = wrapper.db_connect
 
 connection_states = [
     (1, "connected", "#19ff00"),
-    (2, "waiting for ping", "#ff004c"),
-    (3, "disconnected", "#bc0000"),
+    (2, "waiting for ping", "#FF00CC"),
+    (3, "disconnected", "#FF3300"),
 ]
 
 physical_states = [
-    (1, "closed", "#61b4e8"),
-    (2, "should open", "#00fff6"),
+    (1, "closed", "#00FF66"),
+    (2, "should open", "#00FFE5"),
     (3, "open", "#61b4e8"),
     (4, "should close", "#a83cea"),
 ]
