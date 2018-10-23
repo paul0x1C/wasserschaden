@@ -48,25 +48,25 @@ def on_message(mqttc, obj, msg, session):
         if session.query(models.Node).filter(models.Node.id == from_node).count() > 0:
             node = session.query(models.Node).filter(models.Node.id == from_node).first()
             if payload == "opening valve":
-                set_physical_state(node, 3)
+                node.set_physical_state(3)
             elif payload == "closing valve":
-                set_physical_state(node, 1)
+                node.set_physical_state(1)
                 for listing in node.queue:
                     session.delete(listing)
             elif payload[:4] == "pong":
-                set_connection_state(node, 1)
+                node.set_connection_state(1)
                 if payload[-1:] == "1" and not node.physical_state_id == 3:
-                    set_physical_state(node, 3)
+                    node.set_physical_state(3)
                 elif payload[-1:] == "0" and not node.physical_state_id == 1:
-                    set_physical_state(node, 1)
+                    node.set_physical_state(1)
             elif payload == "dropped":
-                set_connection_state(node, 3)
+                node.set_connection_state(3)
             elif payload[:3] == "con":
-                set_connection_state(node, 1)
+                node.set_connection_state(1)
                 if payload[-1:] == "1" and not node.physical_state_id == 3:
-                    set_physical_state(node, 3)
+                    node.set_physical_state(3)
                 elif payload[-1:] == "0" and not node.physical_state_id == 1:
-                    set_physical_state(node, 1)
+                    node.set_physical_state(1)
         else:
             flat_id = session.query(models.Setting).filter(models.Setting.id == 1).first().state
             flat = session.query(models.Flat).filter(models.Flat.id == flat_id).first()
