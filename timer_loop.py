@@ -36,7 +36,7 @@ def add_alert(alert_text, session):
 def process_queue(session):
     queue = session.query(models.Queue)
     for q in queue:
-        logger.info("Trying to open %s" % q.node.id)
+        # logger.info("Trying to open %s" % q.node.id)
         if q.node.open_valve():
             session.delete(q)
 
@@ -111,7 +111,6 @@ def check_timeouts(session):
                 node.set_physical_state(1)
                 node.send_mqtt_msg("ping")
         elif node.physical_state_id == 3:
-            if node.flat.floor.house.length <= last_physical_change:
+            if node.flat.floor.house.duration <= last_physical_change:
                 node.close_valve()
-                node.set_physical_state(4)
 loop()

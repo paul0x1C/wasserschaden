@@ -24,7 +24,7 @@ def overview(session):
             mqtt_topic = request.form.get('mqtt_topic'),
             adress = request.form.get('adress'),
             interval = int(request.form.get('interval')),
-            length = int(request.form.get('length'))
+            duration = int(request.form.get('duration'))
         )
         content += "added house"
         session.add(house)
@@ -40,7 +40,7 @@ def overview(session):
         session.add(flat)
     elif request.form.get('action') == "edit_house":
         house = session.query(models.House).filter(models.House.id == int(request.form.get('house_id'))).one()
-        house.length = int(request.form.get('length'))
+        house.duration = int(request.form.get('duration'))
         house.interval = int(request.form.get('interval'))
         house.mqtt_topic = request.form.get('mqtt_topic')
     elif request.form.get('action') == "clear_queue":

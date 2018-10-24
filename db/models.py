@@ -25,7 +25,7 @@ class House(Base):
     name = Column(String(50))
     gps = Column(String(50))
     interval = Column(Integer)
-    length = Column(Integer)
+    duration = Column(Integer)
     last_flush = Column(DateTime)
     adress = Column(String(100))
     mqtt_topic = Column(String(100))
@@ -80,7 +80,7 @@ class Node(Base):
         self.physical_attemps = 0
         self.physical_state_id = state_id
         logger.info("Set physical_state of node %s to %s" % (self.id, state_id))
-        print("set", self.id, "state_id")
+        # print("set", self.id, "state_id")
         report = Report(node_id = self.id, physical_state_id = state_id, time = now())
         session.add(report)
 
@@ -114,7 +114,7 @@ class Node(Base):
         for n in nodes:
             if n.physical_state_id in [2,3,4] and self.flat.floor.house.id ==  n.flat.floor.house.id:
                 open_nodes += 1
-        print(open_nodes,nodes.count())
+        # print(open_nodes,nodes.count())
         if open_nodes == 0:
             if self.connection_state_id == 1 and self.physical_state_id == 1:
                 self.set_physical_state(2)

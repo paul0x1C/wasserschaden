@@ -62,7 +62,7 @@
             <form method='post'>
               <p>mqtt_topic: <input type='text' name='mqtt_topic', value='{{ house.mqtt_topic }}'></p>
               <p>interval: <input type='number' name='interval', value='{{ house.interval }}'></p>
-              <p>length: <input type='number' name='length', value='{{ house.length }}'></p>
+              <p>duration: <input type='number' name='duration', value='{{ house.duration }}'></p>
               <input type='hidden' value='edit_house' name='action'>
               <input type='hidden' value='{{ house.id}}' name='house_id'>
               <input type='submit' value='save'>
@@ -84,7 +84,7 @@
     <p><input type='text' name='mqtt_topic', placeholder='mqtt_topic'></p>
     <p><input type='text' name='adress', placeholder='adress'></p>
     <p><input type='number' name='interval', placeholder='interval'></p>
-    <p><input type='number' name='length', placeholder='length'></p>
+    <p><input type='number' name='duration', placeholder='duration'></p>
     <input type='hidden' value='add_house' name='action'><input class='add' type='submit' value='add'>
     </form>
   </div>
