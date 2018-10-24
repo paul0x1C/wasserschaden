@@ -1,39 +1,5 @@
-EESchema Schematic File Version 2
-LIBS:power
-LIBS:device
-LIBS:switches
-LIBS:relays
-LIBS:motors
-LIBS:transistors
-LIBS:conn
-LIBS:linear
-LIBS:regul
-LIBS:74xx
-LIBS:cmos4000
-LIBS:adc-dac
-LIBS:memory
-LIBS:xilinx
-LIBS:microcontrollers
-LIBS:dsp
-LIBS:microchip
-LIBS:analog_switches
-LIBS:motorola
-LIBS:texas
-LIBS:intel
-LIBS:audio
-LIBS:interface
-LIBS:digital-audio
-LIBS:philips
-LIBS:display
-LIBS:cypress
-LIBS:siliconi
-LIBS:opto
-LIBS:atmel
-LIBS:contrib
-LIBS:valves
-LIBS:wemos_mini
-LIBS:wasserschaden-cache
-EELAYER 25 0
+EESchema Schematic File Version 4
+EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -48,7 +14,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L WeMos_mini U2
+L wasserschaden-cache-2018-10-17-20-35-24:WeMos_mini U2
 U 1 1 5B26FC39
 P 4000 2100
 F 0 "U2" H 4000 2600 60  0000 C CNN
@@ -59,7 +25,7 @@ F 3 "" H 4550 1400 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L 2N7000 IRFZ44N1
+L wasserschaden-cache-2018-10-17-20-35-24:2N7000 IRFZ44N1
 U 1 1 5B2A69C6
 P 2900 2250
 F 0 "IRFZ44N1" H 3150 2250 50  0000 L CNN
@@ -70,9 +36,9 @@ F 3 "" H 2900 2250 50  0001 L CNN
 	-1   0    0    1   
 $EndComp
 Wire Wire Line
-	3100 2250 3500 2250
+	3100 2250 3200 2250
 $Comp
-L Screw_Terminal_01x02 J1
+L wasserschaden-cache-2018-10-17-20-35-24:Screw_Terminal_01x02 J1
 U 1 1 5B2A6B15
 P 2450 2750
 F 0 "J1" H 2450 2850 50  0000 C CNN
@@ -83,7 +49,7 @@ F 3 "" H 2450 2750 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L Screw_Terminal_01x02 J2
+L wasserschaden-cache-2018-10-17-20-35-24:Screw_Terminal_01x02 J2
 U 1 1 5B2A6B9D
 P 2450 3200
 F 0 "J2" H 2450 3300 50  0000 C CNN
@@ -94,7 +60,7 @@ F 3 "" H 2450 3200 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L GND #PWR01
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR01
 U 1 1 5B2A6BE6
 P 2650 3200
 F 0 "#PWR01" H 2650 2950 50  0001 C CNN
@@ -105,7 +71,7 @@ F 3 "" H 2650 3200 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR02
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR02
 U 1 1 5B2A6C2A
 P 3500 1850
 F 0 "#PWR02" H 3500 1600 50  0001 C CNN
@@ -116,7 +82,7 @@ F 3 "" H 3500 1850 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L GND #PWR03
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR03
 U 1 1 5B2A6C5A
 P 2800 2050
 F 0 "#PWR03" H 2800 1800 50  0001 C CNN
@@ -127,18 +93,18 @@ F 3 "" H 2800 2050 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L D D1
+L wasserschaden-cache-2018-10-17-20-35-24:D D1
 U 1 1 5B2A6D63
 P 3050 2750
 F 0 "D1" H 3050 2850 50  0000 C CNN
 F 1 " " H 3150 2850 50  0000 C CNN
-F 2 "Diodes_THT:D_5KPW_P12.70mm_Horizontal" H 3050 2750 50  0001 C CNN
+F 2 "Diodes_THT:D_A-405_P7.62mm_Horizontal" H 3050 2750 50  0001 C CNN
 F 3 "" H 3050 2750 50  0001 C CNN
 	1    3050 2750
 	-1   0    0    1   
 $EndComp
 $Comp
-L stepdown U1
+L wasserschaden-cache-2018-10-17-20-35-24:stepdown U1
 U 1 1 5B2A6F8D
 P 3800 3000
 F 0 "U1" H 3950 2950 60  0000 C CNN
@@ -151,7 +117,7 @@ $EndComp
 Wire Wire Line
 	4500 1750 4950 1750
 $Comp
-L GND #PWR04
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR04
 U 1 1 5B2A7077
 P 3400 2900
 F 0 "#PWR04" H 3400 2650 50  0001 C CNN
@@ -166,15 +132,13 @@ NoConn ~ 3500 1950
 NoConn ~ 3500 2050
 NoConn ~ 3500 2350
 NoConn ~ 3500 2450
-NoConn ~ 4500 2450
 NoConn ~ 4500 2350
-NoConn ~ 4500 2250
 NoConn ~ 4500 2150
 NoConn ~ 4500 2050
 NoConn ~ 4500 1950
 NoConn ~ 4500 1850
 Wire Wire Line
-	2650 2750 2900 2750
+	2650 2750 2800 2750
 Wire Wire Line
 	2800 2450 2800 2750
 Connection ~ 2800 2750
@@ -183,13 +147,11 @@ Text Notes 2300 2800 0    60   ~ 0
 Text Notes 2300 3250 0    60   ~ 0
 +\n-
 Wire Wire Line
-	4950 1750 4950 3050
-Wire Wire Line
 	2650 2650 3200 2650
 Wire Wire Line
 	3200 2650 3200 2750
 $Comp
-L +12V #PWR05
+L wasserschaden-cache-2018-10-17-20-35-24:+12V #PWR05
 U 1 1 5B2A7A00
 P 2650 2650
 F 0 "#PWR05" H 2650 2500 50  0001 C CNN
@@ -200,7 +162,7 @@ F 3 "" H 2650 2650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +12V #PWR06
+L wasserschaden-cache-2018-10-17-20-35-24:+12V #PWR06
 U 1 1 5B2A7A20
 P 2650 3100
 F 0 "#PWR06" H 2650 2950 50  0001 C CNN
@@ -211,7 +173,7 @@ F 3 "" H 2650 3100 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +12V #PWR07
+L wasserschaden-cache-2018-10-17-20-35-24:+12V #PWR07
 U 1 1 5B2A7A40
 P 3400 3050
 F 0 "#PWR07" H 3400 2900 50  0001 C CNN
@@ -222,7 +184,7 @@ F 3 "" H 3400 3050 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L R R1
+L wasserschaden-cache-2018-10-17-20-35-24:R R1
 U 1 1 5B2A7CB0
 P 3050 2100
 F 0 "R1" V 3130 2100 50  0000 C CNN
@@ -233,7 +195,7 @@ F 3 "" H 3050 2100 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR08
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR08
 U 1 1 5B2A7CE4
 P 3050 1950
 F 0 "#PWR08" H 3050 1700 50  0001 C CNN
@@ -244,7 +206,7 @@ F 3 "" H 3050 1950 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L GND #PWR09
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR09
 U 1 1 5B2A9F12
 P 4700 2900
 F 0 "#PWR09" H 4700 2650 50  0001 C CNN
@@ -257,7 +219,7 @@ $EndComp
 Wire Wire Line
 	4950 3050 4700 3050
 $Comp
-L LED D2
+L wasserschaden-cache-2018-10-17-20-35-24:LED D2
 U 1 1 5B2BDC1C
 P 3200 1500
 F 0 "D2" H 3200 1600 50  0000 C CNN
@@ -268,7 +230,7 @@ F 3 "" H 3200 1500 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L R R2
+L wasserschaden-cache-2018-10-17-20-35-24:R R2
 U 1 1 5B2BDCBD
 P 3200 1200
 F 0 "R2" V 3280 1200 50  0000 C CNN
@@ -279,7 +241,7 @@ F 3 "" H 3200 1200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR010
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR010
 U 1 1 5B2BDCFD
 P 3200 1050
 F 0 "#PWR010" H 3200 800 50  0001 C CNN
@@ -289,12 +251,11 @@ F 3 "" H 3200 1050 50  0001 C CNN
 	1    3200 1050
 	-1   0    0    1   
 $EndComp
-Connection ~ 4950 2000
 Wire Wire Line
 	3200 1650 3200 2250
 Connection ~ 3200 2250
 $Comp
-L LED D3
+L wasserschaden-cache-2018-10-17-20-35-24:LED D3
 U 1 1 5B2C19FD
 P 5100 2000
 F 0 "D3" H 5100 2100 50  0000 C CNN
@@ -305,7 +266,7 @@ F 3 "" H 5100 2000 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L R R3
+L wasserschaden-cache-2018-10-17-20-35-24:R R3
 U 1 1 5B2C1A03
 P 5250 2150
 F 0 "R3" V 5330 2150 50  0000 C CNN
@@ -316,7 +277,7 @@ F 3 "" H 5250 2150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR011
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR011
 U 1 1 5B2C1A09
 P 5250 2300
 F 0 "#PWR011" H 5250 2050 50  0001 C CNN
@@ -327,7 +288,7 @@ F 3 "" H 5250 2300 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L LED D4
+L wasserschaden-cache-2018-10-17-20-35-24:LED D4
 U 1 1 5B2C1D4C
 P 3450 1500
 F 0 "D4" H 3450 1600 50  0000 C CNN
@@ -338,7 +299,7 @@ F 3 "" H 3450 1500 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L R R4
+L wasserschaden-cache-2018-10-17-20-35-24:R R4
 U 1 1 5B2C1D52
 P 3450 1200
 F 0 "R4" V 3530 1200 50  0000 C CNN
@@ -349,7 +310,7 @@ F 3 "" H 3450 1200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR012
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR012
 U 1 1 5B2C1D58
 P 3450 1050
 F 0 "#PWR012" H 3450 800 50  0001 C CNN
@@ -366,7 +327,7 @@ Wire Wire Line
 Wire Wire Line
 	3300 2150 3500 2150
 $Comp
-L +3.3V #PWR013
+L wasserschaden-cache-2018-10-17-20-35-24:+3V3 #PWR013
 U 1 1 5B2C1F93
 P 4950 1750
 F 0 "#PWR013" H 4950 1600 50  0001 C CNN
@@ -378,4 +339,33 @@ F 3 "" H 4950 1750 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	3200 2250 3050 2250
+Wire Wire Line
+	2800 2750 2900 2750
+Wire Wire Line
+	3200 2250 3500 2250
+Wire Wire Line
+	4950 1750 4950 3050
+$Comp
+L Jumper:SolderJumper_2_Open JP1
+U 1 1 5BCFAE3F
+P 4750 2350
+F 0 "JP1" V 4704 2418 50  0000 L CNN
+F 1 "SolderJumper_2_Open" V 4795 2418 50  0000 L CNN
+F 2 "" H 4750 2350 50  0001 C CNN
+F 3 "~" H 4750 2350 50  0001 C CNN
+	1    4750 2350
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4750 2200 4600 2200
+Wire Wire Line
+	4600 2200 4600 2250
+Wire Wire Line
+	4600 2250 4500 2250
+Wire Wire Line
+	4500 2450 4600 2450
+Wire Wire Line
+	4600 2450 4600 2500
+Wire Wire Line
+	4600 2500 4750 2500
 $EndSCHEMATC
