@@ -34,15 +34,18 @@ def add_alert(alert_text, session):
 
 @db_connect
 def process_queue(session):
+    logger.info("checking que")
     queue = session.query(models.Queue)
     for q in queue:
         # logger.info("Trying to open %s" % q.node.id)
         if q.node.open_valve():
             session.delete(q)
+    logger.info("done checking que")
 
 @db_connect
 def check_houses(session):
     houses = session.query(models.House)
+    logger.info("checking house timeouts")
     for house in houses:
         if house.last_flush == None:
             house.last_flush = datetime.datetime(1,1,1)
@@ -54,10 +57,12 @@ def check_houses(session):
                         queue = models.Queue(node_id = node.id, added = now())
                         session.add(queue)
             house.last_flush = now()
+    logger.info("done checking houses")
 
 @db_connect
 def check_timeouts(session):
     nodes = session.query(models.Node)
+    logger.info("checking node timeouts")
     for node in nodes:
         last_physical_change = (now() - node.last_physical_change).seconds
         last_connection_change = (now() - node.last_connection_change).seconds
@@ -113,4 +118,5 @@ def check_timeouts(session):
         elif node.physical_state_id == 3:
             if node.flat.floor.house.duration <= last_physical_change:
                 node.close_valve()
+    logger.info("done checking nodes")
 loop()
