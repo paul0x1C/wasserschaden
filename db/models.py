@@ -2,9 +2,22 @@ from sqlalchemy import *
 from sqlalchemy.orm import *
 from sqlalchemy.ext.declarative import declarative_base
 
+from db import wrapper
+db_connect = wrapper.db_connect
 from . import connection
 
+import datetime, logging, os
+
+def now():
+    return datetime.datetime.now()
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 Base = declarative_base()
+
+
 
 class House(Base):
     __tablename__ = 'houses'
@@ -12,7 +25,7 @@ class House(Base):
     name = Column(String(50))
     gps = Column(String(50))
     interval = Column(Integer)
-    length = Column(Integer)
+    duration = Column(Integer)
     last_flush = Column(DateTime)
     adress = Column(String(100))
     mqtt_topic = Column(String(100))
@@ -39,18 +52,87 @@ class Node(Base):
     flat_id = Column(Integer, ForeignKey('flats.id'))
     flat = relationship("Flat", foreign_keys=[flat_id], backref="nodes")
     name = Column(String(50))
-    state_id = Column(Integer, ForeignKey('states.id'))
-    state = relationship("State", foreign_keys=[state_id], backref="nodes")
+    connection_state_id = Column(Integer, ForeignKey('connection_states.id'))
+    connection_state = relationship("ConnectionState", foreign_keys=[connection_state_id], backref="nodes")
+    physical_state_id = Column(Integer, ForeignKey('physical_states.id'))
+    physical_state = relationship("PhysicalState", foreign_keys=[physical_state_id], backref="nodes")
+    last_physical_change = Column(DateTime)
+    last_connection_change = Column(DateTime)
+    last_physical_attempt = Column(DateTime)
+    last_connection_attempt = Column(DateTime)
+    physical_attemps = Column(Integer)
+    connection_attemps = Column(Integer)
     reported_offline = Column(Boolean)
-    last_change = Column(DateTime)
+    @db_connect
+    def add_physical_attempt(self, session):
+        self.last_physical_attempt = now()
+        self.physical_attemps += 1
+
+    @db_connect
+    def add_connection_attempt(self, session):
+        self.last_connection_attempt = now()
+        self.connection_attemps += 1
+
+    @db_connect
+    def set_physical_state(self, state_id, session, update_time = True):
+        if update_time:
+            self.last_physical_change = now()
+        self.physical_attemps = 0
+        self.physical_state_id = state_id
+        logger.info("Set physical_state of node %s to %s" % (self.id, state_id))
+        # print("set", self.id, "state_id")
+        report = Report(node_id = self.id, physical_state_id = state_id, time = now())
+        session.add(report)
+
+    @db_connect
+    def set_connection_state(self, state_id, session, update_time = True):
+        if update_time:
+            self.last_connection_change = now()
+        if state_id == 3 and not self.reported_offline:
+            alert = Alert(added = now(), content="Node %s in House '%s' on floor %s in flat '%s' not responding…" % (self.id, self.flat.floor.house.name, self.flat.floor.level, self.flat.name))
+            session.add(alert)
+            self.reported_offline = True
+        if state_id == 1 and self.reported_offline:
+            self.reported_offline = False
+            alert = Alert(added = now(), content="Node %s in House '%s' on floor %s in flat '%s' is back onlin <3" % (self.id, self.flat.floor.house.name, self.flat.floor.level, self.flat.name))
+            session.add(alert)
+        self.connection_attemps = 0
+        self.connection_state_id = state_id
+        logger.info("Set connection_state of node %s to %s" % (self.id, state_id))
+
+    @db_connect
+    def close_valve(self,session):
+        self.set_physical_state(4)
+        self.send_mqtt_msg("close")
+        logger.info("Sending close command to node %s" % self.id)
+
+    @db_connect
+    def open_valve(self, session):
+        self = session.query(Node).filter(Node.id == self.id).one()
+        nodes = session.query(Node)
+        open_nodes = 0
+        for n in nodes:
+            if n.physical_state_id in [2,3,4] and self.flat.floor.house.id ==  n.flat.floor.house.id:
+                open_nodes += 1
+        # print(open_nodes,nodes.count())
+        if open_nodes == 0:
+            if self.connection_state_id == 1 and self.physical_state_id == 1:
+                self.set_physical_state(2)
+                self.send_mqtt_msg("open")
+                logger.info("Sending open command to node %s" % self.id)
+                return True
+        return False
+
+    def send_mqtt_msg(self, msg):
+        os.system("""mosquitto_pub -t "%s/to/%s" -m "%s" """ % (self.flat.floor.house.mqtt_topic, self.id, msg))
 
 class Report(Base):
     __tablename__ = 'reports'
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     node_id = Column(BigInteger, ForeignKey('nodes.id'))
     node = relationship("Node", foreign_keys=[node_id], backref="reports")
-    state_id = Column(Integer, ForeignKey('states.id'))
-    state = relationship("State", foreign_keys=[state_id], backref="reports")
+    physical_state_id = Column(Integer, ForeignKey('physical_states.id'))
+    physical_state = relationship("PhysicalState", foreign_keys=[physical_state_id], backref="reports")
     time = Column(DateTime)
 
 class Alert(Base):
@@ -59,14 +141,20 @@ class Alert(Base):
     priority = Column(Integer)
     added = Column(DateTime)
     sent = Column(DateTime)
-    content = Column(String(200))
+    content = Column(String(5000))
 
-class State(Base):
-    __tablename__ = 'states'
+class PhysicalState(Base):
+    __tablename__ = 'physical_states'
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
     color = Column(String(8))
-    timeout = Column(Integer)
+
+class ConnectionState(Base):
+    __tablename__ = 'connection_states'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50))
+    color = Column(String(8))
+
 
 class Queue(Base):
     __tablename__ = 'queue'
@@ -75,8 +163,8 @@ class Queue(Base):
     node = relationship("Node", foreign_keys=[node_id], backref="queue")
     added = Column(DateTime)
 
-class System(Base):
-    __tablename__ = 'systems' # hm
+class Module(Base):
+    __tablename__ = 'modules'
     id = Column(Integer, primary_key=True, autoincrement=True)
     updated = Column(DateTime)
     status = Column(Integer)

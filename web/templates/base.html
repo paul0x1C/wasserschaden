@@ -2,20 +2,12 @@
 <meta charset="utf-8">
 <html lang="en">
 <head>
-  {% if autorefresh %}
-  <meta http-equiv="refresh" content="1" >
-  {% endif %}
   <title>{% block title %}{% endblock %} - Gebäudespülung</title>
-  <div class="setting">
-    {% if autorefresh %}
-    <a href="?node_id={{ node_id }}">Auto Refresh OFF</a> {# this node_id thing is pretty ugly and should be fixed #}
-    {% else %}
-    <a href="?autorefresh=1&node_id={{ node_id }}">Auto Refresh ON</a>
-    {% endif %}
-  </div>
 </head>
 <body>
+  <FONT FACE="arial">
     <div id="content">{% block content %}{% endblock %}</div>
+  </FONT>
 </body>
 </html>
 <style>
@@ -45,18 +37,30 @@
     color: white;
     display: inline-block;
     font-size: 75%;
-    float: right;
-    margin-top: 5px;
-    margin-right: 5px;
+}
+.clear {
+   background-color: #ff5c33;
+    color: white;
+    display: inline-block;
+    font-size: 75%;
+}
+.use_for_new_nodes{
+   background-color: #dd7c00;
+    color: white;
+    display: inline-block;
+    font-size: 75%;
+}
+.used_for_new_nodes{
+  background-color: #eeee00;
+   color: white;
+   display: inline-block;
+   font-size: 75%;
 }
 .del_house {
    background-color: #BC0000;
     color: white;
     text-align: center;
     font-size: 80%;
-    float: right;
-    margin-top: 10px;
-    margin-right: 10px;
 }
 .del_floor {
    background-color: #BC0000;
@@ -64,9 +68,6 @@
     text-align: center;
     display: inline-block;
     font-size: 75%;
-    float: right;
-    margin-top: -10px;
-    margin-right: 2px;
 }
 .house {
     float: left;
@@ -113,6 +114,9 @@
 }
 .floor_name{
 
+}
+.new_node_flat_radio{
+  font-size: 50%;
 }
 .footer {
     background-color: #f1f1f1;

@@ -1,6 +1,6 @@
 ## -*- coding: utf-8 -*-
 
-import time, logging, datetime, pdb, random
+import time, logging, datetime, pdb, random, sys, traceback
 from db import models
 from db import wrapper
 from actions import *
@@ -15,17 +15,29 @@ system_module = SystemModule(1, "timer_loop")
 
 def loop():
     while True:
-        system_module.update(1)
-        check_timeouts()
-        check_houses()
-        process_queue()
         time.sleep(1)
+        try:
+            system_module.update(1)
+            check_timeouts()
+            check_houses()
+            process_queue()
+        except:
+            e = traceback.format_exc()
+            logger.error(e)
+            add_alert(e)
+
+@db_connect
+def add_alert(alert_text, session):
+    alert_text += "exception in timer_loop:\n"
+    alert = models.Alert(content = alert_text, added = now())
+    session.add(alert)
 
 @db_connect
 def process_queue(session):
     queue = session.query(models.Queue)
     for q in queue:
-        if open_valve(q.node.id):
+        # logger.info("Trying to open %s" % q.node.id)
+        if q.node.open_valve():
             session.delete(q)
 
 @db_connect
@@ -47,39 +59,58 @@ def check_houses(session):
 def check_timeouts(session):
     nodes = session.query(models.Node)
     for node in nodes:
-        #pdb.set_trace()
-        logger.info("Checking node '%s' with state '%s'" % (node.id, node.state.name))
-        last_change = (now() - node.last_change).seconds
-        if last_change > 10:
-            if node.state_id == 2:
-                publish_to_node(node, "open")
-                set_state(node.id, 21)
-                logger.warning("open retry 1 for node %s"%node.id)
-            elif node.state_id == 21:
-                publish_to_node(node, "open")
-                logger.warning("open retry 2 for node %s"%node.id)
-                set_state(node.id, 22)
-            elif node.state_id == 4:
-                publish_to_node(node, "close")
-                logger.warning("close retry 1 for node %s"%node.id)
-                set_state(node.id, 41)
-            elif node.state_id == 41:
-                publish_to_node(node, "close")
-                logger.warning("close retry 2 for node %s"%node.id)
-                set_state(node.id, 42)
-            elif node.state_id in [22,42]:
-                logger.warning("ping timeout for node %s"%node.id)
-                set_state(node.id, 5)
-                publish_to_node(node, "ping")
-            elif node.state_id == 3:
-                if node.flat.floor.house.length <= last_change:
-                    close_valve(node.id)
-            elif node.state_id == 5:
-                set_state(node.id, 9)
-            elif node.state_id == 9:
-                if last_change > 600:
-                    if random.randint(1,25) == 5: #don't send so many pings when disconnected for a long time
-                        publish_to_node(node, "ping")
-
-
+        last_physical_change = (now() - node.last_physical_change).seconds
+        last_connection_change = (now() - node.last_connection_change).seconds
+        last_physical_attempt = (now() - node.last_physical_attempt).seconds
+        last_connection_attempt = (now() - node.last_connection_attempt).seconds
+        if node.connection_state_id == 2:
+            if node.connection_attemps == 0:
+                if last_connection_change > 5:
+                    node.send_mqtt_msg("ping")
+                    node.add_connection_attempt()
+            elif node.connection_attemps == 1:
+                if last_connection_attempt > 10:
+                    node.send_mqtt_msg("ping")
+                    node.add_connection_attempt()
+            elif node.connection_attemps > 1:
+                if last_connection_attempt > 20:
+                    node.set_connection_state(3)
+        elif node.connection_state_id == 3:
+            if node.connection_attemps < 5:
+                if last_connection_attempt > 100:
+                    node.send_mqtt_msg("ping")
+                    node.add_connection_attempt()
+            else:
+                if last_connection_attempt > 3600:
+                    node.send_mqtt_msg("ping")
+                    node.add_connection_attempt()
+        if node.physical_state_id == 2:
+            if node.physical_attemps == 0:
+                if last_physical_change > 5:
+                    node.send_mqtt_msg("open")
+                    node.add_physical_attempt()
+            elif node.physical_attemps < 3:
+                if last_physical_attempt > 10:
+                    node.send_mqtt_msg("open")
+                    node.add_physical_attempt()
+            else:
+                node.set_connection_state(2)
+                node.set_physical_state(1)
+                node.send_mqtt_msg("ping")
+        elif node.physical_state_id == 4:
+            if node.physical_attemps == 0:
+                if last_physical_change > 5:
+                    node.send_mqtt_msg("close")
+                    node.add_physical_attempt()
+            elif node.physical_attemps < 3:
+                if last_physical_attempt > 10:
+                    node.send_mqtt_msg("close")
+                    node.add_physical_attempt()
+            else:
+                node.set_connection_state(2)
+                node.set_physical_state(1)
+                node.send_mqtt_msg("ping")
+        elif node.physical_state_id == 3:
+            if node.flat.floor.house.duration <= last_physical_change:
+                node.close_valve()
 loop()

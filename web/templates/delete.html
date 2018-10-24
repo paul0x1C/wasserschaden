@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Overview{% endblock %}
+{% block content %}
+<a href='./overview'>overview</a>
+<h2>Delete stuff</h2>
+<ul>
+  {% for house in houses %}
+  <li>{{ house.name }}
+      <form method='post'>
+        <input type='hidden' value='del_house' name='action'>
+        <input type='hidden' name='house_id' value='{{ house.id }}'>
+        <input type='submit' value='del' action='submit' class='del_house'>
+      </form>
+    </li>
+    <ul>
+        {% for floor in sorted(house.floors, key=attrgetter('level')) %}
+          <li>{{ floor.level }}
+              <form method='post'>
+                <input type='hidden' value='del_floor' name='action'>
+                <input type='hidden' name='floor_id' value='{{ floor.id }}'>
+                <input type='submit' value='del' action='submit' class='del_floor'>
+              </form>
+            </li>
+            <ul>
+            {% for flat in floor.flats %}
+              <li>{{ flat.name }}
+                <form method='post'>
+                  <input type='hidden' value='del_flat' name='action'>
+                  <input type='hidden' name='flat_id' value='{{ flat.id }}'>
+                  <input type='submit' value='del' action='submit' class='del'>
+                </form>
+              </li>
+              <ul>
+              {% for node in flat.nodes %}
+                <li>
+                  {{ node.id }}
+                  <form method='post'>
+                    <input type='hidden' value='del_node' name='action'>
+                    <input type='hidden' name='node_id' value='{{ node.id }}'>
+                    <input type='submit' value='del' action='submit' class='del'>
+                  </form>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endfor %}
+        </ul>
+      {% endfor %}
+    </ul>
+  {% endfor %}
+</ul>
+{% endblock %}

@@ -4,20 +4,10 @@
 <div class='row'>
     <h2>Houses</h2>
     {% for house in houses %}
-      <div class='house'><div class='house_name'>{{ house.name }}</div>
-      <form method='post'>
-        <input type='hidden' value='del_house' name='action'>
-        <input type='hidden' name='house_id' value='{{ house.id }}'>
-        <input type='submit' value='del' action='submit' class='del_house'>
-      </form>
-          {% for floor in sorted(house.floors, key=attrgetter('level')) %}
+      <div class='house'><div class='house_name'><a href='csv?house_id={{ house.id }}'>{{ house.name }}</a></div>
+        {% for floor in sorted(house.floors, key=attrgetter('level')) %}
           <div class='floor'>
               <div class='floor_name'>{{ floor.level }}</div>
-              <form method='post'>
-                <input type='hidden' value='del_floor' name='action'>
-                <input type='hidden' name='floor_id' value='{{ floor.id }}'>
-                <input type='submit' value='del' action='submit' class='del_floor'>
-              </form>
               <form method='post'>
                 <input type='text' placeholder='new flat' name='name'>
                 <input type='hidden' value='add_flat' name='action'>
@@ -26,16 +16,20 @@
               </form>
               {% for flat in floor.flats %}
               <div class='flat'>
-                  <form method='post'>
-                    <input type='hidden' value='del_flat' name='action'>
-                    <input type='hidden' name='flat_id' value='{{ flat.id }}'>
-                    <input type='submit' value='del' action='submit' class='del'>
-                  </form>
                   <div class='flat_name'>{{ flat.name }}</div>
                   <div class='row'>
                       {% for node in flat.nodes %}
-                      <div class='node' style="background-color:{{ node.state.color }};"><a href='node_info?node_id={{ node.id }}&autorefresh={{ int(autorefresh) }}'>{{ node.id }}</a></div>
+                      <div class='node' id='Nco{{ node.id }}' style="background-color:{{ node.physical_state.color }}; border-color:{{node.connection_state.color}}"><a href='node_info?node_id={{ node.id }}'>{{ node.id }}</a></div>
                       {% endfor %}
+                      <form method='post'>
+                        <input type='hidden' value='set_setting' name='action'>
+                        <input type='hidden' name='setting' value='1'>
+                        <input type='hidden' name='value' value='{{flat.id}}'>
+                        <input type='submit' value='use for new nodes' class='use_for_new_nodes'
+                        {% if flat.id == uf_new_nodes %}
+                         disabled style='border-width: 5px; border-color: #004400'
+                        {% endif %}>
+                      </form>
                   </div>
               </div>
               {% endfor %}
@@ -48,13 +42,27 @@
             <input type='submit' value='add' class='add'>
           </form>
           <div class = "gateway">
-              <p> Gateway '{{ house.mqtt_topic }}': {{ house.gateway_state }} since {{ house.gateway_updated }}</p>
+              <p> Gateway '{{ house.mqtt_topic }}': <b id='{{"Hst" + str(house.id)}}'>{{ house.gateway_state }}</b> since <b id='{{"Hsi" + str(house.id)}}'>{{ house.gateway_updated }}</b>
+                <form method='post'>
+                  <input type='hidden' value='broadcast_ping' name='action'>
+                  <input type='hidden' name='gateway_topic' value='{{ house.mqtt_topic }}'>
+                  <input type='submit' value='broadcast ping' class='add'>
+                </form>
+              </p>
+              <p>
+                <form method='post'>
+                  <input type='hidden' name='house_id' value='{{ house.id }}'>
+                  <input type='hidden' value='clear_queue' name='action'>
+                  Queue length: <b id='{{"Hqu" + str(house.id)}}'></b>
+                  <input type='submit' value='clear' class='clear'>
+                </form>
+              </p>
           </div>
           <div class = "settings">
             <form method='post'>
               <p>mqtt_topic: <input type='text' name='mqtt_topic', value='{{ house.mqtt_topic }}'></p>
               <p>interval: <input type='number' name='interval', value='{{ house.interval }}'></p>
-              <p>length: <input type='number' name='length', value='{{ house.length }}'></p>
+              <p>duration: <input type='number' name='duration', value='{{ house.duration }}'></p>
               <input type='hidden' value='edit_house' name='action'>
               <input type='hidden' value='{{ house.id}}' name='house_id'>
               <input type='submit' value='save'>
@@ -65,7 +73,7 @@
 </div>
 <div class='status'>
   {% for module in system_modules %}
-  <p>{{ module.name }}: {{ module.status }} since {{ module.updated }}</p>
+  <p>{{ module.name }}: <b id='{{"Mst" + str(module.id)}}'>{{ module.status }}</b> since <b id='{{"Msi" + str(module.id)}}'>{{ module.updated }}</b></p>
   {% endfor %}
 </div>
 <div class='footer'>
@@ -76,8 +84,34 @@
     <p><input type='text' name='mqtt_topic', placeholder='mqtt_topic'></p>
     <p><input type='text' name='adress', placeholder='adress'></p>
     <p><input type='number' name='interval', placeholder='interval'></p>
-    <p><input type='number' name='length', placeholder='length'></p>
+    <p><input type='number' name='duration', placeholder='duration'></p>
     <input type='hidden' value='add_house' name='action'><input class='add' type='submit' value='add'>
     </form>
-</div>
+  </div>
+  <div class='status'>
+    <a href='delete'>delete stuff</a>
+  </div>
+  <script type=text/javascript>
+  	function update (){
+      fetch('/auto_update?n_nodes={{n_nodes}}')
+      .then(res => res.json())
+      .then((data) =>  {
+        if (data.refresh){
+          window.location = window.location.href;
+        }
+        data.html.forEach(function(element) {
+          document.getElementById(element[0]).innerHTML=element[1];
+        });
+        data.bgColor.forEach(function(element) {
+          document.getElementById(element[0]).style.backgroundColor=element[1];
+        });
+        data.boColor.forEach(function(element) {
+          document.getElementById(element[0]).style.borderColor=element[1];
+        });
+  		});
+  	};
+    setInterval(function(){
+      update() // this will run after every second
+    }, 1000);
+  </script>
 {% endblock %}

@@ -13,4 +13,5 @@ def db_connect(func):
         finally:
             session.close()
         return return_value
+    inner.__name__ = "db_" + func.__name__
     return inner
