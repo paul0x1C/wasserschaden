@@ -142,6 +142,10 @@ def auto_update(session): # returns all the self updateing stuff
         result['html'].append(("Hst" + str(house.id), house.gateway_state))
         result['html'].append(("Hsi" + str(house.id), house.gateway_updated))
         result['html'].append(("Hqu" + str(house.id), queue_length(house)))
+        if house.interval > 0:
+            result['html'].append(("Hnf" + str(house.id), datetime.timedelta(seconds = house.interval) + house.last_flush))
+        else:
+            result['html'].append(("Hnf" + str(house.id), "None"))
     for module in modules:
         result['html'].append(("Mst" + str(module.id), module.status))
         result['html'].append(("Msi" + str(module.id), module.updated))
