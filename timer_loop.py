@@ -61,7 +61,7 @@ def check_houses(session):
 
 @db_connect
 def check_timeouts(session):
-    nodes = session.query(models.Node)
+    nodes = session.query(models.Node).filter((models.Node.physical_state_id > 1) | (models.Node.connection_state_id > 1))
     logger.info("checking node timeouts")
     for node in nodes:
         last_physical_change = (now() - node.last_physical_change).seconds
