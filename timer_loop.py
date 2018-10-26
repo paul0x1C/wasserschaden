@@ -19,8 +19,8 @@ def loop():
         try:
             system_module.update(1)
             check_timeouts()
-            check_houses()
             process_queue()
+            check_houses()
         except:
             e = traceback.format_exc()
             logger.error(e)
@@ -37,15 +37,14 @@ def process_queue(session):
     logger.info("checking que")
     queue = session.query(models.Queue)
     for q in queue:
-        # logger.info("Trying to open %s" % q.node.id)
         if q.node.open_valve():
             session.delete(q)
     logger.info("done checking que")
 
 @db_connect
 def check_houses(session):
-    houses = session.query(models.House)
     logger.info("checking house timeouts")
+    houses = session.query(models.House)
     for house in houses:
         if house.last_flush == None:
             house.last_flush = datetime.datetime(1,1,1)
@@ -57,6 +56,9 @@ def check_houses(session):
                         queue = models.Queue(node_id = node.id, added = now())
                         session.add(queue)
             house.last_flush = now()
+        if house.locked and (now() - house.locked_since).seconds > 120:
+            house.unlock()
+            logger.warning("Lock for house %s timed out!" % house.id)
     logger.info("done checking houses")
 
 @db_connect

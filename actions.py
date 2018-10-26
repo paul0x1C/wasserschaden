@@ -22,9 +22,8 @@ class SystemModule():
             session.add(new_system_module)
     @db_connect
     def update(self, status, session):
-        system_module = session.query(models.Module).filter(models.Module.id == self.id).one()
-        system_module.updated = now()
-        system_module.status = status
+        self.updated = now()
+        self.status = status
 
 @db_connect
 def set_setting(setting_id, state, session):

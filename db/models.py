@@ -31,6 +31,15 @@ class House(Base):
     mqtt_topic = Column(String(100))
     gateway_state = Column(Boolean)
     gateway_updated = Column(DateTime)
+    locked = Column(Boolean)
+    locked_since = Column(DateTime)
+
+    def lock(self):
+        self.locked = True
+        self.locked_since = now()
+
+    def unlock(self):
+        self.locked = False
 
 class Floor(Base):
     __tablename__ = 'floors'
@@ -63,22 +72,24 @@ class Node(Base):
     physical_attemps = Column(Integer)
     connection_attemps = Column(Integer)
     reported_offline = Column(Boolean)
-    @db_connect
+
     def add_physical_attempt(self, session):
         self.last_physical_attempt = now()
         self.physical_attemps += 1
 
-    @db_connect
     def add_connection_attempt(self, session):
         self.last_connection_attempt = now()
         self.connection_attemps += 1
 
     @db_connect
     def set_physical_state(self, state_id, session, update_time = True):
+        self.physical_attemps = 0
+        if state_id == 1 and self.physical_state_id == 4:
+            house = self.flat.floor.house
+            house.unlock()
+        self.physical_state_id = state_id
         if update_time:
             self.last_physical_change = now()
-        self.physical_attemps = 0
-        self.physical_state_id = state_id
         logger.info("Set physical_state of node %s to %s" % (self.id, state_id))
         # print("set", self.id, "state_id")
         report = Report(node_id = self.id, physical_state_id = state_id, time = now())
@@ -109,14 +120,10 @@ class Node(Base):
     @db_connect
     def open_valve(self, session):
         self = session.query(Node).filter(Node.id == self.id).one()
-        nodes = session.query(Node)
-        open_nodes = 0
-        for n in nodes:
-            if n.physical_state_id in [2,3,4] and self.flat.floor.house.id ==  n.flat.floor.house.id:
-                open_nodes += 1
-        # print(open_nodes,nodes.count())
-        if open_nodes == 0:
+        locked = session.query(House).filter(House.id == self.flat.floor.house.id).one().locked
+        if not locked:
             if self.connection_state_id == 1 and self.physical_state_id == 1:
+                self.flat.floor.house.lock()
                 self.set_physical_state(2)
                 self.send_mqtt_msg("open")
                 logger.info("Sending open command to node %s" % self.id)

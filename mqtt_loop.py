@@ -81,8 +81,8 @@ def on_message(mqttc, obj, msg, session):
                             )
             logger.info("New node %s connect for the first time, adding to flat %s in house %s" % (from_node, flat.name, flat.floor.house.name))
             session.add(new_node)
-            alert = models.Alert(added = now(), content="Node %s connected for the first time! Addded to flat '%s'" % (from_node, flat.name))
-            session.add(alert)
+            # alert = models.Alert(added = now(), content="Node %s connected for the first time! Addded to flat '%s'" % (from_node, flat.name))
+            # session.add(alert)
 
 
 def on_log(client, userdata, level, buff):
