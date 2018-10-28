@@ -53,7 +53,7 @@ def check_houses(session):
             for floor in house.floors:
                 for flat in floor.flats:
                     for node in flat.nodes:
-                        queue = models.Queue(node_id = node.id, added = now())
+                        queue = models.Queue(node_id = node.id, house_id = house.id, added = now())
                         session.add(queue)
             house.last_flush = now()
         if house.locked and (now() - house.locked_since).seconds > 120:

@@ -168,6 +168,8 @@ class Queue(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     node_id = Column(BigInteger, ForeignKey('nodes.id'))
     node = relationship("Node", foreign_keys=[node_id], backref="queue")
+    house_id = Column(Integer, ForeignKey('houses.id'))
+    house = relationship("House", foreign_keys=[house_id], backref="queue")
     added = Column(DateTime)
 
 class Module(Base):

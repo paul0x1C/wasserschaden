@@ -210,7 +210,7 @@ def queue_length(house, session):
     counter = 0
     queue = session.query(models.Queue)
     for que in queue:
-        if que.node.flat.floor.house.id == house.id:
+        if que.house_id == house.id:
             counter += 1
     return counter
 
