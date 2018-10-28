@@ -74,11 +74,11 @@ def check_timeouts(session):
             if node.connection_attemps == 0:
                 if last_connection_change > 5:
                     node.send_mqtt_msg("ping")
-                    node.add_connection_attempt()
+                    node.add_connection_attempt(session)
             elif node.connection_attemps == 1:
                 if last_connection_attempt > 10:
                     node.send_mqtt_msg("ping")
-                    node.add_connection_attempt()
+                    node.add_connection_attempt(session)
             elif node.connection_attemps > 1:
                 if last_connection_attempt > 20:
                     node.set_connection_state(3)
@@ -86,11 +86,11 @@ def check_timeouts(session):
             if node.connection_attemps < 5:
                 if last_connection_attempt > 100:
                     node.send_mqtt_msg("ping")
-                    node.add_connection_attempt()
+                    node.add_connection_attempt(session)
             else:
                 if last_connection_attempt > 3600:
                     node.send_mqtt_msg("ping")
-                    node.add_connection_attempt()
+                    node.add_connection_attempt(session)
         if node.physical_state_id == 2:
             if node.physical_attemps == 0:
                 if last_physical_change > 5:
