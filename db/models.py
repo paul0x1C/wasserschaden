@@ -148,7 +148,7 @@ class Alert(Base):
     priority = Column(Integer)
     added = Column(DateTime)
     sent = Column(DateTime)
-    content = Column(String(5000))
+    content = Column(String(50000))
 
 class PhysicalState(Base):
     __tablename__ = 'physical_states'
