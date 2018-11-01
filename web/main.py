@@ -145,7 +145,7 @@ def auto_update(session): # returns all the self updateing stuff
         result['html'].append(("Hsi" + str(house.id), house.gateway_updated))
         result['html'].append(("Hqu" + str(house.id), queue_length(house)))
         result['html'].append(("Hlk" + str(house.id), house.locked))
-        if house.interval > 0:
+        if house.interval > 0 and house.last_flush:
             result['html'].append(("Hnf" + str(house.id), datetime.timedelta(seconds = house.interval) + house.last_flush))
         else:
             result['html'].append(("Hnf" + str(house.id), "None"))

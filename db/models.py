@@ -73,11 +73,11 @@ class Node(Base):
     connection_attemps = Column(Integer)
     reported_offline = Column(Boolean)
 
-    def add_physical_attempt(self, session):
+    def add_physical_attempt(self):
         self.last_physical_attempt = now()
         self.physical_attemps += 1
 
-    def add_connection_attempt(self, session):
+    def add_connection_attempt(self):
         self.last_connection_attempt = now()
         self.connection_attemps += 1
 
