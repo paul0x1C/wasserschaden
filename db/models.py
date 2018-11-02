@@ -12,7 +12,7 @@ def now():
     return datetime.datetime.now()
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+                    level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 Base = declarative_base()
@@ -34,11 +34,14 @@ class House(Base):
     locked = Column(Boolean)
     locked_since = Column(DateTime)
 
-    def lock(self):
-        self.locked = True
-        self.locked_since = now()
+    @db_connect
+    def lock(self, session):
+        house = session.query(House).filter(House.id == self.id).one()
+        house.locked = True
+        house.locked_since = now()
 
-    def unlock(self):
+    @db_connect
+    def unlock(self, session):
         self.locked = False
 
 class Floor(Base):
@@ -60,6 +63,8 @@ class Node(Base):
     id = Column(BigInteger, primary_key=True)
     flat_id = Column(Integer, ForeignKey('flats.id'))
     flat = relationship("Flat", foreign_keys=[flat_id], backref="nodes")
+    house_id = Column(Integer, ForeignKey('houses.id'))
+    house = relationship("House", foreign_keys=[house_id], backref="nodes")
     name = Column(String(50))
     connection_state_id = Column(Integer, ForeignKey('connection_states.id'))
     connection_state = relationship("ConnectionState", foreign_keys=[connection_state_id], backref="nodes")
@@ -85,8 +90,11 @@ class Node(Base):
     def set_physical_state(self, state_id, session, update_time = True):
         self.physical_attemps = 0
         if state_id == 1 and self.physical_state_id == 4:
-            house = self.flat.floor.house
+            logger.debug("looking for house")
+            house =  session.query(House).filter(House.id == self.house_id).one()
+            logger.debug("unlocking house")
             house.unlock()
+            logger.debug("done unlocking house")
         self.physical_state_id = state_id
         if update_time:
             self.last_physical_change = now()
@@ -129,6 +137,65 @@ class Node(Base):
                 logger.info("Sending open command to node %s" % self.id)
                 return True
         return False
+
+    @db_connect
+    def state_change(self, session): # performs all the state changes that are triggerd by timeout
+        last_physical_change = (now() - self.last_physical_change).seconds
+        last_connection_change = (now() - self.last_connection_change).seconds
+        last_physical_attempt = (now() - self.last_physical_attempt).seconds
+        last_connection_attempt = (now() - self.last_connection_attempt).seconds
+        logger.debug("starting state change for node %s" % self.id)
+        if self.connection_state_id == 2:
+            if self.connection_attemps == 0:
+                if last_connection_change > 5:
+                    self.send_mqtt_msg("ping")
+                    self.add_connection_attempt()
+            elif self.connection_attemps == 1:
+                if last_connection_attempt > 10:
+                    self.send_mqtt_msg("ping")
+                    self.add_connection_attempt()
+            elif self.connection_attemps > 1:
+                if last_connection_attempt > 20:
+                    self.set_connection_state(3)
+        elif self.connection_state_id == 3:
+            if self.connection_attemps < 5:
+                if last_connection_attempt > 100:
+                    self.send_mqtt_msg("ping")
+                    self.add_connection_attempt()
+            else:
+                if last_connection_attempt > 3600:
+                    self.send_mqtt_msg("ping")
+                    self.add_connection_attempt()
+        if self.physical_state_id == 2:
+            if self.physical_attemps == 0:
+                if last_physical_change > 5:
+                    self.send_mqtt_msg("open")
+                    self.add_physical_attempt()
+            elif self.physical_attemps < 3:
+                if last_physical_attempt > 10:
+                    self.send_mqtt_msg("open")
+                    self.add_physical_attempt()
+            else:
+                self.set_connection_state(2)
+                self.set_physical_state(1)
+                self.send_mqtt_msg("ping")
+        elif self.physical_state_id == 4:
+            if self.physical_attemps == 0:
+                if last_physical_change > 5:
+                    self.send_mqtt_msg("close")
+                    self.add_physical_attempt()
+            elif self.physical_attemps < 3:
+                if last_physical_attempt > 10:
+                    self.send_mqtt_msg("close")
+                    self.add_physical_attempt()
+            else:
+                self.set_connection_state(2)
+                self.set_physical_state(1)
+                self.send_mqtt_msg("ping")
+        elif self.physical_state_id == 3:
+            if self.flat.floor.house.duration <= last_physical_change:
+                self.close_valve()
+        logger.debug("finished state change for node %s" % self.id)
 
     def send_mqtt_msg(self, msg):
         os.system("""mosquitto_pub -t "%s/to/%s" -m "%s" """ % (self.flat.floor.house.mqtt_topic, self.id, msg))

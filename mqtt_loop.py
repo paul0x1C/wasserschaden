@@ -77,7 +77,8 @@ def on_message(mqttc, obj, msg, session):
                                 last_physical_change = now(),
                                 last_connection_change = now(),
                                 last_physical_attempt = now(),
-                                last_connection_attempt = now()
+                                last_connection_attempt = now(),
+                                house_id = flat.floor.house_id
                             )
             logger.info("New node %s connect for the first time, adding to flat %s in house %s" % (from_node, flat.name, flat.floor.house.name))
             session.add(new_node)
@@ -86,6 +87,7 @@ def on_message(mqttc, obj, msg, session):
 
 
 def on_log(client, userdata, level, buff):
+    print(level)
     logger.warning(buff)
 
 c = mqtt.Client("python-backend-", clean_session = False)
