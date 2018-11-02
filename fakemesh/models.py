@@ -48,10 +48,15 @@ class Gateway:
         self.node_ids.append(node_id)
         return node
     def handle_msg(self, topic, msg):
-        node_id = int(topic.split('/')[2])
-        try:
-            index = self.node_ids.index(node_id)
-        except:
-            print("Node %s not found" % node_id)
+        to = topic.split('/')[2]
+        if to == "broadcast":
+            for node in self.nodes:
+                node.handle_msg(msg)
         else:
-            self.nodes[index].handle_msg(msg)
+            node_id = int(to)
+            try:
+                index = self.node_ids.index(node_id)
+            except:
+                print("Node %s not found" % node_id)
+            else:
+                self.nodes[index].handle_msg(msg)

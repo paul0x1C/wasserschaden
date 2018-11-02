@@ -2,7 +2,7 @@ from models import *
 import time, random
 import paho.mqtt.client as mqtt
 
-mqtt_server = "mos.fritz.box" # use your ip/hostname here
+mqtt_server = "10.8.0.1" # use your ip/hostname here
 c = mqtt.Client("python-fakemesh", clean_session = False)
 
 def generate_send_func(c, topic):
