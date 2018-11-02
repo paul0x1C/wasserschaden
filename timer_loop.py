@@ -18,7 +18,7 @@ def loop():
         time.sleep(1)
         try:
             system_module.update(1)
-            check_timeouts()
+            check_nodes()
             process_queue()
             check_houses()
         except:
@@ -34,7 +34,7 @@ def add_alert(alert_text, session):
 
 @db_connect
 def process_queue(session):
-    logger.info("checking que")
+    logger.debug("checking que")
     houses = session.query(models.House)
     for house in houses:
         if not house.locked:
@@ -42,33 +42,34 @@ def process_queue(session):
                 if q.node.open_valve():
                     session.delete(q)
                     break;
-    logger.info("done checking que")
+    logger.debug("done checking que")
 
 @db_connect
 def check_houses(session):
-    logger.info("checking house timeouts")
+    logger.debug("checking houses")
     houses = session.query(models.House)
     for house in houses:
-        if house.last_flush == None:
+        if house.last_flush == None: # make sure last_flush is set
             house.last_flush = datetime.datetime(1,1,1)
-        if (now() - house.last_flush).seconds > house.interval and not house.interval == 0:
+
+        if (now() - house.last_flush).seconds > house.interval and not house.interval == 0: # check if house needs to be flushed
             logger.info("Initiating new flush for house '%s'" % house.name)
-            for floor in house.floors:
-                for flat in floor.flats:
-                    for node in flat.nodes:
-                        que = models.Queue(node_id = node.id, house_id = house.id, added = now())
-                        session.add(que)
+            for node in house.nodes:
+                que = models.Queue(node_id = node.id, house_id = house.id, added = now())
+                session.add(que)
             house.last_flush = now()
-        if house.locked and (now() - house.locked_since).seconds > 120:
+
+        if house.locked and (now() - house.locked_since).seconds > 120: # check if house is locked for a too long time
             house.unlock()
             logger.warning("Lock for house %s timed out!" % house.id)
-    logger.info("done checking houses")
+
+    logger.debug("done checking houses")
 
 @db_connect
-def check_timeouts(session):
+def check_nodes(session):
     nodes = session.query(models.Node).filter((models.Node.physical_state_id > 1) | (models.Node.connection_state_id > 1))
-    logger.info("checking node timeouts")
+    logger.debug("checking node timeouts")
     for node in nodes:
         node.state_change()
-    logger.info("done checking nodes")
+    logger.debug("done checking nodes")
 loop()
