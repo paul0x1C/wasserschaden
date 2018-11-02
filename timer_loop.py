@@ -35,10 +35,13 @@ def add_alert(alert_text, session):
 @db_connect
 def process_queue(session):
     logger.info("checking que")
-    queue = session.query(models.Queue)
-    for q in queue:
-        if q.node.open_valve():
-            session.delete(q)
+    houses = session.query(models.House)
+    for house in houses:
+        if not house.locked:
+            for q in house.queue:
+                if q.node.open_valve():
+                    session.delete(q)
+                    break;
     logger.info("done checking que")
 
 @db_connect

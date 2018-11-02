@@ -39,10 +39,7 @@ def set_setting(setting_id, state, session):
 
 @db_connect
 def broadcast_ping(gateway_topic, session):
-    houses = session.query(models.House).filter(models.House.mqtt_topic == gateway_topic)
-    for house in houses:
-        for floor in house.floors:
-            for flat in floor.flats:
-                for node in flat.nodes:
-                    node.set_connection_state(2)
+    house = session.query(models.House).filter(models.House.mqtt_topic == gateway_topic).one()
+    for node in house.nodes:
+        node.set_connection_state(2)
     os.system("""mosquitto_pub -t "%s/to/broadcast" -m ping """ % (gateway_topic))

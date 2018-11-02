@@ -91,9 +91,9 @@ class Node(Base):
         self.physical_attemps = 0
         if state_id == 1 and self.physical_state_id == 4:
             logger.debug("looking for house")
-            house =  session.query(House).filter(House.id == self.house_id).one()
+            # house =  session.query(House).filter(House.id == self.house_id).one()
             logger.debug("unlocking house")
-            house.unlock()
+            self.house.unlock()
             logger.debug("done unlocking house")
         self.physical_state_id = state_id
         if update_time:
@@ -103,43 +103,40 @@ class Node(Base):
         report = Report(node_id = self.id, physical_state_id = state_id, time = now())
         session.add(report)
 
-    @db_connect
-    def set_connection_state(self, state_id, session, update_time = True):
+    # @db_connect
+    def set_connection_state(self, state_id, update_time = True):
         if update_time:
             self.last_connection_change = now()
-        if state_id == 3 and not self.reported_offline:
-            alert = Alert(added = now(), content="Node %s in House '%s' on floor %s in flat '%s' not responding…" % (self.id, self.flat.floor.house.name, self.flat.floor.level, self.flat.name))
-            session.add(alert)
-            self.reported_offline = True
-        if state_id == 1 and self.reported_offline:
-            self.reported_offline = False
-            alert = Alert(added = now(), content="Node %s in House '%s' on floor %s in flat '%s' is back onlin <3" % (self.id, self.flat.floor.house.name, self.flat.floor.level, self.flat.name))
-            session.add(alert)
+        # if state_id == 3 and not self.reported_offline:
+        #     alert = Alert(added = now(), content="Node %s in House '%s' on floor %s in flat '%s' not responding…" % (self.id, self.flat.floor.house.name, self.flat.floor.level, self.flat.name))
+        #     session.add(alert)
+        #     self.reported_offline = True
+        # if state_id == 1 and self.reported_offline:
+        #     self.reported_offline = False
+        #     alert = Alert(added = now(), content="Node %s in House '%s' on floor %s in flat '%s' is back onlin <3" % (self.id, self.flat.floor.house.name, self.flat.floor.level, self.flat.name))
+        #     session.add(alert)
         self.connection_attemps = 0
         self.connection_state_id = state_id
         logger.info("Set connection_state of node %s to %s" % (self.id, state_id))
 
-    @db_connect
-    def close_valve(self,session):
+    def close_valve(self):
         self.set_physical_state(4)
         self.send_mqtt_msg("close")
         logger.info("Sending close command to node %s" % self.id)
 
     @db_connect
     def open_valve(self, session):
-        self = session.query(Node).filter(Node.id == self.id).one()
-        locked = session.query(House).filter(House.id == self.flat.floor.house.id).one().locked
-        if not locked:
+        house = session.query(House).filter(House.id == self.house_id).one()
+        if not house.locked:
             if self.connection_state_id == 1 and self.physical_state_id == 1:
-                self.flat.floor.house.lock()
+                house.lock()
                 self.set_physical_state(2)
                 self.send_mqtt_msg("open")
                 logger.info("Sending open command to node %s" % self.id)
                 return True
         return False
 
-    @db_connect
-    def state_change(self, session): # performs all the state changes that are triggerd by timeout
+    def state_change(self): # performs all the state changes that are triggerd by timeout
         last_physical_change = (now() - self.last_physical_change).seconds
         last_connection_change = (now() - self.last_connection_change).seconds
         last_physical_attempt = (now() - self.last_physical_attempt).seconds
@@ -215,7 +212,7 @@ class Alert(Base):
     priority = Column(Integer)
     added = Column(DateTime)
     sent = Column(DateTime)
-    content = Column(String(50000))
+    content = Column(Text(50000))
 
 class PhysicalState(Base):
     __tablename__ = 'physical_states'
