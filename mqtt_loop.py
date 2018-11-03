@@ -45,7 +45,7 @@ def on_message(mqttc, obj, msg, session):
         pass
     else:
         from_node = int(from_node)
-        if session.query(models.Node).filter(models.Node.id == from_node).count() > 0:
+        if session.query(models.Node).filter(models.Node.id == from_node).count() > 0: # check if node exists
             node = session.query(models.Node).filter(models.Node.id == from_node).first()
             if payload == "opening valve":
                 node.set_physical_state(3)
@@ -92,7 +92,7 @@ def on_log(client, userdata, level, buff):
 
 c = mqtt.Client("python-backend-", clean_session = False)
 c.connect("localhost", 1883)
-c.on_log = on_log
+# c.on_log = on_log
 c.on_connect = on_connect
 c.on_disconnect = on_disconnect
 # c.reconnect_delay_set()
