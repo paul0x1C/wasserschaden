@@ -85,7 +85,7 @@ def button(bot, update, session):
         msg = "Flat '%s' on floor %s in house '%s'" % (flat.name, flat.floor.level, flat.floor.house.name)
         msg += "\nnodes:"
         keyboard.append([InlineKeyboardButton("use for new nodes", callback_data="u|%s" % flat.id)])
-        for nodes in flat.nodes:
+        for node in flat.nodes:
             keyboard.append([InlineKeyboardButton("node %s" % node.id, callback_data = "N|%s" % node.id)])
         reply_markup = InlineKeyboardMarkup(keyboard)
         bot.sendMessage(chat_id, msg, reply_markup=reply_markup)

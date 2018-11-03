@@ -71,5 +71,6 @@ def check_nodes(session):
     logger.debug("checking node timeouts")
     for node in nodes:
         node.state_change()
+        session.commit()
     logger.debug("done checking nodes")
 loop()

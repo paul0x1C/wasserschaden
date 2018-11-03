@@ -36,14 +36,14 @@ class House(Base):
     locked = Column(Boolean)
     locked_since = Column(DateTime)
 
-    @db_connect
-    def lock(self, session):
-        house = session.query(House).filter(House.id == self.id).one()
-        house.locked = True
-        house.locked_since = now()
+    # @db_connect
+    def lock(self):
+        # house = session.query(House).filter(House.id == self.id).one()
+        self.locked = True
+        self.locked_since = now()
 
-    @db_connect
-    def unlock(self, session):
+    # @db_connect
+    def unlock(self):
         self.locked = False
 
 class Floor(Base):
@@ -91,13 +91,25 @@ class Node(Base):
     @db_connect
     def set_physical_state(self, state_id, session, update_time = True):
         self.physical_attemps = 0
-        if state_id == 1 and self.physical_state_id == 4:
-            logger.debug("looking for house")
-            # house =  session.query(House).filter(House.id == self.house_id).one()
-            logger.debug("unlocking house")
-            self.house.unlock()
-            logger.debug("done unlocking house")
+        if state_id == 1:
+            if self.physical_state_id == 4: # unlcok house when state goes form should close to closed
+                self.house.unlock()
+                logger.debug("unlocking house")
+            else:
+                open_nodes = 0
+                for n in house:
+                    if not n.physical_state_id == 1:
+                        open_nodes += 1
+                if open_nodes < 2: # one node is the current node
+                    house.unlock()
+                    logger.info("Node %s wasn't set to should close but closed anyhow")
+                else:
+                    logger.warning("Node %s in house %s closed unexpectedly and there is another node open in the house" % (node, house))
         self.physical_state_id = state_id
+        session.commit()
+            # pass
+        # else:
+        #     logger.warning("not unlocking, old sate: %s new sate: %s" % (self.physical_state_id, state_id))
         if update_time:
             self.last_physical_change = now()
         logger.info("Set physical_state of node %s to %s" % (self.id, state_id))
