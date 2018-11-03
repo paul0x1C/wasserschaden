@@ -61,7 +61,7 @@ def button(bot, update, session):
         msg = house.name
         msg += "\nGPS: " + house.gps
         msg += "\nInterval (s): " + str(house.interval)
-        msg += "\nLength (s): " + str(house.length)
+        msg += "\nDuration (s): " + str(house.duration)
         msg += "\nLast Flush: " + str(house.last_flush)
         msg += "\nAdress: " + str(house.adress)
         msg += "\nfloors:"
