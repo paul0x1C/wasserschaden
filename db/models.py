@@ -31,6 +31,8 @@ class House(Base):
     mqtt_topic = Column(String(100))
     gateway_state = Column(Boolean)
     gateway_updated = Column(DateTime)
+    new_node_flat_id = Column(Integer, ForeignKey('flats.id'))
+    new_node_flat = relationship("Flat", foreign_keys=[new_node_flat_id], backref="new_node_houses")
     locked = Column(Boolean)
     locked_since = Column(DateTime)
 

@@ -55,9 +55,10 @@ def overview(session):
         broadcast_ping(request.form.get('gateway_topic'))
     elif request.form.get('action') == "set_setting":
         set_setting(int(request.form.get('setting')), int(request.form.get('value')))
+    elif request.form.get('action') == "set_new_node_flat":
+        set_new_node_flat(int(request.form.get('flat_id')))
     houses = session.query(models.House)
     system_modules = session.query(models.Module)
-    uf_new_nodes = session.query(models.Setting).filter(models.Setting.id == 1).one().state
     n_nodes = session.query(models.Node).count()
     return content+render_template('overview.html',
                                     system_modules=system_modules,
@@ -65,7 +66,6 @@ def overview(session):
                                     houses = houses, sorted=sorted,
                                     attrgetter=attrgetter, node_id=0,
                                     int=int, str=str,
-                                    uf_new_nodes=uf_new_nodes,
                                     n_nodes=n_nodes
                                 )
 

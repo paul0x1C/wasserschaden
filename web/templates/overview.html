@@ -22,11 +22,10 @@
                       <div class='node' id='Nco{{ node.id }}' style="background-color:{{ node.physical_state.color }}; border-color:{{node.connection_state.color}}"><a href='node_info?node_id={{ node.id }}'>{{ node.id }}</a></div>
                       {% endfor %}
                       <form method='post'>
-                        <input type='hidden' value='set_setting' name='action'>
-                        <input type='hidden' name='setting' value='1'>
-                        <input type='hidden' name='value' value='{{flat.id}}'>
+                        <input type='hidden' value='set_new_node_flat' name='action'>
+                        <input type='hidden' name='flat_id' value='{{flat.id}}'>
                         <input type='submit' value='use for new nodes' class='use_for_new_nodes'
-                        {% if flat.id == uf_new_nodes %}
+                        {% if flat.id == house.new_node_flat_id %}
                          disabled style='border-width: 5px; border-color: #004400'
                         {% endif %}>
                       </form>

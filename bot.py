@@ -26,7 +26,7 @@ def access_conrol(func):
             return func(*args, **kwargs)
         else:
             args[1].message.reply_text('nope')
-            logger.info("Blocked acces for %s" % args[1].message.from_user)
+            logger.warning("Blocked acces for %s" % args[1].message.from_user)
     return inner
 
 @access_conrol
@@ -103,7 +103,7 @@ def button(bot, update, session):
         reply_markup = InlineKeyboardMarkup(keyboard)
         bot.sendMessage(chat_id, msg, reply_markup=reply_markup)
     elif data[0] == "u":
-        set_setting(1, data[1])
+        set_new_node_flat(int(data[1]))
         bot.sendMessage(chat_id, "Okay")
 
 @db_connect

@@ -27,6 +27,13 @@ class SystemModule():
         module.status = status
 
 @db_connect
+def set_new_node_flat(flat_id, session):
+    flat = session.query(models.Flat).filter(models.Flat.id == flat_id).one()
+    house = flat.floor.house
+    house.new_node_flat = flat
+    logger.info("Using flat %s ('%s') for new nodes in house %s ('%s')" % (flat.id, flat.name, house.id, house.name))
+
+@db_connect
 def set_setting(setting_id, state, session):
     setting = session.query(models.Setting).filter(models.Setting.id == setting_id)
     logger.info("Setting setting %s to %s" % (setting_id, state))
