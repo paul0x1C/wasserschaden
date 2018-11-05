@@ -59,7 +59,7 @@ def check_houses(session):
                 session.add(que)
             house.last_flush = now()
 
-        if house.locked and (now() - house.locked_since).seconds > 120: # check if house is locked for a too long time
+        if house.locked and (now() - house.locked_since).seconds > 200: # check if house is locked for a too long time
             house.unlock()
             logger.warning("Lock for house %s timed out!" % house.id)
 

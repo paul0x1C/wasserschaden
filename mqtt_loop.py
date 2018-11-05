@@ -81,7 +81,7 @@ def on_message(mqttc, obj, msg, session):
                     # alert = models.Alert(added = now(), content="Node %s connected for the first time! Addded to flat '%s'" % (from_node, flat.name))
                     # session.add(alert)
                 else:
-                    logger.warn("Couldn't add node %s because new_node_flat for house %s is not set" % (node_id, house))
+                    logger.warn("Couldn't add node %s because new_node_flat for house %s is not set" % (from_node, house))
 
 
 def on_log(client, userdata, level, buff):
