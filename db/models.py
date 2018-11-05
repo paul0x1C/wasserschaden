@@ -46,6 +46,9 @@ class House(Base):
     def unlock(self):
         self.locked = False
 
+    def __repr__(self):
+        return "<House id=%i, name='%s'>" % (self.id, self.name)
+
 class Floor(Base):
     __tablename__ = 'floors'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -53,12 +56,18 @@ class Floor(Base):
     house = relationship("House", foreign_keys=[house_id], backref="floors")
     level = Column(Integer)
 
+    def __repr__(self):
+        return "<Floor id=%i, level=%i>" % (self.id, self.level)
+
 class Flat(Base):
     __tablename__ = 'flats'
     id = Column(Integer, primary_key=True, autoincrement=True)
     floor_id = Column(Integer, ForeignKey('floors.id'))
     floor = relationship("Floor", foreign_keys=[floor_id], backref="flats")
     name = Column(String(50))
+
+    def __repr__(self):
+        return "<Flat id=%i, name='%s'>" % (self.id, self.name)
 
 class Node(Base):
     __tablename__ = 'nodes'
@@ -79,6 +88,7 @@ class Node(Base):
     physical_attemps = Column(Integer)
     connection_attemps = Column(Integer)
     reported_offline = Column(Boolean)
+
 
     def add_physical_attempt(self):
         self.last_physical_attempt = now()
@@ -211,6 +221,9 @@ class Node(Base):
     def send_mqtt_msg(self, msg):
         os.system("""mosquitto_pub -t "%s/to/%s" -m "%s" """ % (self.flat.floor.house.mqtt_topic, self.id, msg))
 
+    def __repr__(self):
+        return "<Node id=%i>" % (self.id)
+
 class Report(Base):
     __tablename__ = 'reports'
     id = Column(BigInteger, primary_key=True, autoincrement=True)
@@ -233,13 +246,16 @@ class PhysicalState(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
     color = Column(String(8))
-
+    def __repr__(self):
+        return "<PhysicalState id=%i, name='%s'>" % (self.id, self.name)
+        
 class ConnectionState(Base):
     __tablename__ = 'connection_states'
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
     color = Column(String(8))
-
+    def __repr__(self):
+        return "<ConnectionState id=%i, name='%s'>" % (self.id, self.name)
 
 class Queue(Base):
     __tablename__ = 'queue'
@@ -262,6 +278,7 @@ class Setting(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(100))
     state = Column(Integer)
-
+    def __repr__(self):
+        return "<Setting id=%i, name='%s'>" % (self.id, self.name)
 
 Base.metadata.create_all(connection.engine)
