@@ -76,7 +76,7 @@ def on_message(mqttc, obj, msg, session):
                                         last_connection_attempt = now(),
                                         house_id = flat.floor.house_id
                                     )
-                    logger.info("New node %s connect for the first time, adding to flat %s in house %s" % (from_node, flat.name, flat.floor.house.name))
+                    logger.info("New node %s connect for the first time, adding to flat %s in house %s" % (new_node, flat, node.house))
                     session.add(new_node)
                     # alert = models.Alert(added = now(), content="Node %s connected for the first time! Addded to flat '%s'" % (from_node, flat.name))
                     # session.add(alert)

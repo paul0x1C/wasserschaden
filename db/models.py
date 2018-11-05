@@ -12,7 +12,7 @@ def now():
     return datetime.datetime.now()
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.DEBUG)
+                    level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 Base = declarative_base()
@@ -112,7 +112,7 @@ class Node(Base):
                         open_nodes += 1
                 if open_nodes < 2: # one node is the current node
                     house.unlock()
-                    logger.info("Node %s wasn't set to should close but closed anyhow")
+                    logger.info("Node %s wasn't set to should close but closed anyhow" % node)
                 else:
                     logger.warning("Node %s in house %s closed unexpectedly and there is another node open in the house" % (node, house))
         self.physical_state_id = state_id
@@ -122,7 +122,7 @@ class Node(Base):
         #     logger.warning("not unlocking, old sate: %s new sate: %s" % (self.physical_state_id, state_id))
         if update_time:
             self.last_physical_change = now()
-        logger.info("Set physical_state of node %s to %s" % (self.id, state_id))
+        logger.info("Set physical_state of node %s to %s" % (self, state_id))
         # print("set", self.id, "state_id")
         report = Report(node_id = self.id, physical_state_id = state_id, time = now())
         session.add(report)
@@ -141,12 +141,12 @@ class Node(Base):
         #     session.add(alert)
         self.connection_attemps = 0
         self.connection_state_id = state_id
-        logger.info("Set connection_state of node %s to %s" % (self.id, state_id))
+        logger.info("Set connection_state of node %s to %s" % (self, state_id))
 
     def close_valve(self):
         self.set_physical_state(4)
         self.send_mqtt_msg("close")
-        logger.info("Sending close command to node %s" % self.id)
+        logger.info("Sending close command to node %s" % self)
 
     @db_connect
     def open_valve(self, session):
@@ -156,7 +156,7 @@ class Node(Base):
                 house.lock()
                 self.set_physical_state(2)
                 self.send_mqtt_msg("open")
-                logger.info("Sending open command to node %s" % self.id)
+                logger.info("Sending open command to node %s" % self)
                 return True
         return False
 
@@ -165,7 +165,7 @@ class Node(Base):
         last_connection_change = (now() - self.last_connection_change).seconds
         last_physical_attempt = (now() - self.last_physical_attempt).seconds
         last_connection_attempt = (now() - self.last_connection_attempt).seconds
-        logger.debug("starting state change for node %s" % self.id)
+        logger.debug("starting state change for node %s" % self)
         if self.connection_state_id == 2:
             if self.connection_attemps == 0:
                 if last_connection_change > 5:
@@ -216,10 +216,10 @@ class Node(Base):
         elif self.physical_state_id == 3:
             if self.flat.floor.house.duration <= last_physical_change:
                 self.close_valve()
-        logger.debug("finished state change for node %s" % self.id)
+        logger.debug("finished state change for node %s" % self)
 
     def send_mqtt_msg(self, msg):
-        os.system("""mosquitto_pub -t "%s/to/%s" -m "%s" """ % (self.flat.floor.house.mqtt_topic, self.id, msg))
+        os.system("""mosquitto_pub -t "%s/to/%s" -m "%s" """ % (self.house.mqtt_topic, self.id, msg))
 
     def __repr__(self):
         return "<Node id=%i>" % (self.id)
@@ -248,7 +248,7 @@ class PhysicalState(Base):
     color = Column(String(8))
     def __repr__(self):
         return "<PhysicalState id=%i, name='%s'>" % (self.id, self.name)
-        
+
 class ConnectionState(Base):
     __tablename__ = 'connection_states'
     id = Column(Integer, primary_key=True)

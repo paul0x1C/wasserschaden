@@ -8,7 +8,7 @@ from actions import *
 db_connect = wrapper.db_connect
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.DEBUG)
+                    level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 system_module = SystemModule(1, "timer_loop")
@@ -53,7 +53,7 @@ def check_houses(session):
             house.last_flush = datetime.datetime(1,1,1)
 
         if (now() - house.last_flush).seconds > house.interval and not house.interval == 0: # check if house needs to be flushed
-            logger.info("Initiating new flush for house '%s'" % house.name)
+            logger.info("Initiating new flush for house %s" % house)
             for node in house.nodes:
                 que = models.Queue(node_id = node.id, house_id = house.id, added = now())
                 session.add(que)
@@ -61,7 +61,7 @@ def check_houses(session):
 
         if house.locked and (now() - house.locked_since).seconds > 200: # check if house is locked for a too long time
             house.unlock()
-            logger.warning("Lock for house %s timed out!" % house.id)
+            logger.warning("Lock for house %s timed out!" % house)
 
     logger.debug("done checking houses")
 
