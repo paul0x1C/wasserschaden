@@ -96,6 +96,7 @@ void close_valve(){
   is_open = false;
 }
 void setup() {
+  //ESP.wdtEnable(5000);
   close_valve();
   Serial.begin(115200);
 
@@ -117,6 +118,7 @@ void setup() {
 }
 
 void loop() {
+  //ESP.wdtFeed();
   userScheduler.execute();
   mesh.update();
 }
