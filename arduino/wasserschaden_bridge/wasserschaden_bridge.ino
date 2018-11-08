@@ -48,6 +48,7 @@ char* convert_for_mqtt(int input) {
 }
 
 void setup() {
+  ESP.wdtEnable(5000);
   pinMode(POWER_LED, OUTPUT);
   pinMode(WLAN_LED, OUTPUT);
   pinMode(MESH_LED, OUTPUT);
@@ -92,7 +93,7 @@ void setup() {
 }
 
 void mqttConnect() {
-  if (mqttClient.connect(String("pmC_"+String(MQTT_TOPIC)).c_str()),from_gateway,1,false,"dead") {
+  if (mqttClient.connect(String("pmC_"+String(MQTT_TOPIC)).c_str())) {
     digitalWrite(MQTT_LED, HIGH);
     Serial.println("connected to mqtt");
     mqttClient.publish(from_gateway.c_str(), "Ready!");
@@ -120,6 +121,7 @@ void mesh_led_off() {
 }
 
 void loop() {
+  ESP.wdtFeed();
   mesh.update();
   mqttClient.loop();
 
@@ -157,8 +159,8 @@ void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
   String msg = String(cleanPayload);
   free(cleanPayload);
 
-  String targetStr = String(topic).substring(16);
-
+  String targetStr = String(topic).substring(String(MQTT_TOPIC).length()+4);
+  Serial.println("targetStr:" + targetStr);
   if (targetStr == "gateway")
   {
     if (msg == "getNodes")
