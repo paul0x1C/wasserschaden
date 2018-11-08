@@ -12,7 +12,7 @@ def now():
     return datetime.datetime.now()
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+                    level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 Base = declarative_base()
@@ -103,27 +103,31 @@ class Node(Base):
         self.physical_attemps = 0
         if state_id == 1:
             if self.physical_state_id == 4: # unlcok house when state goes form should close to closed
-                self.house.unlock()
+                house = session.query(House).filter(House.id == self.house_id).one()
+                """
+                Why am I not using self.house?
+                Well… accesing any relationship of self, caused the insert report operation to fail, when this function is called from timer_loop
+                even print(self.flat)
+                Yes, wtf
+                am I very supid or is this a bug?
+                should do even more investigation and open a issue
+                """
+                house.unlock()
                 logger.debug("unlocking house")
-            else:
-                open_nodes = 0
-                for n in house:
-                    if not n.physical_state_id == 1:
-                        open_nodes += 1
-                if open_nodes < 2: # one node is the current node
-                    house.unlock()
-                    logger.info("Node %s wasn't set to should close but closed anyhow" % node)
-                else:
-                    logger.warning("Node %s in house %s closed unexpectedly and there is another node open in the house" % (node, house))
+            # else:
+                # open_nodes = 0
+                # for n in self.house.nodes:
+                #     if not n.physical_state_id == 1:
+                #         open_nodes += 1
+                # if open_nodes < 2: # one node is the current node
+                #     self.house.unlock()
+                #     logger.info("Node %s wasn't set to should close but closed anyhow" % self)
+                # else:
+                #     logger.warning("Node %s in house %s closed unexpectedly and there is another node open in the house" % (self, self.house))
         self.physical_state_id = state_id
-        session.commit()
-            # pass
-        # else:
-        #     logger.warning("not unlocking, old sate: %s new sate: %s" % (self.physical_state_id, state_id))
         if update_time:
             self.last_physical_change = now()
         logger.info("Set physical_state of node %s to %s" % (self, state_id))
-        # print("set", self.id, "state_id")
         report = Report(node_id = self.id, physical_state_id = state_id, time = now())
         session.add(report)
 
@@ -159,64 +163,6 @@ class Node(Base):
                 logger.info("Sending open command to node %s" % self)
                 return True
         return False
-
-    def state_change(self): # performs all the state changes that are triggerd by timeout
-        last_physical_change = (now() - self.last_physical_change).seconds
-        last_connection_change = (now() - self.last_connection_change).seconds
-        last_physical_attempt = (now() - self.last_physical_attempt).seconds
-        last_connection_attempt = (now() - self.last_connection_attempt).seconds
-        logger.debug("starting state change for node %s" % self)
-        if self.connection_state_id == 2:
-            if self.connection_attemps == 0:
-                if last_connection_change > 5:
-                    self.send_mqtt_msg("ping")
-                    self.add_connection_attempt()
-            elif self.connection_attemps == 1:
-                if last_connection_attempt > 10:
-                    self.send_mqtt_msg("ping")
-                    self.add_connection_attempt()
-            elif self.connection_attemps > 1:
-                if last_connection_attempt > 20:
-                    self.set_connection_state(3)
-        elif self.connection_state_id == 3:
-            if self.connection_attemps < 5:
-                if last_connection_attempt > 100:
-                    self.send_mqtt_msg("ping")
-                    self.add_connection_attempt()
-            else:
-                if last_connection_attempt > 3600:
-                    self.send_mqtt_msg("ping")
-                    self.add_connection_attempt()
-        if self.physical_state_id == 2:
-            if self.physical_attemps == 0:
-                if last_physical_change > 5:
-                    self.send_mqtt_msg("open")
-                    self.add_physical_attempt()
-            elif self.physical_attemps < 3:
-                if last_physical_attempt > 10:
-                    self.send_mqtt_msg("open")
-                    self.add_physical_attempt()
-            else:
-                self.set_connection_state(2)
-                self.set_physical_state(1)
-                self.send_mqtt_msg("ping")
-        elif self.physical_state_id == 4:
-            if self.physical_attemps == 0:
-                if last_physical_change > 5:
-                    self.send_mqtt_msg("close")
-                    self.add_physical_attempt()
-            elif self.physical_attemps < 3:
-                if last_physical_attempt > 10:
-                    self.send_mqtt_msg("close")
-                    self.add_physical_attempt()
-            else:
-                self.set_connection_state(2)
-                self.set_physical_state(1)
-                self.send_mqtt_msg("ping")
-        elif self.physical_state_id == 3:
-            if self.flat.floor.house.duration <= last_physical_change:
-                self.close_valve()
-        logger.debug("finished state change for node %s" % self)
 
     def send_mqtt_msg(self, msg):
         os.system("""mosquitto_pub -t "%s/to/%s" -m "%s" """ % (self.house.mqtt_topic, self.id, msg))

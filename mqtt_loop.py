@@ -36,9 +36,10 @@ def on_message(mqttc, obj, msg, session):
         logger.warning("Got message from not matching bridge '%s'" % bridge)
     else:
         house.gateway_updated = now()
-        if from_node == "gateway" and payload == "dead":
-            house.gateway_state = False
-            logger.info("gateway '%s' went offline" % bridge)
+        if from_node == "gateway":
+            if payload == "dead":
+                house.gateway_state = False
+                logger.info("gateway '%s' went offline" % bridge)
         else:
             house.gateway_state = True
             from_node = int(from_node)
@@ -76,7 +77,7 @@ def on_message(mqttc, obj, msg, session):
                                         last_connection_attempt = now(),
                                         house_id = flat.floor.house_id
                                     )
-                    logger.info("New node %s connect for the first time, adding to flat %s in house %s" % (new_node, flat, node.house))
+                    logger.info("New node %s connect for the first time, adding to flat %s in house %s" % (new_node, flat, new_node.house))
                     session.add(new_node)
                     # alert = models.Alert(added = now(), content="Node %s connected for the first time! Addded to flat '%s'" % (from_node, flat.name))
                     # session.add(alert)
@@ -90,7 +91,7 @@ def on_log(client, userdata, level, buff):
 
 c = mqtt.Client("python-backend-", clean_session = False)
 c.connect("localhost", 1883)
-# c.on_log = on_log
+c.on_log = on_log
 c.on_connect = on_connect
 c.on_disconnect = on_disconnect
 # c.reconnect_delay_set()
