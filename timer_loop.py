@@ -55,8 +55,11 @@ def check_houses(session):
         if (now() - house.last_flush).seconds > house.interval and not house.interval == 0: # check if house needs to be flushed
             logger.info("Initiating new flush for house %s" % house)
             for node in house.nodes:
-                que = models.Queue(node_id = node.id, house_id = house.id, added = now())
-                session.add(que)
+                if session.query(models.Queue).filter(models.Queue.node_id == node.id).count() == 0:
+                    que = models.Queue(node_id = node.id, house_id = house.id, added = now())
+                    session.add(que)
+                else:
+                    logger.warning("%s was already queued" % node)
             house.last_flush = now()
 
         if house.locked and (now() - house.locked_since).seconds > 150: # check if house is locked for a too long time
