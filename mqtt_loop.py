@@ -48,6 +48,8 @@ def on_message(mqttc, obj, msg, session):
                 if payload == "opening valve":
                     node.set_physical_state(3)
                 elif payload == "closing valve":
+                    if node.physical_state_id == 4:
+                        node.house.unlock()
                     node.set_physical_state(1)
                     for listing in node.queue:
                         session.delete(listing)

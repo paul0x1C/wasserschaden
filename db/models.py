@@ -101,29 +101,6 @@ class Node(Base):
     @db_connect
     def set_physical_state(self, state_id, session, update_time = True):
         self.physical_attemps = 0
-        if state_id == 1:
-            if self.physical_state_id == 4: # unlcok house when state goes form should close to closed
-                house = session.query(House).filter(House.id == self.house_id).one()
-                """
-                Why am I not using self.house?
-                Well… accesing any relationship of self, caused the insert report operation to fail, when this function is called from timer_loop
-                even print(self.flat)
-                Yes, wtf
-                am I very supid or is this a bug?
-                should do even more investigation and open a issue
-                """
-                house.unlock()
-                logger.debug("unlocking house")
-            # else:
-                # open_nodes = 0
-                # for n in self.house.nodes:
-                #     if not n.physical_state_id == 1:
-                #         open_nodes += 1
-                # if open_nodes < 2: # one node is the current node
-                #     self.house.unlock()
-                #     logger.info("Node %s wasn't set to should close but closed anyhow" % self)
-                # else:
-                #     logger.warning("Node %s in house %s closed unexpectedly and there is another node open in the house" % (self, self.house))
         self.physical_state_id = state_id
         if update_time:
             self.last_physical_change = now()
