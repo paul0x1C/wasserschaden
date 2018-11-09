@@ -132,9 +132,7 @@ NoConn ~ 3500 1950
 NoConn ~ 3500 2050
 NoConn ~ 3500 2350
 NoConn ~ 3500 2450
-NoConn ~ 4500 2450
 NoConn ~ 4500 2350
-NoConn ~ 4500 2250
 NoConn ~ 4500 2150
 NoConn ~ 4500 2050
 NoConn ~ 4500 1950
@@ -347,4 +345,27 @@ Wire Wire Line
 	3200 2250 3500 2250
 Wire Wire Line
 	4950 1750 4950 3050
+$Comp
+L Jumper:SolderJumper_2_Open JP?
+U 1 1 5BCFAE3F
+P 4750 2350
+F 0 "JP?" V 4704 2418 50  0000 L CNN
+F 1 "SolderJumper_2_Open" V 4795 2418 50  0000 L CNN
+F 2 "" H 4750 2350 50  0001 C CNN
+F 3 "~" H 4750 2350 50  0001 C CNN
+	1    4750 2350
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4750 2200 4600 2200
+Wire Wire Line
+	4600 2200 4600 2250
+Wire Wire Line
+	4600 2250 4500 2250
+Wire Wire Line
+	4500 2450 4600 2450
+Wire Wire Line
+	4600 2450 4600 2500
+Wire Wire Line
+	4600 2500 4750 2500
 $EndSCHEMATC
