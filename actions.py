@@ -27,6 +27,11 @@ class SystemModule():
         module.status = status
 
 @db_connect
+def add_alert(alert_text, session):
+    alert = models.Alert(content = alert_text, added = now())
+    session.add(alert)
+
+@db_connect
 def set_new_node_flat(flat_id, session):
     flat = session.query(models.Flat).filter(models.Flat.id == flat_id).one()
     house = flat.floor.house

@@ -24,13 +24,7 @@ def loop():
         except:
             e = traceback.format_exc()
             logger.error(e)
-            # add_alert(e)
-
-@db_connect
-def add_alert(alert_text, session):
-    alert_text += "exception in timer_loop:\n"
-    alert = models.Alert(content = alert_text, added = now())
-    session.add(alert)
+            add_alert("Exception in timer loop!")
 
 @db_connect
 def process_queue(session):
@@ -53,7 +47,8 @@ def check_houses(session):
             house.last_flush = datetime.datetime(1,1,1)
 
         if (now() - house.last_flush).seconds > house.interval and not house.interval == 0: # check if house needs to be flushed
-            logger.info("Initiating new flush for house %s" % house)
+            logger.info("Initiating new flush for %s" % house)
+            add_alert("Initiating new flush for %s" % house)
             for node in house.nodes:
                 if session.query(models.Queue).filter(models.Queue.node_id == node.id).count() == 0:
                     que = models.Queue(node_id = node.id, house_id = house.id, added = now())
@@ -83,11 +78,11 @@ def check_nodes(session):
                 if last_connection_change > 5:
                     node.send_mqtt_msg("ping")
                     node.add_connection_attempt()
-            elif node.connection_attemps == 1:
+            elif node.connection_attemps < 3:
                 if last_connection_attempt > 10:
                     node.send_mqtt_msg("ping")
                     node.add_connection_attempt()
-            elif node.connection_attemps > 1:
+            else:
                 if last_connection_attempt > 20:
                     node.set_connection_state(3)
         elif node.connection_state_id == 3:
@@ -112,7 +107,6 @@ def check_nodes(session):
                 node.set_connection_state(2)
                 node.set_physical_state(1)
                 node.send_mqtt_msg("ping")
-                logger.debug("passing4")
         elif node.physical_state_id == 4:
             if node.physical_attemps == 0:
                 if last_physical_change > 5:
@@ -126,9 +120,8 @@ def check_nodes(session):
                 node.set_physical_state(1)
                 node.set_connection_state(2)
                 node.send_mqtt_msg("ping")
-                logger.debug("passing4")
         elif node.physical_state_id == 3:
-            if node.flat.floor.house.duration <= last_physical_change:
+            if node.house.duration <= last_physical_change:
                 node.close_valve()
         logger.debug("finished state change for %s" % node)
         session.commit()

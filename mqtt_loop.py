@@ -32,23 +32,26 @@ def on_message(mqttc, obj, msg, session):
     from_node = msg.topic.split('/')[2]
     try:
         house = session.query(models.House).filter(models.House.mqtt_topic == bridge).one()
-    except:
+    except: # bridge not known
         logger.warning("Got message from not matching bridge '%s'" % bridge)
-    else:
+    else: # bridge known
         house.gateway_updated = now()
         if from_node == "gateway":
             if payload == "dead":
                 house.gateway_state = False
                 logger.info("gateway '%s' went offline" % bridge)
+            elif payload == "Ready!":
+                house.gateway_state = True
+                logger.info("gateway for %s is ready" % house)
         else:
             house.gateway_state = True
-            from_node = int(from_node)
+            from_node = int(from_node) # must be a node, and node ids are int
             if session.query(models.Node).filter(models.Node.id == from_node).count() > 0: # check if node exists
-                node = session.query(models.Node).filter(models.Node.id == from_node).first()
+                node = session.query(models.Node).filter(models.Node.id == from_node).one()
                 if payload == "opening valve":
                     node.set_physical_state(3)
                 elif payload == "closing valve":
-                    if node.physical_state_id == 4:
+                    if node.physical_state_id == 4: # check if node should really close now
                         node.house.unlock()
                     node.set_physical_state(1)
                     for listing in node.queue:
@@ -81,15 +84,14 @@ def on_message(mqttc, obj, msg, session):
                                     )
                     logger.info("New node %s connect for the first time, adding to flat %s in house %s" % (new_node, flat, new_node.house))
                     session.add(new_node)
-                    # alert = models.Alert(added = now(), content="Node %s connected for the first time! Addded to flat '%s'" % (from_node, flat.name))
-                    # session.add(alert)
+                    add_alert("Node %s connected for the first time! Addded to flat '%s'" % (from_node, flat.name))
                 else:
-                    logger.warn("Couldn't add node %s because new_node_flat for house %s is not set" % (from_node, house))
+                    logger.warn("Couldn't add node %s because new_node_flat for %s is not set" % (from_node, house))
 
 
 def on_log(client, userdata, level, buff):
-    print(level)
-    logger.warning(buff)
+    if not level == 16:
+        logger.warning(buff)
 
 c = mqtt.Client("python-backend-", clean_session = False)
 c.connect("localhost", 1883)
