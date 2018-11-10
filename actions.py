@@ -27,8 +27,8 @@ class SystemModule():
         module.status = status
 
 @db_connect
-def add_alert(alert_text, session):
-    alert = models.Alert(content = alert_text, added = now())
+def add_alert(alert_text, priority, session):
+    alert = models.Alert(content = alert_text, added = now(), priority = priority)
     session.add(alert)
 
 @db_connect

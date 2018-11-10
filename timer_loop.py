@@ -24,7 +24,7 @@ def loop():
         except:
             e = traceback.format_exc()
             logger.error(e)
-            add_alert("Exception in timer loop!")
+            add_alert("Exception in timer loop!", 5)
 
 @db_connect
 def process_queue(session):
@@ -48,7 +48,7 @@ def check_houses(session):
 
         if (now() - house.last_flush).seconds > house.interval and not house.interval == 0: # check if house needs to be flushed
             logger.info("Initiating new flush for %s" % house)
-            add_alert("Initiating new flush for %s" % house)
+            add_alert("Initiating new flush for %s" % house, 1)
             for node in house.nodes:
                 if session.query(models.Queue).filter(models.Queue.node_id == node.id).count() == 0:
                     que = models.Queue(node_id = node.id, house_id = house.id, added = now())

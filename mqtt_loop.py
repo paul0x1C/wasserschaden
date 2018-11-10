@@ -84,7 +84,7 @@ def on_message(mqttc, obj, msg, session):
                                     )
                     logger.info("New node %s connect for the first time, adding to flat %s in house %s" % (new_node, flat, new_node.house))
                     session.add(new_node)
-                    add_alert("Node %s connected for the first time! Addded to flat '%s'" % (from_node, flat.name))
+                    add_alert("Node %s connected for the first time! Addded to flat '%s'" % (from_node, flat.name), priority = 2)
                 else:
                     logger.warn("Couldn't add node %s because new_node_flat for %s is not set" % (from_node, house))
 
