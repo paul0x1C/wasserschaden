@@ -1,10 +1,10 @@
 ## -*- coding: utf-8 -*-
+from telegram import *
+from telegram.ext import *
 
 from key import key
 from db import models, wrapper
 from actions import *
-from telegram import *
-from telegram.ext import *
 
 import logging
 
@@ -50,6 +50,18 @@ def list_houses(bot, update, session):
     reply_markup = InlineKeyboardMarkup(keyboard)
     update.message.reply_text(msg, reply_markup=reply_markup)
 
+@access_conrol
+def set_priority(bot, update):
+    last_char = update.message.text[-1:]
+    try:
+        priority = int(last_char)
+    except:
+        update.message.reply_text("please provide an Integer")
+    else:
+        set_setting(1, priority)
+        update.message.reply_text("priority set to %i" % priority)
+
+@access_conrol
 @db_connect
 def button(bot, update, session):
     data = update.callback_query.data
@@ -109,7 +121,9 @@ def button(bot, update, session):
 @db_connect
 def send_alerts(bot, job, session):
     system_module.update(1)
-    alerts = session.query(models.Alert).filter(models.Alert.sent == None)
+    priority_setting = session.query(models.Setting.state).filter(models.Setting.id == 1).one()
+    priority_setting = 1
+    alerts = session.query(models.Alert).filter(models.Alert.sent == None).filter(models.Alert.priority >= priority_setting)
     for alert in alerts:
         bot.sendMessage(chat_id, alert.content)
         alert.sent = now()
@@ -126,6 +140,7 @@ def main():
 
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("list_houses", list_houses))
+    dp.add_handler(CommandHandler("set_priority", set_priority))
     dp.add_handler(CallbackQueryHandler(button))
 
     dp.add_handler(MessageHandler(Filters.text, msg))

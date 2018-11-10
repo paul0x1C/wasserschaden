@@ -50,7 +50,7 @@ def check_houses(session):
             logger.info("Initiating new flush for %s" % house)
             add_alert("Initiating new flush for %s" % house, 1)
             for node in house.nodes:
-                if session.query(models.Queue).filter(models.Queue.node_id == node.id).count() == 0:
+                if session.query(models.Queue).filter(models.Queue.node_id == node.id).count() == 0: #check whether node is already queued
                     que = models.Queue(node_id = node.id, house_id = house.id, added = now())
                     session.add(que)
                 else:
