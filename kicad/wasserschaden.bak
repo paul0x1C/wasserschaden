@@ -1,4 +1,5 @@
 EESchema Schematic File Version 4
+LIBS:wasserschaden-cache
 EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
@@ -19,7 +20,7 @@ U 1 1 5B26FC39
 P 4000 2100
 F 0 "U2" H 4000 2600 60  0000 C CNN
 F 1 "WeMos_mini" H 4000 1600 60  0000 C CNN
-F 2 "test_wemos:wemos-d1-mini-with-pin-header" H 4550 1400 60  0001 C CNN
+F 2 "custom:wemos" H 4550 1400 60  0001 C CNN
 F 3 "" H 4550 1400 60  0000 C CNN
 	1    4000 2100
 	1    0    0    -1  
@@ -30,7 +31,7 @@ U 1 1 5B2A69C6
 P 2900 2250
 F 0 "IRFZ44N1" H 3150 2250 50  0000 L CNN
 F 1 " " H 3100 2250 50  0000 L CNN
-F 2 "test_wemos:irlz44n" H 3100 2175 50  0001 L CIN
+F 2 "custom:irlz44n" H 3100 2175 50  0001 L CIN
 F 3 "" H 2900 2250 50  0001 L CNN
 	1    2900 2250
 	-1   0    0    1   
@@ -109,7 +110,7 @@ U 1 1 5B2A6F8D
 P 3800 3000
 F 0 "U1" H 3950 2950 60  0000 C CNN
 F 1 "stepdown" H 4050 3000 60  0000 C CNN
-F 2 "stepdown:stepdown" H 3800 3000 60  0001 C CNN
+F 2 "custom:stepdown" H 3800 3000 60  0001 C CNN
 F 3 "" H 3800 3000 60  0001 C CNN
 	1    3800 3000
 	1    0    0    -1  
@@ -346,12 +347,12 @@ Wire Wire Line
 Wire Wire Line
 	4950 1750 4950 3050
 $Comp
-L Jumper:SolderJumper_2_Open JP?
+L Jumper:SolderJumper_2_Open JP1
 U 1 1 5BCFAE3F
 P 4750 2350
-F 0 "JP?" V 4704 2418 50  0000 L CNN
+F 0 "JP1" V 4704 2418 50  0000 L CNN
 F 1 "SolderJumper_2_Open" V 4795 2418 50  0000 L CNN
-F 2 "" H 4750 2350 50  0001 C CNN
+F 2 "custom:jumper" H 4750 2350 50  0001 C CNN
 F 3 "~" H 4750 2350 50  0001 C CNN
 	1    4750 2350
 	0    1    1    0   
@@ -368,4 +369,6 @@ Wire Wire Line
 	4600 2450 4600 2500
 Wire Wire Line
 	4600 2500 4750 2500
+NoConn ~ 6200 -3400
+NoConn ~ 6800 -3300
 $EndSCHEMATC
