@@ -62,7 +62,7 @@ def on_message(mqttc, obj, msg, session):
                         node.set_physical_state(3)
                     elif payload[-1:] == "0" and not node.physical_state_id == 1:
                         node.set_physical_state(1)
-                elif payload == "dropped":
+                elif payload == "dropped" or payload == "not connected":
                     node.set_connection_state(3)
                 elif payload[:3] == "con":
                     node.set_connection_state(1)
