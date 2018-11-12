@@ -58,6 +58,7 @@ def check_houses(session):
                     session.add(que)
                 else:
                     logger.warning("%s was already queued" % node)
+                    add_alert("Tried to add a node to {}'s queue, but it was already in the queue".format(house), 2)
             house.last_flush = now()
 
         if house.locked and (now() - house.locked_since).seconds > 150: # check if house is locked for a too long time
