@@ -144,6 +144,10 @@ class Node(Base):
     def send_mqtt_msg(self, msg):
         os.system("""mosquitto_pub -t "%s/to/%s" -m "%s" """ % (self.house.mqtt_topic, self.id, msg))
 
+    def ping(self):
+        self.set_connection_state(2)
+        self.send_mqtt_msg("ping")
+
     def __repr__(self):
         return "<Node id=%i>" % (self.id)
 

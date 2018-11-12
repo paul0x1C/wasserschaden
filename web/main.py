@@ -75,8 +75,7 @@ def node_info(session):
     node_id = int(request.args.get('node_id'))
     node = session.query(models.Node).filter(models.Node.id == node_id).one()
     if request.form.get('action') == "ping":
-        node.send_mqtt_msg("ping")
-        node.set_connection_state(2)
+        node.ping()
     elif request.form.get('action') == "move":
         node = session.query(models.Node).filter(models.Node.id == node_id).first()
         node.flat_id = int(request.form.get('flat_id'))

@@ -45,7 +45,7 @@ def check_houses(session):
     logger.debug("checking houses")
     houses = session.query(models.House)
     for house in houses:
-        logger.info("checking %s" % house)
+        logger.debug("checking %s" % house)
         if house.last_flush == None: # make sure last_flush is set
             house.last_flush = datetime.datetime(1,1,1)
 
@@ -124,9 +124,8 @@ def check_nodes(session):
                         node.send_mqtt_msg("open")
                         node.add_physical_attempt()
                 else:
-                    node.set_connection_state(2)
+                    node.ping()
                     node.set_physical_state(1)
-                    node.send_mqtt_msg("ping")
             elif node.physical_state_id == 4:
                 if node.physical_attemps == 0:
                     if last_physical_change > 5:
@@ -138,8 +137,7 @@ def check_nodes(session):
                         node.add_physical_attempt()
                 else:
                     node.set_physical_state(1)
-                    node.set_connection_state(2)
-                    node.send_mqtt_msg("ping")
+                    node.ping()
             elif node.physical_state_id == 3:
                 if node.house.duration <= last_physical_change:
                     node.close_valve()
