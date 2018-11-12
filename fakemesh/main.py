@@ -10,13 +10,14 @@ def generate_send_func(c, topic):
         c.publish(topic + "/from/" + str(node_id), msg)
     return send
 
-
-gateway = Gateway("fake", generate_send_func(c, "fake"))
+def get_gateway(topic):
+    return Gateway(topic, generate_send_func(c, topic))
 
 def on_message(mqttc, obj, msg):
     payload = msg.payload.decode()
     topic = msg.topic
-    gateway.handle_msg(topic, payload)
+    gateway = topic.split('/')[0]
+    gateways[gateway].handle_msg(topic, payload)
 
 c.connect(mqtt_server, 1883)
 c.on_message = on_message;
@@ -29,12 +30,16 @@ def on_log(client, userdata, level, buff):
 c.on_log = on_log
 
 groups = []
-for i in range(10):
-    group = Group(gateway, 30)
+gateways = {}
+for letter in ["A","B","C","D","E","F"]:
+    topic = "fake"+letter
+    gateway= get_gateway(topic)
+    gateways[topic] = gateway
+    group = Group(gateway, 40)
     groups.append(group)
 
 for group in groups:
     group.connect()
-    time.sleep(0)
+    # time.sleep(15)
 
 c.loop_forever()
