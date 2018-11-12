@@ -142,16 +142,16 @@ def auto_update(session): # returns all the self updateing stuff
         result['boColor'].append(("Nco" + str(node.id), node.connection_state.color))
     for house in houses:
         result['html'].append(("Hst" + str(house.id), house.gateway_state))
-        result['html'].append(("Hsi" + str(house.id), house.gateway_updated))
+        result['html'].append(("Hsi" + str(house.id), house.gateway_updated.strftime("%a %d.%m. %H:%M:%S")))
         result['html'].append(("Hqu" + str(house.id), queue_length(house)))
         result['html'].append(("Hlk" + str(house.id), house.locked))
         if house.interval > 0 and house.last_flush:
-            result['html'].append(("Hnf" + str(house.id), datetime.timedelta(seconds = house.interval) + house.last_flush))
+            result['html'].append(("Hnf" + str(house.id), (datetime.timedelta(seconds = house.interval) + house.last_flush).strftime("%a %d.%m. %H:%M:%S")))
         else:
             result['html'].append(("Hnf" + str(house.id), "None"))
     for module in modules:
         result['html'].append(("Mst" + str(module.id), module.status))
-        result['html'].append(("Msi" + str(module.id), module.updated))
+        result['html'].append(("Msi" + str(module.id), module.updated.strftime("%a %d.%m. %H:%M:%S")))
     return jsonify(result)
 
 @app.route('/delete', methods=['POST','GET'])
