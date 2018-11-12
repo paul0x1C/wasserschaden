@@ -124,10 +124,23 @@ def send_alerts(bot, job, session):
     priority_setting = session.query(models.Setting.state).filter(models.Setting.id == 1).one()
     alerts = session.query(models.Alert).filter(models.Alert.priority >= priority_setting)
     if alerts.count() > 0:
-        alert_msg = ""
+        to_send = []
         for alert in alerts:
-            alert_msg += "\n{} {}".format(priority_emojis[alert.priority], alert.content)
+            msg = "{} {}".format(priority_emojis[alert.priority], alert.content)
+            if to_send:
+                if to_send[-1][1] == msg:
+                    to_send[-1][0] += 1
+                else:
+                    to_send.append([1, msg])
+            else:
+                to_send.append([1, msg]) # this repitition is pretty ugly :(
             session.delete(alert)
+        alert_msg = ""
+        for entry in to_send:
+            if entry[0] > 1:
+                alert_msg += "\n({}x) {}".format(entry[0], entry[1])
+            else:
+                alert_msg += "\n{}".format(entry[1])
         while len(alert_msg) > 3000:
             bot.sendMessage(chat_id, alert_msg[:3000])
             alert_msg = alert_msg[3000:]
