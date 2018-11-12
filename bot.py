@@ -122,7 +122,6 @@ def button(bot, update, session):
 def send_alerts(bot, job, session):
     system_module.update(1)
     priority_setting = session.query(models.Setting.state).filter(models.Setting.id == 1).one()
-    priority_setting = 1
     alerts = session.query(models.Alert).filter(models.Alert.sent == None).filter(models.Alert.priority >= priority_setting)
     for alert in alerts:
         bot.sendMessage(chat_id, alert.content)
