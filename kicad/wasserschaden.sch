@@ -36,8 +36,6 @@ F 3 "" H 2700 2250 50  0001 L CNN
 	1    2700 2250
 	-1   0    0    1   
 $EndComp
-Wire Wire Line
-	2900 2250 3000 2250
 $Comp
 L wasserschaden-cache-2018-10-17-20-35-24:Screw_Terminal_01x02 J1
 U 1 1 5B2A6B15
@@ -137,8 +135,6 @@ NoConn ~ 4500 2050
 NoConn ~ 4500 1950
 NoConn ~ 4500 1850
 Wire Wire Line
-	2650 2750 2700 2750
-Wire Wire Line
 	2600 2450 2600 2750
 Text Notes 2100 2800 0    60   ~ 0
 +\n-
@@ -184,24 +180,24 @@ $EndComp
 $Comp
 L wasserschaden-cache-2018-10-17-20-35-24:R R1
 U 1 1 5B2A7CB0
-P 2850 2100
-F 0 "R1" V 2930 2100 50  0000 C CNN
-F 1 "20K" V 2850 2100 50  0000 C CNN
-F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 2780 2100 50  0001 C CNN
-F 3 "" H 2850 2100 50  0001 C CNN
-	1    2850 2100
-	1    0    0    -1  
+P 3000 2400
+F 0 "R1" V 3080 2400 50  0000 C CNN
+F 1 "20K" V 3000 2400 50  0000 C CNN
+F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 2930 2400 50  0001 C CNN
+F 3 "" H 3000 2400 50  0001 C CNN
+	1    3000 2400
+	-1   0    0    1   
 $EndComp
 $Comp
 L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR08
 U 1 1 5B2A7CE4
-P 2850 1950
-F 0 "#PWR08" H 2850 1700 50  0001 C CNN
-F 1 "GND" H 2850 1800 50  0000 C CNN
-F 2 "" H 2850 1950 50  0001 C CNN
-F 3 "" H 2850 1950 50  0001 C CNN
-	1    2850 1950
-	-1   0    0    1   
+P 3000 2550
+F 0 "#PWR08" H 3000 2300 50  0001 C CNN
+F 1 "GND" H 3000 2400 50  0000 C CNN
+F 2 "" H 3000 2550 50  0001 C CNN
+F 3 "" H 3000 2550 50  0001 C CNN
+	1    3000 2550
+	0    -1   -1   0   
 $EndComp
 $Comp
 L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR09
@@ -249,8 +245,6 @@ F 3 "" H 3000 1050 50  0001 C CNN
 	1    3000 1050
 	-1   0    0    1   
 $EndComp
-Wire Wire Line
-	3000 1650 3000 2250
 Connection ~ 3000 2250
 $Comp
 L wasserschaden-cache-2018-10-17-20-35-24:LED D3
@@ -333,8 +327,6 @@ F 3 "" H 4950 1750 50  0001 C CNN
 	1    4950 1750
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	4950 1750 4950 3050
 $Comp
 L Jumper:SolderJumper_2_Open JP1
 U 1 1 5BCFAE3F
@@ -362,12 +354,6 @@ NoConn ~ 6200 -3400
 NoConn ~ 6800 -3300
 NoConn ~ 4500 2150
 Connection ~ 2450 2650
-Connection ~ 2700 2750
-Connection ~ 2900 2250
-Wire Wire Line
-	2900 2250 2850 2250
-Wire Wire Line
-	2700 2750 2900 2750
 Wire Wire Line
 	3100 2150 3500 2150
 Wire Wire Line
@@ -378,58 +364,73 @@ Wire Wire Line
 	3200 2050 3200 1700
 Wire Wire Line
 	3200 1700 3450 1700
-Wire Wire Line
-	3450 1700 3450 1200
 $Comp
 L wasserschaden-cache-2018-10-17-20-35-24:Screw_Terminal_01x02 J3
 U 1 1 5BE7342F
-P 3950 900
-F 0 "J3" H 3950 1000 50  0000 C CNN
-F 1 "sense" V 4050 900 50  0000 C CNN
-F 2 "Connectors_Terminal_Blocks:TerminalBlock_Altech_AK300-2_P5.00mm" H 3950 900 50  0001 C CNN
-F 3 "" H 3950 900 50  0001 C CNN
-	1    3950 900 
+P 3950 800
+F 0 "J3" H 3950 900 50  0000 C CNN
+F 1 "sense" V 4050 800 50  0000 C CNN
+F 2 "Connectors_Terminal_Blocks:TerminalBlock_Altech_AK300-2_P5.00mm" H 3950 800 50  0001 C CNN
+F 3 "" H 3950 800 50  0001 C CNN
+	1    3950 800 
 	0    -1   -1   0   
 $EndComp
-$Comp
-L Device:Jumper_NC_Dual JP2
-U 1 1 5BE73632
-P 4400 1150
-F 0 "JP2" V 4354 1252 50  0000 L CNN
-F 1 "sense jumper" V 4445 1252 50  0000 L CNN
-F 2 "" H 4400 1150 50  0001 C CNN
-F 3 "~" H 4400 1150 50  0001 C CNN
-	1    4400 1150
-	0    1    1    0   
-$EndComp
 Wire Wire Line
-	3450 1200 3950 1200
+	3450 1100 3950 1100
 Wire Wire Line
-	4050 1150 4300 1150
-$Comp
-L power:+3.3V #PWR0101
-U 1 1 5BE747AE
-P 4400 900
-F 0 "#PWR0101" H 4400 750 50  0001 C CNN
-F 1 "+3.3V" H 4415 1073 50  0000 C CNN
-F 2 "" H 4400 900 50  0001 C CNN
-F 3 "" H 4400 900 50  0001 C CNN
-	1    4400 900 
-	1    0    0    -1  
-$EndComp
+	4050 1050 4300 1050
 $Comp
 L power:GND #PWR0102
 U 1 1 5BE7483F
-P 4400 1400
-F 0 "#PWR0102" H 4400 1150 50  0001 C CNN
-F 1 "GND" H 4405 1227 50  0000 C CNN
-F 2 "" H 4400 1400 50  0001 C CNN
-F 3 "" H 4400 1400 50  0001 C CNN
-	1    4400 1400
+P 4300 1050
+F 0 "#PWR0102" H 4300 800 50  0001 C CNN
+F 1 "GND" H 4305 877 50  0000 C CNN
+F 2 "" H 4300 1050 50  0001 C CNN
+F 3 "" H 4300 1050 50  0001 C CNN
+	1    4300 1050
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3950 1100 3950 1200
+	3950 1000 3950 1100
 Wire Wire Line
-	4050 1150 4050 1100
+	4050 1050 4050 1000
+$Comp
+L Device:R R5
+U 1 1 5BE92986
+P 3950 1250
+F 0 "R5" H 4020 1296 50  0000 L CNN
+F 1 "R" H 4020 1205 50  0000 L CNN
+F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal" V 3880 1250 50  0001 C CNN
+F 3 "~" H 3950 1250 50  0001 C CNN
+	1    3950 1250
+	1    0    0    -1  
+$EndComp
+Connection ~ 3950 1100
+Wire Wire Line
+	3450 1100 3450 1700
+$Comp
+L power:+3.3V #PWR0101
+U 1 1 5BE93467
+P 3950 1400
+F 0 "#PWR0101" H 3950 1250 50  0001 C CNN
+F 1 "+3.3V" V 3965 1528 50  0000 L CNN
+F 2 "" H 3950 1400 50  0001 C CNN
+F 3 "" H 3950 1400 50  0001 C CNN
+	1    3950 1400
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	2450 2750 2600 2750
+Wire Wire Line
+	2700 2750 2600 2750
+Connection ~ 2600 2750
+Wire Wire Line
+	3000 1650 3000 2250
+Wire Wire Line
+	3000 2250 2900 2250
+Wire Wire Line
+	4950 1750 4950 2000
+Connection ~ 4950 2000
+Wire Wire Line
+	4950 2000 4950 3050
 $EndSCHEMATC
