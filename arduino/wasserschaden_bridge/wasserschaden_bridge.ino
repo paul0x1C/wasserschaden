@@ -57,10 +57,8 @@ void setup() {
   pinMode(MESH_RX_LED, OUTPUT);
   Serial.begin(115200);
   digitalWrite(POWER_LED, HIGH);
-  mesh.setDebugMsgTypes( ERROR | STARTUP | CONNECTION );  // set before init() so that you can see startup messages
+  mesh.setDebugMsgTypes( ERROR | STARTUP | CONNECTION );
 
-  // Channel set to 6. Make sure to use the same channel for your mesh and for you other
-  // network (STATION_SSID)
   mesh.init( MESH_PREFIX, MESH_PASSWORD, MESH_PORT, WIFI_AP_STA, 1);
   mesh.onReceive(&receivedCallback);
 
@@ -167,6 +165,10 @@ void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
     {
       //Serial.println( mesh.subConnectionJson().c_str());
       mqttClient.publish(from_gateway.c_str(), mesh.subConnectionJson().c_str());
+    }else if(msg == "ping")
+    {
+      Serial.println("ping recived, sending pong");
+      mqttClient.publish(from_gateway.c_str(), "pong");
     }
   }
   else if (targetStr == "broadcast")
