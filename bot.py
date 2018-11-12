@@ -66,6 +66,7 @@ def button(bot, update, session):
     data = update.callback_query.data
     data = data.split('|')
     from_chat_id = update.callback_query.message.chat_id
+    message_id = update.callback_query.message.message_id
     if chat_id == from_chat_id:
         if data[0] == "H":
             house = session.query(models.House).filter(models.House.id == int(data[1])).first()
@@ -82,7 +83,7 @@ def button(bot, update, session):
                 keyboard.append([InlineKeyboardButton("floor %s" % floor.level, callback_data = "F|%s" % floor.id)])
             keyboard.append([InlineKeyboardButton("boradcast ping", callback_data = "Hp|%s" % house.id)])
             reply_markup = InlineKeyboardMarkup(keyboard)
-            bot.sendMessage(chat_id, msg, reply_markup=reply_markup)
+            bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg, reply_markup=reply_markup)
         elif data[0] == "F":
             floor = session.query(models.Floor).filter(models.Floor.id == int(data[1])).first()
             keyboard = []
@@ -90,9 +91,9 @@ def button(bot, update, session):
             msg += "\nflats:"
             for flat in floor.flats:
                 keyboard.append([InlineKeyboardButton(flat.name, callback_data = "f|%s" % flat.id)])
-            keyboard.append([InlineKeyboardButton("<back", callback_data = "H|%s" % floor.house.id)])
+            keyboard.append([InlineKeyboardButton("🔙", callback_data = "H|%s" % floor.house.id)])
             reply_markup = InlineKeyboardMarkup(keyboard)
-            bot.sendMessage(chat_id, msg, reply_markup=reply_markup)
+            bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg, reply_markup=reply_markup)
         elif data[0] == "f":
             flat = session.query(models.Flat).filter(models.Flat.id == int(data[1])).first()
             keyboard = []
@@ -101,20 +102,20 @@ def button(bot, update, session):
             keyboard.append([InlineKeyboardButton("use for new nodes", callback_data="u|%s" % flat.id)])
             for node in flat.nodes:
                 keyboard.append([InlineKeyboardButton("node %s" % node.id, callback_data = "N|%s" % node.id)])
-            keyboard.append([InlineKeyboardButton("<back", callback_data = "F|%s" % flat.floor.id)])
+            keyboard.append([InlineKeyboardButton("🔙", callback_data = "F|%s" % flat.floor.id)])
             reply_markup = InlineKeyboardMarkup(keyboard)
-            bot.sendMessage(chat_id, msg, reply_markup=reply_markup)
+            bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg, reply_markup=reply_markup)
         elif data[0] == "N":
             node = session.query(models.Node).filter(models.Node.id == int(data[1])).one()
             msg = str(node)
             msg += "\n" + node.connection_state.name
             msg += "\n" + node.physical_state.name
             keyboard = []
-            keyboard.append([InlineKeyboardButton("reload", callback_data = "N|%s" % node.id)])
+            keyboard.append([InlineKeyboardButton("reload " + now().strftime("%a %d.%m. %H:%M:%S"), callback_data = "N|%s" % node.id)])
             keyboard.append([InlineKeyboardButton("ping", callback_data = "Np|%s" % node.id)])
-            keyboard.append([InlineKeyboardButton("<back", callback_data = "f|%s" % node.flat.id)])
+            keyboard.append([InlineKeyboardButton("🔙", callback_data = "f|%s" % node.flat.id)])
             reply_markup = InlineKeyboardMarkup(keyboard)
-            bot.sendMessage(chat_id, msg, reply_markup=reply_markup)
+            bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg, reply_markup=reply_markup)
         elif data[0] == "Np":
             node = session.query(models.Node).filter(models.Node.id == int(data[1])).one()
             node.ping()
