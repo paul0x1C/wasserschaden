@@ -29,7 +29,7 @@ class House(Base):
     last_flush = Column(DateTime)
     adress = Column(String(100))
     mqtt_topic = Column(String(100))
-    gateway_state = Column(Boolean)
+    gateway_state = Column(Integer)
     gateway_updated = Column(DateTime)
     new_node_flat_id = Column(Integer, ForeignKey('flats.id'))
     new_node_flat = relationship("Flat", foreign_keys=[new_node_flat_id], backref="new_node_houses")

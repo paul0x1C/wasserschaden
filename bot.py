@@ -2,14 +2,13 @@
 from telegram import *
 from telegram.ext import *
 
-from key import key
+from key import api_key, chat_id
 from db import models, wrapper
 from actions import *
 
 import logging
 
 db_connect = wrapper.db_connect
-chat_id = -255683761
 
 system_module = SystemModule(3, "telegram_bot")
 system_module.update(1)
@@ -19,6 +18,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 logger = logging.getLogger(__name__)
 
+priority_emojis = ["", "ℹ","❓","❗","‼","⁉","🔥"]
 
 def access_conrol(func):
     def inner(*args, **kwargs):
@@ -122,10 +122,13 @@ def button(bot, update, session):
 def send_alerts(bot, job, session):
     system_module.update(1)
     priority_setting = session.query(models.Setting.state).filter(models.Setting.id == 1).one()
-    alerts = session.query(models.Alert).filter(models.Alert.sent == None).filter(models.Alert.priority >= priority_setting)
-    for alert in alerts:
-        bot.sendMessage(chat_id, alert.content)
-        alert.sent = now()
+    alerts = session.query(models.Alert).filter(models.Alert.priority >= priority_setting)
+    if alerts.count() > 0:
+        alert_msg = ""
+        for alert in alerts:
+            alert_msg += "\n"+ priority_emojis[alert.priority] + ": " + alert.content
+            session.delete(alert)
+        bot.sendMessage(chat_id, alert_msg)
 
 
 def error(bot, update, error):
@@ -133,7 +136,7 @@ def error(bot, update, error):
     logger.warning('Update "%s" caused error "%s"', update, error)
 
 def main():
-    updater = Updater(key) # located in key.py
+    updater = Updater(api_key) # located in key.py
 
     dp = updater.dispatcher
 

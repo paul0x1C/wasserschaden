@@ -38,13 +38,23 @@ def on_message(mqttc, obj, msg, session):
         house.gateway_updated = now()
         if from_node == "gateway":
             if payload == "dead":
-                house.gateway_state = False
+                house.gateway_state = 2
                 logger.info("gateway '%s' went offline" % bridge)
-            elif payload == "Ready!":
-                house.gateway_state = True
-                logger.info("gateway for %s is ready" % house)
+                add_alert("gateway in {} went offline".format(house), 2)
+            else:
+                if house.gateway_state == 2:
+                    logger.info("gateway in {} is back online".format(house))
+                    add_alert("gateway in {} is back online".format(house), 2)
+                elif house.gateway_state == 3:
+                    logger.info("gateway in {} is back online".format(house))
+                    add_alert("gateway in {} is back online".format(house), 3)
+                house.gateway_state = 1
+                if payload == "Ready!":
+                    logger.info("gateway for %s is ready" % house)
+                elif payload == "pong":
+                    logger.info("gateway for %s reponded to ping" % house)
         else:
-            house.gateway_state = True
+            house.gateway_state = 1
             from_node = int(from_node) # must be a node, and node ids are int
             if session.query(models.Node).filter(models.Node.id == from_node).count() > 0: # check if node exists
                 node = session.query(models.Node).filter(models.Node.id == from_node).one()

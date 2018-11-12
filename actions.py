@@ -54,4 +54,7 @@ def broadcast_ping(gateway_topic, session):
     house = session.query(models.House).filter(models.House.mqtt_topic == gateway_topic).one()
     for node in house.nodes:
         node.set_connection_state(2)
-    os.system("""mosquitto_pub -t "%s/to/broadcast" -m ping """ % (gateway_topic))
+    send_mqtt_msg("{}/to/broadcast".format(gateway_topic), "ping")
+
+def send_mqtt_msg(topic, payload):
+    os.system("""mosquitto_pub -t "{}" -m "{}" """.format(topic, payload))
