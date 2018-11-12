@@ -126,8 +126,11 @@ def send_alerts(bot, job, session):
     if alerts.count() > 0:
         alert_msg = ""
         for alert in alerts:
-            alert_msg += "\n"+ priority_emojis[alert.priority] + ": " + alert.content
+            alert_msg += "\n{} {}".format(priority_emojis[alert.priority], alert.content)
             session.delete(alert)
+        while len(alert_msg) > 3000:
+            bot.sendMessage(chat_id, alert_msg[:3000])
+            alert_msg = alert_msg[3000:]
         bot.sendMessage(chat_id, alert_msg)
 
 
