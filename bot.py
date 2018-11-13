@@ -18,7 +18,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 logger = logging.getLogger(__name__)
 
-priority_emojis = ["", "ℹ","❓","❗","‼","⁉","🔥"]
+priority_emojis = ["", "ℹ","❔","❓","⚠️","❌","🔥","☄️","💥","📉"]
 
 def access_conrol(func):
     def inner(*args, **kwargs):
@@ -56,7 +56,11 @@ def set_priority(bot, update):
     try:
         priority = int(last_char)
     except:
-        update.message.reply_text("please provide an Integer")
+        keyboard = []
+        for priority in range(1,10):
+            keyboard.append([InlineKeyboardButton("{} {}".format(priority, priority_emojis[priority]), callback_data = "p|%s" % priority)])
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        bot.sendMessage(chat_id=chat_id, text="select priority", reply_markup=reply_markup)
     else:
         set_setting(1, priority)
         update.message.reply_text("priority set to %i" % priority)
@@ -68,7 +72,7 @@ def button(bot, update, session):
     from_chat_id = update.callback_query.message.chat_id
     message_id = update.callback_query.message.message_id
     if chat_id == from_chat_id:
-        if data[0] == "H":
+        if data[0] == "H": # house info
             house = session.query(models.House).filter(models.House.id == int(data[1])).first()
             keyboard = []
             msg = house.name
@@ -84,7 +88,7 @@ def button(bot, update, session):
             keyboard.append([InlineKeyboardButton("boradcast ping", callback_data = "Hp|%s" % house.id)])
             reply_markup = InlineKeyboardMarkup(keyboard)
             bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg, reply_markup=reply_markup)
-        elif data[0] == "F":
+        elif data[0] == "F": # floor info
             floor = session.query(models.Floor).filter(models.Floor.id == int(data[1])).first()
             keyboard = []
             msg = "Floor %s in house '%s'" % (floor.level, floor.house.name)
@@ -94,7 +98,7 @@ def button(bot, update, session):
             keyboard.append([InlineKeyboardButton("🔙", callback_data = "H|%s" % floor.house.id)])
             reply_markup = InlineKeyboardMarkup(keyboard)
             bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg, reply_markup=reply_markup)
-        elif data[0] == "f":
+        elif data[0] == "f": # flat info
             flat = session.query(models.Flat).filter(models.Flat.id == int(data[1])).first()
             keyboard = []
             msg = "Flat '%s' on floor %s in house '%s'" % (flat.name, flat.floor.level, flat.floor.house.name)
@@ -116,17 +120,26 @@ def button(bot, update, session):
             keyboard.append([InlineKeyboardButton("🔙", callback_data = "f|%s" % node.flat.id)])
             reply_markup = InlineKeyboardMarkup(keyboard)
             bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg, reply_markup=reply_markup)
-        elif data[0] == "Np":
+        elif data[0] == "Np": # ping node
             node = session.query(models.Node).filter(models.Node.id == int(data[1])).one()
             node.ping()
             bot.sendMessage(chat_id, "pinged node")
-        elif data[0] == "Hp":
+        elif data[0] == "Hp": # ping whole house
             house = session.query(models.House).filter(models.House.id == int(data[1])).one()
             broadcast_ping(house.mqtt_topic)
             bot.sendMessage(chat_id, "broadcasting ping")
-        elif data[0] == "u":
+        elif data[0] == "u": # set flat for new nodes
             set_new_node_flat(int(data[1]))
             bot.sendMessage(chat_id, "Okay")
+        elif data[0] == "p": # set priority
+            set_setting(1, int(data[1]))
+            msg = "alert priority set to {}".format(data[1])
+            bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg)
+
+@db_connect
+@access_conrol
+def module_status():
+    pass
 
 @db_connect
 def send_alerts(bot, job, session):
@@ -151,11 +164,13 @@ def send_alerts(bot, job, session):
                 alert_msg += "\n({}x) {}".format(entry[0], entry[1])
             else:
                 alert_msg += "\n{}".format(entry[1])
-        while len(alert_msg) > 3000:
-            bot.sendMessage(chat_id, alert_msg[:3000])
-            alert_msg = alert_msg[3000:]
-        bot.sendMessage(chat_id, alert_msg)
+        send(bot, alert_msg)
 
+def send(bot, text):
+    while len(text) > 3000:
+        bot.sendMessage(chat_id, text[:3000])
+        text = text[3000:]
+    bot.sendMessage(chat_id, text)
 
 def error(bot, update, error):
     """Log Errors caused by Updates."""
