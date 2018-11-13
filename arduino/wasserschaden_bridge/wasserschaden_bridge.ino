@@ -41,12 +41,6 @@ Task reconnect(1000, TASK_FOREVER, &mqttConnect);
 Task mqtt_blink(50, 1, &mqtt_led_off);
 Task mesh_blink(50, 1, &mesh_led_off);
 
-char* convert_for_mqtt(int input) {
-  String pubString = String(input);
-  pubString.toCharArray(message_buff, pubString.length() + 1);
-  return message_buff;
-}
-
 void setup() {
   ESP.wdtEnable(5000);
   pinMode(POWER_LED, OUTPUT);
@@ -184,7 +178,8 @@ void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
     }
     else
     {
-      mqttClient.publish(from_gateway.c_str(), "Client not connected!");
+      String pubtopic = String(MQTT_TOPIC)+"/from/" + targetStr;
+      mqttClient.publish(pubtopic.c_str(), "not connected");
     }
   }
   mqtt_blink.enable();
