@@ -20,9 +20,9 @@
     <p>
       {{ house.name }}
       <select name='flat_id'>
+        <option value="" selected>-</option>
         {% for floor in house.floors %}
           {% for flat in floor.flats %}
-            <option value="">-</option>
             <option value="{{ flat.id }}">{{ floor.level }} {{ flat.name }}</option>
           {% endfor %}
         {% endfor %}
@@ -30,8 +30,8 @@
       <input type='hidden' name='action' value='move'>
       <input type='hidden' name='node_id' value='{{ node.id }}'>
       <input type='submit' value='move'>
-    </form>
     </p>
+    </form>
     {% endfor %}
 </div>
 
