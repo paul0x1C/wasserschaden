@@ -15,7 +15,7 @@
 #define HOSTNAME "MQTT_Bridge"
 
 // Prototypes
-void receivedCallback( const uint32_t &from, const String &msg );
+void receivedCallback(uint32_t from, String msg );
 void mqttCallback(char* topic, byte* payload, unsigned int length);
 void mqttConnect();
 void mqtt_led_off();
@@ -23,6 +23,7 @@ void mesh_led_off();
 
 char* message_buff;
 
+String msg_ping = "ping";
 const String from_gateway = String(MQTT_TOPIC)+"/from/gateway";
 
 IPAddress getlocalIP();
@@ -135,12 +136,15 @@ void loop() {
   userScheduler.execute();
 }
 
-void receivedCallback( const uint32_t &from, const String &msg ) {
+void receivedCallback(uint32_t from, String msg ) {
   digitalWrite(MESH_RX_LED, HIGH);
   Serial.printf("bridge: Received from %u msg=%s\n", from, msg.c_str());
   String topic = String(MQTT_TOPIC)+"/from/" + String(from);
   mqttClient.publish(topic.c_str(), msg.c_str());
   mesh_blink.enable();
+  if(msg == "con|0"){
+    mesh.sendSingle(from, msg_ping);
+  }
 }
 
 void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
