@@ -1,10 +1,15 @@
-#include "painlessMesh.h"2
+#include "painlessMesh.h"
 #include "settings.cpp" //contains definition of MESH_PREFIX and MESH_PASSWORD
-const int flushTime = 120000;
+const int flushTime = 150000;
 const int valve_pin = D1;
 const int status_pin = D2;
 const int opened_value = HIGH;
 const int closed_value = LOW;
+
+//timeouts for actions when no bridge is found
+const int ping_timeout = 30000;
+const int reset_timeout = 60000;
+boolean con_resent = false;
 
 String msg_open = "opening valve";
 String msg_close = "closing valve";
@@ -16,7 +21,9 @@ boolean first_time_adjust = true;
 
 boolean is_open = false;
 
-uint32_t bridge;
+uint32_t bridge = 0;
+
+long running_since;
 
 Scheduler userScheduler;
 painlessMesh  mesh;
@@ -39,6 +46,7 @@ void receivedCallback( uint32_t from, String &msg ) {
     Serial.println("Received close message");
     close_valve();
   }else if(msg == "ping"){
+    bridge = from;
     mesh.sendSingle(from, msg_ping + "|" + is_open);
     pingBlink.enable();
   }
@@ -96,7 +104,7 @@ void close_valve(){
   is_open = false;
 }
 void setup() {
-  //ESP.wdtEnable(5000);
+  ESP.wdtEnable(5000);
   close_valve();
   Serial.begin(115200);
 
@@ -115,10 +123,19 @@ void setup() {
   pinMode(valve_pin, OUTPUT);
   pingBlink.setIterations(2);
   pingBlink.enable();
+  running_since = millis();
 }
 
 void loop() {
   //ESP.wdtFeed();
   userScheduler.execute();
   mesh.update();
+  if(bridge == 0){
+    if(millis() - running_since > reset_timeout){
+      ESP.reset();
+    }else if(millis() - running_since > ping_timeout and !con_resent){
+      mesh.sendBroadcast(msg_connected + "|" + is_open);
+      con_resent = true;
+    }
+  }
 }

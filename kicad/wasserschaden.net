@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /home/paul/gits/wasserschaden/kicad/wasserschaden.sch)
-    (date "Mo 12 Nov 2018 07:58:22 CET")
+    (date "Mo 12 Nov 2018 14:11:43 CET")
     (tool "Eeschema 5.0.1")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
