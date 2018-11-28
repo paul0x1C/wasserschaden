@@ -144,9 +144,27 @@ class Node(Base):
     def send_mqtt_msg(self, msg):
         os.system("""mosquitto_pub -t "%s/to/%s" -m "%s" """ % (self.house.mqtt_topic, self.id, msg))
 
-    def ping(self):
-        self.set_connection_state(2)
+    def ping(self, set_connection_state = True):
+        if set_connection_state:
+            self.set_connection_state(2)
         self.send_mqtt_msg("ping")
+
+    @db_connect
+    def average_response_time(self, session):
+        reports = session.query(Report).filter(Report.node_id == self.id).order_by(Report.id.desc()).limit(100)
+        response_times = []
+        last_report = None
+        for report in reports:
+            if last_report == None:
+                last_report = report
+            elif report.physical_state_id == 2:
+                if last_report.physical_state_id == 3:
+                    response_times.append((last_report.time - report.time).total_seconds())
+            elif last_report.physical_state_id == 3:
+                if report.physical_state_id == 4:
+                    response_times.append((last_report.time - report.time).total_seconds())
+            last_report = report
+        return sum(response_times)/len(response_times)
 
     def __repr__(self):
         return "<Node id=%i>" % (self.id)
