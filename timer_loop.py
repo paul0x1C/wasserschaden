@@ -58,7 +58,8 @@ def check_houses(session):
         if house.locked and (now() - house.locked_since).seconds > 150: # check if house is locked for a too long time
             house.unlock()
             log("Lock for house {} timed out!".format(house), 3, 2)
-
+        if not house.gateway_updated:
+            house.gateway_updated = datetime.datetime(1,1,1)
         last_gateway_change = (now() - house.gateway_updated).seconds
         if last_gateway_change > 60: # ping gateway if it has not send anything for longer than 60s
             send_mqtt_msg(house.mqtt_topic + "/to/gateway", "ping")
