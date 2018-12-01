@@ -5,15 +5,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from db import wrapper
 db_connect = wrapper.db_connect
 from . import connection
+from actions import log, logger
 
-import datetime, logging, os
+import datetime, os
 
 def now():
     return datetime.datetime.now()
-
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 Base = declarative_base()
 
@@ -104,7 +101,7 @@ class Node(Base):
         self.physical_state_id = state_id
         if update_time:
             self.last_physical_change = now()
-        logger.info("Set physical_state of node %s to %s" % (self, state_id))
+        log("Set physical_state of node {} to {}".format(self, state_id), 2)
         report = Report(node_id = self.id, physical_state_id = state_id, time = now())
         session.add(report)
 
@@ -122,7 +119,7 @@ class Node(Base):
         #     session.add(alert)
         self.connection_attemps = 0
         self.connection_state_id = state_id
-        logger.info("Set connection_state of node %s to %s" % (self, state_id))
+        log("Set connection_state of {} to {}".format(self, state_id), 2)
 
     def close_valve(self):
         self.set_physical_state(4)

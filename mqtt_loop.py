@@ -1,16 +1,11 @@
 ## -*- coding: utf-8 -*-
 
 import paho.mqtt.client as mqtt
-import time, logging, datetime
+import time, datetime
 from db import models
 from db import wrapper
 from actions import *
-
 db_connect = wrapper.db_connect
-
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 system_module = SystemModule(2, "mqtt_loop")
 system_module.update(1)
@@ -22,7 +17,7 @@ def on_connect(client, userdata, flags, rc):
 
 def on_disconnect(client, userdata, rc):
     if rc != 0:
-        logger.warning("Unexpected MQTT disconnection. Will auto-reconnect")
+        log("Unexpected MQTT disconnection. Will auto-reconnect.", 3, 2)
 
 @db_connect
 def on_message(mqttc, obj, msg, session):
@@ -33,26 +28,23 @@ def on_message(mqttc, obj, msg, session):
     try:
         house = session.query(models.House).filter(models.House.mqtt_topic == bridge).one()
     except: # bridge not known
-        logger.warning("Got message from not matching bridge '%s'" % bridge)
+        log("Got message from not matching bridge '{}'".format(bridge), 3)
     else: # bridge known
         house.gateway_updated = now()
         if from_node == "gateway":
             if payload == "dead":
                 house.gateway_state = 2
-                logger.info("gateway '%s' went offline" % bridge)
-                add_alert("gateway in {} went offline".format(house), 2)
+                log("gateway in {} went offline".format(house), 3, 2)
             else:
                 if house.gateway_state == 2:
-                    logger.info("gateway in {} is back online".format(house))
-                    add_alert("gateway in {} is back online".format(house), 2)
+                    log("gateway in {} is back online".format(house), 2,2)
                 elif house.gateway_state == 3:
-                    logger.info("gateway in {} is back online".format(house))
-                    add_alert("gateway in {} is back online".format(house), 3)
+                    log("gateway in {} is back online".format(house), 2, 3)
                 house.gateway_state = 1
                 if payload == "Ready!":
-                    logger.info("gateway for %s is ready" % house)
+                    log("gateway for {} is ready".format(house), 2)
                 elif payload == "pong":
-                    logger.info("gateway for %s reponded to ping" % house)
+                    log("gateway for {} reponded to ping".format(house), 2)
         else:
             house.gateway_state = 1
             from_node = int(from_node) # must be a node, and node ids are int
@@ -92,11 +84,10 @@ def on_message(mqttc, obj, msg, session):
                                         last_connection_attempt = now(),
                                         house_id = flat.floor.house_id
                                     )
-                    logger.info("New node %s connect for the first time, adding to flat %s in house %s" % (new_node, flat, new_node.house))
                     session.add(new_node)
-                    add_alert("Node %s connected for the first time! Addded to flat '%s'" % (from_node, flat.name), priority = 2)
+                    log("Node {} connected for the first time! Addded to flat '{}'".format(from_node, flat.name), 2, 1)
                 else:
-                    logger.warn("Couldn't add node %s because new_node_flat for %s is not set" % (from_node, house))
+                    log("Couldn't add node {} because new_node_flat for {} is not set".format(from_node, house), 3, 2)
 
 
 def on_log(client, userdata, level, buff):

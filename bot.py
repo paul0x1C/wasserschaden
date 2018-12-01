@@ -26,7 +26,7 @@ def access_conrol(func):
             return func(*args, **kwargs)
         else:
             args[1].message.reply_text('nope')
-            logger.warning("Blocked acces for %s" % args[1].message.from_user)
+            log("Blocked acces for {}".format(args[1].message.from_user), 3, 0)
     return inner
 
 @access_conrol
@@ -174,7 +174,7 @@ def send(bot, text):
 
 def error(bot, update, error):
     """Log Errors caused by Updates."""
-    logger.warning('Update "%s" caused error "%s"', update, error)
+    log('Update "{}" caused error "{}"'.format(update, error), 3, 0)
 
 def main():
     updater = Updater(api_key) # located in key.py

@@ -5,7 +5,7 @@ from db import models, wrapper
 
 db_connect = wrapper.db_connect
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -26,6 +26,18 @@ class SystemModule():
         module.updated = now()
         module.status = status
 
+def log(text, logger_level = 0, alert_priority = 0):
+    if logger_level == 1:
+        logger.debug(text)
+    elif logger_level == 2:
+        logger.info(text)
+    elif logger_level == 3:
+        logger.warning(text)
+    elif logger_level == 4:
+        logger.error(text)
+    if alert_priority:
+        add_alert(text, alert_priority)
+
 @db_connect
 def add_alert(alert_text, priority, session):
     alert = models.Alert(content = alert_text, added = now(), priority = priority)
@@ -36,12 +48,12 @@ def set_new_node_flat(flat_id, session):
     flat = session.query(models.Flat).filter(models.Flat.id == flat_id).one()
     house = flat.floor.house
     house.new_node_flat = flat
-    logger.info("Using flat %s ('%s') for new nodes in house %s ('%s')" % (flat.id, flat.name, house.id, house.name))
+    log("Using flat {} ('{}') for new nodes in house {} ('{}')".format(flat.id, flat.name, house.id, house.name), 2, 0)
 
 @db_connect
 def set_setting(setting_id, state, session):
     setting = session.query(models.Setting).filter(models.Setting.id == setting_id)
-    logger.info("Setting setting %s to %s" % (setting_id, state))
+    log("Setting setting {} to {}".format(setting_id, state), 2, 0)
     if setting.count() > 0:
         setting = setting.first()
         setting.state = int(state)
