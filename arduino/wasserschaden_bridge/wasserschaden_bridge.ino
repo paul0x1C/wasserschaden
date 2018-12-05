@@ -14,6 +14,8 @@
 #define   MESH_PORT       5555
 #define HOSTNAME "MQTT_Bridge"
 
+int leds[6] = {POWER_LED, WLAN_LED, MESH_LED, MESH_RX_LED, MQTT_LED, MQTT_RX_LED,};
+
 // Prototypes
 void receivedCallback(uint32_t from, String msg );
 void mqttCallback(char* topic, byte* payload, unsigned int length);
@@ -50,6 +52,11 @@ void setup() {
   pinMode(MQTT_LED, OUTPUT);
   pinMode(MQTT_RX_LED, OUTPUT);
   pinMode(MESH_RX_LED, OUTPUT);
+  for(int i = 0; i < 6; i++){
+    digitalWrite(leds[i], HIGH);
+    delay(100);
+    digitalWrite(leds[i], LOW);
+  }
   Serial.begin(115200);
   digitalWrite(POWER_LED, HIGH);
   mesh.setDebugMsgTypes( ERROR | STARTUP | CONNECTION );
