@@ -29,7 +29,7 @@ def process_queue(session):
     log("checking que", 1, 0)
     houses = session.query(models.House)
     for house in houses:
-        if not house.locked:
+        if house.gateway_state == 0 and not house.locked:
             for q in house.queue:
                 if q.node.open_valve():
                     session.delete(q)
@@ -70,7 +70,7 @@ def check_houses(session):
             else:
                 if last_gateway_change > 3600 and house.gateway_state == 2: # higher priority alert after 1h
                     house.gateway_state = 3
-                    log("gateway in {} is not responding since an hour".format(house), 3, 2)
+                    log("gateway in {} is not responding since an hour".format(house), 3, 3)
 
 
 
