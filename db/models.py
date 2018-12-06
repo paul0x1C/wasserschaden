@@ -134,6 +134,7 @@ class Node(Base):
                 house.lock()
                 self.set_physical_state(2)
                 self.send_mqtt_msg("open")
+                session.commit()
                 logger.info("Sending open command to node %s" % self)
                 return True
         return False
