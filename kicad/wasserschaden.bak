@@ -438,7 +438,7 @@ U 1 1 5C092FAF
 P 4950 1050
 F 0 "U3" V 4676 1050 50  0000 C CNN
 F 1 "DS18B20" V 4600 1050 50  0000 C CNN
-F 2 "Package_TO_SOT_THT:TO-92_Inline" H 3950 800 50  0001 C CNN
+F 2 "custom:temperature_sensor" H 3950 800 50  0001 C CNN
 F 3 "http://datasheets.maximintegrated.com/en/ds/DS18B20.pdf" H 4800 1300 50  0001 C CNN
 	1    4950 1050
 	0    1    -1   0   
