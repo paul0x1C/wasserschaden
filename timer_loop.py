@@ -29,11 +29,14 @@ def process_queue(session):
     log("checking que", 1, 0)
     houses = session.query(models.House)
     for house in houses:
-        if house.gateway_state == 0 and not house.locked:
+        log("checking {}".format(house), 1, 0)
+        if house.gateway_state == 1 and not house.locked:
             for q in house.queue:
                 if q.node.open_valve():
                     session.delete(q)
                     break;
+                else:
+                    log("couldn't open {}".format(q.node), 1, 0)
     log("done checking que", 1, 0)
 
 @db_connect

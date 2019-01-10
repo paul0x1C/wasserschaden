@@ -84,6 +84,11 @@ class Node(Base):
     last_connection_attempt = Column(DateTime)
     physical_attemps = Column(Integer)
     connection_attemps = Column(Integer)
+    sense = Column(Boolean)
+    sense_update = Column(DateTime)
+    has_sense_pin = Column(Boolean)
+    last_temperature_update = Column(DateTime)
+    has_temperature_sensor = Column(Boolean)
     reported_offline = Column(Boolean)
 
 
@@ -94,6 +99,20 @@ class Node(Base):
     def add_connection_attempt(self):
         self.last_connection_attempt = now()
         self.connection_attemps += 1
+
+    @db_connect
+    def add_temperature(self, value, session):
+        if value == -127.0:
+            self.has_temperature_sensor = False
+        else:
+            self.has_temperature_sensor = True
+            entry = Temperature(
+                node = self,
+                value = value,
+                time = now()
+            )
+            session.add(entry)
+        self.last_temperature_update = now()
 
     @db_connect
     def set_physical_state(self, state_id, session, update_time = True):
@@ -208,6 +227,14 @@ class Queue(Base):
     house_id = Column(Integer, ForeignKey('houses.id'))
     house = relationship("House", foreign_keys=[house_id], backref="queue")
     added = Column(DateTime)
+
+class Temperature(Base):
+    __tablename__ = 'temperatures'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    node_id = Column(BigInteger, ForeignKey('nodes.id'))
+    node = relationship("Node", foreign_keys=[node_id], backref="temperatures")
+    time = Column(DateTime)
+    value = Column(Float)
 
 class Module(Base):
     __tablename__ = 'modules'

@@ -1,0 +1,13 @@
+backend -> node
+"ping" - "pong"
+"open" - "opening"
+"close" - "closing"
+"temp" - "24.2"
+"sense" - "0"|"1"
+"state" - "opened"|"closed"
+
+node -> bridge
+"online" - "welcome"
+
+bridge <-> ndoe
+"welcome" - "okay"
