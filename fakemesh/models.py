@@ -8,20 +8,20 @@ class Node:
         self.connected = False
     def handle_msg(self, msg):
         if msg == "ping":
-            self.gateway.send(self.id, "pong|" + str(int(self.open)))
+            self.gateway.send(self.id, "pong")
             print("opening", self.id)
         elif msg == "open":
             self.open = True
-            self.gateway.send(self.id, "opening valve")
+            self.gateway.send(self.id, "opening")
         elif msg == "close":
             self.open = False
-            self.gateway.send(self.id, "closing valve")
+            self.gateway.send(self.id, "closing")
             print("closing", self.id)
         else:
             print("not handeling", msg)
     def connect(self):
         self.connected = True
-        self.gateway.send(self.id, "con|" + str(int(self.open)))
+        self.gateway.send(self.id, "online")
 
 class Group:
     # generates random nodes
@@ -52,6 +52,8 @@ class Gateway:
         if to == "broadcast":
             for node in self.nodes:
                 node.handle_msg(msg)
+        elif to == "gateway":
+            self.send("gateway","pong")
         else:
             node_id = int(to)
             try:
