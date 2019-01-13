@@ -64,8 +64,16 @@ def check_houses(session):
         if not house.gateway_updated:
             house.gateway_updated = datetime.datetime(1,1,1)
         last_gateway_change = (now() - house.gateway_updated).seconds
+        """
+        gateway_state meanings:
+        1: online (-> send pings when last message is older then 60s every 60s)
+        2: offline since >90s (-> send ping every 100s)
+        3: offline since >1h (-> send ping every 140s)
+        """
         if last_gateway_change > 60: # ping gateway if it has not send anything for longer than 60s
-            send_mqtt_msg(house.mqtt_topic + "/to/gateway", "ping")
+            if (now() - house.gateway_last_attempt).seconds > (20 + (40 * (house.gateway_state))): # send ping less often, depening on how long the node is disconnected
+                send_mqtt_msg(house.mqtt_topic + "/to/gateway", "ping")
+                house.gateway_last_attempt = now()
             if house.gateway_state == 1:
                 if last_gateway_change > 90: # set gateway to disconnected when it's not responding for >90s
                     house.gateway_state = 2

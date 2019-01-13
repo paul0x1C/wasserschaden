@@ -26,7 +26,9 @@ def overview(session):
             interval = int(request.form.get('interval')),
             duration = int(request.form.get('duration')),
             locked = False,
-            locked_since = now()
+            locked_since = now(),
+            gateway_last_attempt = now(),
+            gateway_state = 0
         )
         content += "added house"
         session.add(house)
