@@ -1,8 +1,14 @@
 #include "painlessMesh.h"
+
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
 #include "settings.cpp" //contains definition of MESH_PREFIX and MESH_PASSWORD
+
 const int flushTime = 150000;
 const int valve_pin = D1;
 const int status_pin = D2;
+const int sense_pin = D3;
 const int opened_value = HIGH;
 const int closed_value = LOW;
 
@@ -11,19 +17,22 @@ const int ping_timeout = 30000;
 const int reset_timeout = 60000;
 boolean con_resent = false;
 
-String msg_open = "opening valve";
-String msg_close = "closing valve";
-String msg_connected = "con";
+String msg_open = "opening";
+String msg_close = "closing";
+String msg_connected = "online";
 String msg_ping = "pong";
+String msg_sense = "sense";
 
 boolean blink_state = false;
 boolean first_time_adjust = true;
-
 boolean is_open = false;
 
 uint32_t bridge = 0;
 
 long running_since;
+
+OneWire oneWire(sense_pin);
+DallasTemperature sensors(&oneWire);
 
 Scheduler userScheduler;
 painlessMesh  mesh;
@@ -47,9 +56,21 @@ void receivedCallback( uint32_t from, String &msg ) {
     close_valve();
   }else if(msg == "ping"){
     bridge = from;
-    mesh.sendSingle(from, msg_ping + "|" + is_open);
+    mesh.sendSingle(from, msg_ping);
     pingBlink.enable();
-  }
+  }else if(msg == "temp"){
+    bridge = from;
+    sensors.requestTemperatures();
+    mesh.sendSingle(from, "t:" + String(sensors.getTempCByIndex(0)));
+  }else if(msg == "sense"){
+    bridge = from;
+    mesh.sendSingle(from, "s:" + String(sense_water()));
+  }else if(msg == "state"){
+    bridge = from;
+    mesh.sendSingle(from, "v:" + String(is_open));
+  }else if(msg == "welcome"){
+    bridge = from;
+  } 
 }
 void blink(){
   if (pingBlink.isLastIteration()){
@@ -75,7 +96,7 @@ void changedConnectionCallback() {
 void nodeTimeAdjustedCallback(int32_t offset) {
     Serial.printf("Adjusted time %u. Offset = %d\n", mesh.getNodeTime(),offset);
     if(first_time_adjust){
-      mesh.sendBroadcast(msg_connected + "|" + is_open);
+      mesh.sendBroadcast(msg_connected);
       first_time_adjust = false;
     }
 }
@@ -104,37 +125,42 @@ void close_valve(){
   is_open = false;
 }
 void setup() {
-  ESP.wdtEnable(5000);
   close_valve();
   Serial.begin(115200);
-
-//mesh.setDebugMsgTypes( ERROR | MESH_STATUS | CONNECTION | SYNC | COMMUNICATION | GENERAL | MSG_TYPES | REMOTE ); // all types on
+  
   mesh.setDebugMsgTypes( ERROR | STARTUP ); 
-
+  
   mesh.init( MESH_PREFIX, MESH_PASSWORD, &userScheduler, 5555 ); //defined in extra file thats not on github
+  mesh.setContainsRoot();
   mesh.onReceive(&receivedCallback);
   mesh.onNewConnection(&newConnectionCallback);
   mesh.onChangedConnections(&changedConnectionCallback);
   mesh.onNodeTimeAdjusted(&nodeTimeAdjustedCallback);
 
+  sensors.begin();
+  
   userScheduler.addTask( closeValveTask );
   userScheduler.addTask( pingBlink );
   pinMode(status_pin, OUTPUT);
   pinMode(valve_pin, OUTPUT);
+  pinMode(sense_pin, INPUT);
   pingBlink.setIterations(2);
   pingBlink.enable();
   running_since = millis();
 }
 
+boolean sense_water(){
+  return !digitalRead(sense_pin);
+}
+
 void loop() {
-  //ESP.wdtFeed();
   userScheduler.execute();
   mesh.update();
   if(bridge == 0){
     if(millis() - running_since > reset_timeout){
       ESP.reset();
     }else if(millis() - running_since > ping_timeout and !con_resent){
-      mesh.sendBroadcast(msg_connected + "|" + is_open);
+      mesh.sendBroadcast(msg_connected);
       con_resent = true;
     }
   }
