@@ -26,6 +26,8 @@ void mesh_led_off();
 char* message_buff;
 
 String msg_ping = "ping";
+String msg_welcome = "welcome";
+
 const String from_gateway = String(MQTT_TOPIC)+"/from/gateway";
 
 IPAddress getlocalIP();
@@ -59,6 +61,7 @@ void setup() {
   }
   Serial.begin(115200);
   digitalWrite(POWER_LED, HIGH);
+  mesh.setRoot();
   mesh.setDebugMsgTypes( ERROR | STARTUP | CONNECTION );
 
   mesh.init( MESH_PREFIX, MESH_PASSWORD, MESH_PORT, WIFI_AP_STA, 1);
@@ -149,8 +152,8 @@ void receivedCallback(uint32_t from, String msg ) {
   String topic = String(MQTT_TOPIC)+"/from/" + String(from);
   mqttClient.publish(topic.c_str(), msg.c_str());
   mesh_blink.enable();
-  if(msg == "con|0"){
-    mesh.sendSingle(from, msg_ping);
+  if(msg == "online"){
+    mesh.sendSingle(from, msg_welcome);
   }
 }
 
@@ -176,7 +179,7 @@ void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
       mqttClient.publish(from_gateway.c_str(), "pong");
     }
   }
-  else if (targetStr == "broadcast")
+   else if(targetStr == "broadcast") 
   {
     mesh.sendBroadcast(msg);
   }
@@ -190,7 +193,7 @@ void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
     else
     {
       String pubtopic = String(MQTT_TOPIC)+"/from/" + targetStr;
-      mqttClient.publish(pubtopic.c_str(), "not connected");
+      mqttClient.publish(pubtopic.c_str(), "offline");
     }
   }
   mqtt_blink.enable();
