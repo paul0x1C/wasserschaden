@@ -36,10 +36,9 @@ def on_message(mqttc, obj, msg, session):
                 house.gateway_state = 2
                 log("gateway in {} went offline".format(house), 3, 2)
             else:
-                if house.gateway_state == 2:
-                    log("gateway in {} is back online".format(house), 2,2)
-                elif house.gateway_state == 3:
-                    log("gateway in {} is back online".format(house), 2, 3)
+                if houses.gateway_state > 1:
+                    log("gateway in {} is back online, broadcasting ping".format(house), 2, house.gateway_state) # send alert depending on alert state (see timer_loop>check_houses)
+                    broadcast_ping(house.gateway_topic)
                 house.gateway_state = 1
                 if payload == "Ready!":
                     log("gateway for {} is ready".format(house), 2)
