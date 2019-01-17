@@ -5,9 +5,9 @@ from db import models, wrapper
 db_connect = wrapper.db_connect
 
 connection_states = [
-    (1, "connected", "#19ff00"),
+    (1, "online", "#19ff00"),
     (2, "waiting for ping", "#FF00CC"),
-    (3, "disconnected", "#FF3300"),
+    (3, "offline", "#FF3300"),
 ]
 
 physical_states = [
