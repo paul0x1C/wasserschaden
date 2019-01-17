@@ -2,15 +2,11 @@ from sqlalchemy import *
 from sqlalchemy.orm import *
 from sqlalchemy.ext.declarative import declarative_base
 
-from db import wrapper
-db_connect = wrapper.db_connect
+from db.wrapper import *
 from . import connection
-from actions import log, logger
+from actions import log, logger, now
 
 import datetime, os
-
-def now():
-    return datetime.datetime.now()
 
 Base = declarative_base()
 
@@ -23,16 +19,16 @@ class House(Base):
     gps = Column(String(50))
     interval = Column(Integer)
     duration = Column(Integer)
-    last_flush = Column(DateTime)
+    last_flush = Column(UTCDateTime, default = now())
     adress = Column(String(100))
     mqtt_topic = Column(String(100))
     gateway_state = Column(Integer)
-    gateway_updated = Column(DateTime)
-    gateway_last_attempt = Column(DateTime)
+    gateway_updated = Column(UTCDateTime, default = now())
+    gateway_last_attempt = Column(UTCDateTime, default = now())
     new_node_flat_id = Column(Integer, ForeignKey('flats.id'))
     new_node_flat = relationship("Flat", foreign_keys=[new_node_flat_id], backref="new_node_houses")
     locked = Column(Boolean)
-    locked_since = Column(DateTime)
+    locked_since = Column(UTCDateTime, default = now())
 
     # @db_connect
     def lock(self):
@@ -79,16 +75,16 @@ class Node(Base):
     connection_state = relationship("ConnectionState", foreign_keys=[connection_state_id], backref="nodes")
     physical_state_id = Column(Integer, ForeignKey('physical_states.id'))
     physical_state = relationship("PhysicalState", foreign_keys=[physical_state_id], backref="nodes")
-    last_physical_change = Column(DateTime)
-    last_connection_change = Column(DateTime)
-    last_physical_attempt = Column(DateTime)
-    last_connection_attempt = Column(DateTime)
+    last_physical_change = Column(UTCDateTime, default = now())
+    last_connection_change = Column(UTCDateTime, default = now())
+    last_physical_attempt = Column(UTCDateTime, default = now())
+    last_connection_attempt = Column(UTCDateTime, default = now())
     physical_attemps = Column(Integer)
     connection_attemps = Column(Integer)
     sense = Column(Boolean)
-    sense_update = Column(DateTime)
+    sense_update = Column(UTCDateTime, default = now())
     has_sense_pin = Column(Boolean)
-    last_temperature_update = Column(DateTime)
+    last_temperature_update = Column(UTCDateTime, default = now())
     has_temperature_sensor = Column(Boolean)
     reported_offline = Column(Boolean)
 
@@ -103,16 +99,15 @@ class Node(Base):
 
     @db_connect
     def add_temperature(self, value, session):
-        if value == -127.0:
-            self.has_temperature_sensor = False
-        else:
-            self.has_temperature_sensor = True
+        if not value == -127.0:
             entry = Temperature(
-                node = self,
+                node_id = self.id,
                 value = value,
                 time = now()
             )
             session.add(entry)
+            session.commit()
+            log("stored temperature {} for {}".format(value, self), 1)
         self.last_temperature_update = now()
 
     @db_connect
@@ -194,14 +189,14 @@ class Report(Base):
     node = relationship("Node", foreign_keys=[node_id], backref="reports")
     physical_state_id = Column(Integer, ForeignKey('physical_states.id'))
     physical_state = relationship("PhysicalState", foreign_keys=[physical_state_id], backref="reports")
-    time = Column(DateTime)
+    time = Column(UTCDateTime, default = now())
 
 class Alert(Base):
     __tablename__ = 'alerts'
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     priority = Column(Integer)
-    added = Column(DateTime)
-    sent = Column(DateTime)
+    added = Column(UTCDateTime, default = now())
+    sent = Column(UTCDateTime, default = now())
     content = Column(Text(50000))
 
 class PhysicalState(Base):
@@ -227,20 +222,20 @@ class Queue(Base):
     node = relationship("Node", foreign_keys=[node_id], backref="queue")
     house_id = Column(Integer, ForeignKey('houses.id'))
     house = relationship("House", foreign_keys=[house_id], backref="queue")
-    added = Column(DateTime)
+    added = Column(UTCDateTime, default = now())
 
 class Temperature(Base):
     __tablename__ = 'temperatures'
     id = Column(Integer, primary_key=True, autoincrement=True)
     node_id = Column(BigInteger, ForeignKey('nodes.id'))
     node = relationship("Node", foreign_keys=[node_id], backref="temperatures")
-    time = Column(DateTime)
+    time = Column(UTCDateTime, default = now())
     value = Column(Float)
 
 class Module(Base):
     __tablename__ = 'modules'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    updated = Column(DateTime)
+    updated = Column(UTCDateTime, default = now())
     status = Column(Integer)
     name = Column(String(50))
 

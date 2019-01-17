@@ -10,7 +10,7 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
 logger = logging.getLogger(__name__)
 
 def now():
-    return datetime.datetime.now()
+    return datetime.datetime.now().astimezone()
 
 class SystemModule():
     @db_connect
