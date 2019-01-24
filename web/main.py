@@ -81,6 +81,7 @@ def node_info(session):
     elif request.form.get('action') == "move":
         node = session.query(models.Node).filter(models.Node.id == node_id).first()
         node.flat_id = int(request.form.get('flat_id'))
+        node.house_id = node.flat.floor.house.id
     node = session.query(models.Node).filter(models.Node.id == node_id).first()
     houses = session.query(models.House)
     reports = node.reports[-20:]
@@ -204,6 +205,8 @@ def delete_node(node, session):
         session.delete(report)
     for que in node.queue:
         session.delete(que)
+    for temperature in node.temperatures:
+        session.delete(temperature)
     session.delete(node)
 
 @db_connect
