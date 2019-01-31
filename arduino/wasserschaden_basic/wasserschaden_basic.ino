@@ -9,6 +9,7 @@ const int flushTime = 150000;
 const int valve_pin = D1;
 const int status_pin = D2;
 const int sense_pin = D3;
+const int temperature_pin = D7;
 const int opened_value = HIGH;
 const int closed_value = LOW;
 
@@ -31,7 +32,7 @@ uint32_t bridge = 0;
 
 long running_since;
 
-OneWire oneWire(sense_pin);
+OneWire oneWire(temperature_pin);
 DallasTemperature sensors(&oneWire);
 
 Scheduler userScheduler;
