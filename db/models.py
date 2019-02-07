@@ -30,13 +30,10 @@ class House(Base):
     locked = Column(Boolean)
     locked_since = Column(UTCDateTime, default = now())
 
-    # @db_connect
     def lock(self):
-        # house = session.query(House).filter(House.id == self.id).one()
         self.locked = True
         self.locked_since = now()
 
-    # @db_connect
     def unlock(self):
         self.locked = False
 
@@ -79,9 +76,9 @@ class Node(Base):
     last_connection_change = Column(UTCDateTime, default = now())
     last_physical_attempt = Column(UTCDateTime, default = now())
     last_connection_attempt = Column(UTCDateTime, default = now())
-    physical_attemps = Column(Integer)
-    connection_attemps = Column(Integer)
-    sense = Column(Boolean)
+    physical_attemps = Column(Integer) # counts the attempts that were made to close/open the valve
+    connection_attemps = Column(Integer) # counts the ping attempts
+    sense = Column(Boolean) # True if the node detects water
     sense_update = Column(UTCDateTime, default = now())
     has_sense_pin = Column(Boolean)
     last_temperature_update = Column(UTCDateTime, default = now())
@@ -99,15 +96,18 @@ class Node(Base):
 
     @db_connect
     def add_temperature(self, value, session):
-        if not value == -127.0:
+        if not value == -127.0: # -127.0 is sent, when there is no sensor
             entry = Temperature(
                 node_id = self.id,
                 value = value,
                 time = now()
             )
+            self.has_temperature_sensor = True
             session.add(entry)
             session.commit()
             log("stored temperature {} for {}".format(value, self), 1)
+        elif self.has_temperature_sensor:
+            log("{} sent temperature -127°C but should have a sensor", 3, 2)
         self.last_temperature_update = now()
 
     @db_connect
@@ -152,7 +152,7 @@ class Node(Base):
                 session.commit()
                 logger.info("Sending open command to node %s" % self)
                 return True
-        return False
+        return False # return False when there was no 'open' command sent
 
     def send_mqtt_msg(self, msg):
         os.system("""mosquitto_pub -t "%s/to/%s" -m "%s" """ % (self.house.mqtt_topic, self.id, msg))
@@ -182,7 +182,7 @@ class Node(Base):
     def __repr__(self):
         return "<Node id=%i>" % (self.id)
 
-class Report(Base):
+class Report(Base): # logs physical_states of nodes
     __tablename__ = 'reports'
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     node_id = Column(BigInteger, ForeignKey('nodes.id'))
@@ -191,7 +191,7 @@ class Report(Base):
     physical_state = relationship("PhysicalState", foreign_keys=[physical_state_id], backref="reports")
     time = Column(UTCDateTime, default = now())
 
-class Alert(Base):
+class Alert(Base): # messages to be sent to telegram group
     __tablename__ = 'alerts'
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     priority = Column(Integer)
@@ -232,7 +232,7 @@ class Temperature(Base):
     time = Column(UTCDateTime, default = now())
     value = Column(Float)
 
-class Module(Base):
+class Module(Base): # logs state of running python scripts
     __tablename__ = 'modules'
     id = Column(Integer, primary_key=True, autoincrement=True)
     updated = Column(UTCDateTime, default = now())

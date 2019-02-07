@@ -15,8 +15,7 @@ app = Flask(__name__)
 @app.route('/overview', methods=['GET', 'POST'])
 @db_connect
 def overview(session):
-    content = ""
-    # content += str(request.form)
+    content = "" # used for status messages
     if request.form.get('action') == "add_house":
         house = models.House(
             name = request.form.get('name'),
@@ -61,7 +60,7 @@ def overview(session):
         set_new_node_flat(int(request.form.get('flat_id')))
     houses = session.query(models.House)
     system_modules = session.query(models.Module)
-    n_nodes = session.query(models.Node).count()
+    n_nodes = session.query(models.Node).count() # number of nodes, so the js can check wether new nodes connected
     return content+render_template('overview.html',
                                     system_modules=system_modules,
                                     base_template = 'base.html',
@@ -84,7 +83,7 @@ def node_info(session):
         node.house_id = node.flat.floor.house.id
     node = session.query(models.Node).filter(models.Node.id == node_id).first()
     houses = session.query(models.House)
-    reports = node.reports[-20:]
+    reports = node.reports[-30:] # only show 30 newest reports
     reports.reverse()
     return render_template('node_info.html',
                             base_template = 'base.html',
@@ -97,7 +96,7 @@ def node_info(session):
 
 @app.route('/csv', methods=['GET'])
 @db_connect
-def csv(session):
+def csv(session): # generates csv for display in excel
     house_id = request.args.get('house_id')
     columns = []
     report_query = session.query(models.Report)
@@ -132,7 +131,7 @@ def csv(session):
 
 @app.route('/auto_update')
 @db_connect
-def auto_update(session): # returns all the self updateing stuff
+def auto_update(session): # returns all the self updateing stuff, is called every second by js
     nodes = session.query(models.Node)
     houses = session.query(models.House)
     modules = session.query(models.Module)
@@ -210,7 +209,7 @@ def delete_node(node, session):
     session.delete(node)
 
 @db_connect
-def queue_length(house, session):
+def queue_length(house, session): # returns que length for a house
     counter = 0
     queue = session.query(models.Queue)
     for que in queue:

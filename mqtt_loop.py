@@ -45,27 +45,25 @@ def on_message(mqttc, obj, msg, session):
                 elif payload == "pong":
                     log("gateway for {} reponded to ping".format(house), 2)
         else:
-            house.gateway_state = 1
+            house.gateway_state = 1 # message from node in a house implies that the gateway is still connected
             from_node = int(from_node) # must be a node, and node ids are int
-            if session.query(models.Node).filter(models.Node.id == from_node).count() > 0: # check if node exists
+            if session.query(models.Node).filter(models.Node.id == from_node).count() == 0: # check if node exists
                 node = session.query(models.Node).filter(models.Node.id == from_node).one()
                 if payload == "opening":
                     node.set_physical_state(3)
                 elif payload == "closing":
                     if node.physical_state_id == 4: # check if node should really close now
-                        node.house.unlock()
+                        node.house.unlock() # only unlock the house if node was meant to close
                     node.set_physical_state(1)
                     for listing in node.queue:
-                        session.delete(listing)
-                elif payload == "pong":
+                        session.delete(listing) # delete all queue entries for the node
+                elif payload in ["pong","online", "connected"]:
                     node.set_connection_state(1)
                 elif payload in ["dropped", "offline", "not connected"]:
                     node.set_connection_state(3)
-                elif payload == "online":
-                    node.set_connection_state(1)
-                elif ":" in payload:
-                    key = payload[0]
-                    value = payload[2:]
+                elif ":" in payload: # data is sent with ':' inbetween
+                    key = payload[0] # the cahr before the ':' specfies the data beeing sent
+                    value = payload[2:] # the payload is behind the ':'
                     if key == "t":
                         node.add_temperature(float(value))
                     elif key == "s":

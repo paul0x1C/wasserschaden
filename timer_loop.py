@@ -91,6 +91,9 @@ def check_houses(session):
 
 @db_connect
 def check_nodes(session):
+    """
+    check all nodes that are not in the default states
+    """
     nodes = session.query(models.Node).filter((models.Node.physical_state_id > 1) | (models.Node.connection_state_id > 1))
     log("checking node timeouts", 1, 0)
     for node in nodes:
