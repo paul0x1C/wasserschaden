@@ -36,9 +36,9 @@ def on_message(mqttc, obj, msg, session):
                 house.gateway_state = 2
                 log("gateway in {} went offline".format(house), 3, 2)
             else:
-                if houses.gateway_state > 1:
+                if house.gateway_state > 1:
                     log("gateway in {} is back online, broadcasting ping".format(house), 2, house.gateway_state) # send alert depending on alert state (see timer_loop>check_houses)
-                    broadcast_ping(house.gateway_topic)
+                    broadcast_ping(house.mqtt_topic)
                 house.gateway_state = 1
                 if payload == "Ready!":
                     log("gateway for {} is ready".format(house), 2)
@@ -47,7 +47,7 @@ def on_message(mqttc, obj, msg, session):
         else:
             house.gateway_state = 1 # message from node in a house implies that the gateway is still connected
             from_node = int(from_node) # must be a node, and node ids are int
-            if session.query(models.Node).filter(models.Node.id == from_node).count() == 0: # check if node exists
+            if session.query(models.Node).filter(models.Node.id == from_node).count() == 1: # check if node exists
                 node = session.query(models.Node).filter(models.Node.id == from_node).one()
                 if payload == "opening":
                     node.set_physical_state(3)
