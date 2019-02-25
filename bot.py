@@ -76,16 +76,17 @@ def button(bot, update, session):
             house = session.query(models.House).filter(models.House.id == int(data[1])).first()
             keyboard = []
             msg = house.name
-            msg += "\nInterval (s): " + str(house.interval)
-            msg += "\nDuration (s): " + str(house.duration)
-            msg += "\nLast Flush: " + str(house.last_flush)
-            msg += "\nAdress: " + str(house.adress)
-            msg += "\nNodes: " + str(len(house.nodes))
-            msg += "\nfloors:" + str(len(house.floors))
+            msg += """\nInterval (s): {}
+            Duration (s): {}
+            Last Flush: {}
+            Adress: {}
+            Nodes: {}
+            floors: {}""".format(house.interval, house.duration, house.last_flush, house.adress, len(house.nodes), len(house.floors))
             floors = session.query(models.Floor).filter(models.Floor.house_id == house.id).order_by(models.Floor.level.desc())
             for floor in floors:
                 keyboard.append([InlineKeyboardButton("floor %s" % floor.level, callback_data = "F|%s" % floor.id)])
             keyboard.append([InlineKeyboardButton("boradcast ping", callback_data = "Hp|%s" % house.id)])
+            keyboard.append([InlineKeyboardButton("node stats", callback_data = "Hs|%s" % house.id)])
             reply_markup = InlineKeyboardMarkup(keyboard)
             bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg, reply_markup=reply_markup)
         elif data[0] == "F": # floor info
@@ -128,6 +129,25 @@ def button(bot, update, session):
             house = session.query(models.House).filter(models.House.id == int(data[1])).one()
             broadcast_ping(house.mqtt_topic)
             bot.sendMessage(chat_id, "broadcasting ping")
+        elif data[0] == "Hs": # return node stats
+            house = session.query(models.House).filter(models.House.id == int(data[1])).one()
+            states = {}
+            keyboard =[]
+            msg = house.name
+            for node in house.nodes:
+                if not node.physical_state.name in states:
+                    states[node.physical_state.name] = 0
+                states[node.physical_state.name] += 1
+                if not node.connection_state.name in states:
+                    states[node.connection_state.name] = 0
+                states[node.connection_state.name] += 1
+            for state, n in states.items():
+                msg += "\n{}: {}".format(state,n)
+            keyboard.append([InlineKeyboardButton("boradcast ping", callback_data = "Hp|%s" % house.id)])
+            keyboard.append([InlineKeyboardButton("refresh", callback_data = "Hs|%s" % house.id)])
+            keyboard.append([InlineKeyboardButton("🔙", callback_data = "H|%s" % house.id)])
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg, reply_markup=reply_markup)
         elif data[0] == "u": # set flat for new nodes
             set_new_node_flat(int(data[1]))
             bot.sendMessage(chat_id, "Okay")
