@@ -45,8 +45,6 @@ def check_houses(session):
     houses = session.query(models.House)
     for house in houses:
         log("checking {}".format(house), 1, 0)
-        if house.last_flush == None: # make sure last_flush is set
-            house.last_flush = datetime.datetime(1,1,1)
 
         if (now() - house.last_flush).seconds > house.interval and not house.interval == 0: # check if house needs to be flushed
             log("Initiating new flush for {}".format(house), 2, 1)

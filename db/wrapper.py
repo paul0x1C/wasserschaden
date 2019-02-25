@@ -15,7 +15,7 @@ class UTCDateTime(types.TypeDecorator):
         if value is not None:
             return datetime(value.year, value.month, value.day,
                             value.hour, value.minute, value.second,
-                            value.microsecond).replace(tzinfo=timezone.utc)
+                            value.microsecond).replace(tzinfo=timezone.utc).astimezone()
 
 def db_connect(func):
     def inner(*args, **kwargs):
