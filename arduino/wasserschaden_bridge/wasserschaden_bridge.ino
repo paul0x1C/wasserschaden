@@ -34,7 +34,7 @@ IPAddress getlocalIP();
 
 IPAddress no_ip(0, 0, 0, 0);
 IPAddress myIP(0, 0, 0, 0);
-IPAddress mqttBroker(10, 8, 0, 1);
+IPAddress mqttBroker(6, 6, 6, 1);
 
 painlessMesh  mesh;
 WiFiClient wifiClient;
@@ -64,7 +64,7 @@ void setup() {
   mesh.setRoot();
   mesh.setDebugMsgTypes( ERROR | STARTUP | CONNECTION );
 
-  mesh.init( MESH_PREFIX, MESH_PASSWORD, MESH_PORT, WIFI_AP_STA, 1);
+  mesh.init( MESH_PREFIX, MESH_PASSWORD, MESH_PORT, WIFI_AP_STA, 4);
   mesh.onReceive(&receivedCallback);
 
   mesh.onNewConnection([](const uint32_t nodeId) {

@@ -41,6 +41,7 @@ painlessMesh  mesh;
 // User stub
 void sendMessage() ; // Prototype so PlatformIO doesn't complain
 void valve();
+void blink();
 Task closeValveTask(flushTime, 2, &valve);
 Task pingBlink(100, 6, &blink);
 
@@ -76,7 +77,7 @@ void receivedCallback( uint32_t from, String &msg ) {
 void blink(){
   if (pingBlink.isLastIteration()){
     digitalWrite(status_pin, LOW);
-    blink_state = false;
+    blink_state = true;
     pingBlink.disable();
     pingBlink.setIterations(6);
   }else{
@@ -126,12 +127,13 @@ void close_valve(){
   is_open = false;
 }
 void setup() {
+  ESP.wdtEnable(5000);
   close_valve();
   Serial.begin(115200);
   
   mesh.setDebugMsgTypes( ERROR | STARTUP ); 
   
-  mesh.init( MESH_PREFIX, MESH_PASSWORD, &userScheduler, 5555 ); //defined in extra file thats not on github
+  mesh.init( MESH_PREFIX, MESH_PASSWORD, &userScheduler, 5555, WIFI_AP_STA, 4); //defined in extra file thats not on github
   mesh.setContainsRoot();
   mesh.onReceive(&receivedCallback);
   mesh.onNewConnection(&newConnectionCallback);
@@ -155,6 +157,7 @@ boolean sense_water(){
 }
 
 void loop() {
+  ESP.wdtFeed();
   userScheduler.execute();
   mesh.update();
   if(bridge == 0){
