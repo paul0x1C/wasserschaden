@@ -76,7 +76,8 @@ def button(bot, update, session):
             house = session.query(models.House).filter(models.House.id == int(data[1])).first()
             keyboard = []
             msg = house.name
-            msg += """\nInterval (s): {}
+            msg += """
+            \nInterval (s): {}
             Duration (s): {}
             Last Flush: {}
             Adress: {}
