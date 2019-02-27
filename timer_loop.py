@@ -30,9 +30,11 @@ def poll_temperatures(session):
     nodes = session.query(models.Node).filter(models.Node.has_temperature_sensor)
     interval = session.query(models.Setting).filter(models.Setting.id == 2).one().state
     for node in nodes:
-        if (now() - node.last_temperature_update).seconds >= interval:
-            logger.debug("sending temp poll to {}".format(node))
-            node.send_mqtt_msg("temp")
+        if (now() - node.last_temeparture_request).seconds >= 10:
+            if (now() - node.last_temperature_update).seconds >= interval:
+                node.last_temeparture_request = now()
+                logger.debug("sending temp poll to {}".format(node))
+                node.send_mqtt_msg("temp")
 
 @db_connect
 def process_queue(session):

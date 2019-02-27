@@ -83,6 +83,7 @@ class Node(Base):
     has_sense_pin = Column(Boolean)
     last_temperature_update = Column(UTCDateTime, default = now())
     has_temperature_sensor = Column(Boolean)
+    last_temeparture_request = Column(UTCDateTime, default = now())
     reported_offline = Column(Boolean)
 
 

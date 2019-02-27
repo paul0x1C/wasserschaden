@@ -92,9 +92,11 @@ def on_message(mqttc, obj, msg, session):
                                         last_physical_attempt = now(),
                                         last_connection_attempt = now(),
                                         house_id = flat.floor.house_id,
-                                        has_temperature_sensor = True
+                                        has_temperature_sensor = False
                                     )
                     session.add(new_node)
+                    session.commit()
+                    new_node.send_mqtt_msg("temp")
                     log("Node {} connected for the first time! Addded to flat '{}'".format(from_node, flat.name), 2, 1)
                 else:
                     log("Couldn't add node {} because new_node_flat for {} is not set".format(from_node, house), 3, 2)

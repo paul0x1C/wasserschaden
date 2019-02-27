@@ -165,7 +165,7 @@ def module_status():
 @db_connect
 def send_alerts(bot, job, session):
     system_module.update(1)
-    priority_setting = session.query(models.Setting.state).filter(models.Setting.id == 1).one()
+    priority_setting = session.query(models.Setting).filter(models.Setting.id == 1).one().state
     alerts = session.query(models.Alert).filter(models.Alert.priority >= priority_setting)
     if alerts.count() > 0:
         to_send = []
