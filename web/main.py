@@ -185,6 +185,7 @@ def delete(session):
 
 
 def delete_house(house, session):
+    house.new_node_flat = None
     for floor in house.floors:
         delete_floor(floor, session)
     session.delete(house)
