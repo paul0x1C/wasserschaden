@@ -29,6 +29,7 @@ def add_states(session):
 @db_connect
 def add_settings(session):
     setting = models.Setting(id = 1, state = 0, name = "telegram message priority level")
+    setting = models.Setting(id = 2, state = 60, name = "tempearture interval")
     session.add(setting)
 
 add_states()

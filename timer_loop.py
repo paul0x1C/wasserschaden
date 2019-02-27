@@ -19,10 +19,20 @@ def loop():
             check_nodes()
             process_queue()
             check_houses()
+            poll_temperatures()
         except:
             e = traceback.format_exc()
             logger.error(e)
             add_alert("Exception in timer loop!", 5)
+
+@db_connect
+def poll_temperatures(session):
+    nodes = session.query(models.Node).filter(models.Node.has_temperature_sensor)
+    interval = session.query(models.Setting).filter(models.Setting.id == 2).one().state
+    for node in nodes:
+        if (now() - node.last_temperature_update).seconds >= interval:
+            logger.debug("sending temp poll to {}".format(node))
+            node.send_mqtt_msg("temp")
 
 @db_connect
 def process_queue(session):
