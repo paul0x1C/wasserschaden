@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /home/paul/gits/wasserschaden/kicad/wasserschaden_smd.sch)
-    (date "Fr 08 Feb 2019 14:30:33 CET")
+    (date "Mo 18 Mär 2019 22:20:23 CET")
     (tool "Eeschema 5.0.1")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -23,7 +23,7 @@
       (tstamp 5B26FC39))
     (comp (ref IRFZ44N1)
       (value " ")
-      (footprint custom:irlz44n)
+      (footprint custom:irlz44n_vertical)
       (libsource (lib wasserschaden-cache-2018-10-17-20-35-24) (part 2N7000) (description ""))
       (sheetpath (names /) (tstamps /))
       (tstamp 5B2A69C6))
@@ -41,7 +41,7 @@
       (tstamp 5B2A6B9D))
     (comp (ref D1)
       (value " ")
-      (footprint Diodes_THT:D_A-405_P7.62mm_Horizontal)
+      (footprint Diodes_SMD:D_SMA_Handsoldering)
       (libsource (lib wasserschaden-cache-2018-10-17-20-35-24) (part D) (description ""))
       (sheetpath (names /) (tstamps /))
       (tstamp 5B2A6D63))

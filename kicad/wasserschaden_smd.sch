@@ -1,4 +1,5 @@
 EESchema Schematic File Version 4
+LIBS:wasserschaden_smd-cache
 EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
@@ -30,7 +31,7 @@ U 1 1 5B2A69C6
 P 2700 2250
 F 0 "IRFZ44N1" H 2950 2250 50  0000 L CNN
 F 1 " " H 2900 2250 50  0000 L CNN
-F 2 "custom:irlz44n" H 2900 2175 50  0001 L CIN
+F 2 "custom:irlz44n_vertical" H 2900 2175 50  0001 L CIN
 F 3 "" H 2700 2250 50  0001 L CNN
 	1    2700 2250
 	-1   0    0    1   
@@ -96,7 +97,7 @@ U 1 1 5B2A6D63
 P 2850 2750
 F 0 "D1" H 2850 2850 50  0000 C CNN
 F 1 " " H 2950 2850 50  0000 C CNN
-F 2 "Diodes_THT:D_A-405_P7.62mm_Horizontal" H 2850 2750 50  0001 C CNN
+F 2 "Diodes_SMD:D_SMA_Handsoldering" H 2850 2750 50  0001 C CNN
 F 3 "" H 2850 2750 50  0001 C CNN
 	1    2850 2750
 	-1   0    0    1   
