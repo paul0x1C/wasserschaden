@@ -56,7 +56,7 @@ def overview(session):
         broadcast_ping(request.form.get('gateway_topic'))
     elif request.form.get('action') == "reset_temp_sensor_status":
         content += "reset temperature sensor status"
-        house_id = int(request.form.get('house_id')))
+        house_id = int(request.form.get('house_id'))
         house = session.query(models.House).filter(models.House.id == house_id).one()
         house.reset_temp_sensor_status()
     elif request.form.get('action') == "set_setting":

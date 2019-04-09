@@ -40,7 +40,7 @@ class House(Base):
     def reset_temp_sensor_status(self):
         log("Reseting temperature sensor status", 2)
         for node in self.nodes:
-            node.has_temperature_sensor = False
+            node.has_temperature_sensor = True
 
     def __repr__(self):
         return "<House id=%i, name='%s'>" % (self.id, self.name)
