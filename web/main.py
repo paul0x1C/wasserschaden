@@ -54,6 +54,11 @@ def overview(session):
     elif request.form.get('action') == "broadcast_ping":
         content += "broadcast_ping"
         broadcast_ping(request.form.get('gateway_topic'))
+    elif request.form.get('action') == "reset_temp_sensor_status":
+        content += "reset temperature sensor status"
+        house_id = int(request.form.get('house_id')))
+        house = session.query(models.House).filter(models.House.id == house_id).one()
+        house.reset_temp_sensor_status()
     elif request.form.get('action') == "set_setting":
         set_setting(int(request.form.get('setting')), int(request.form.get('value')))
     elif request.form.get('action') == "set_new_node_flat":

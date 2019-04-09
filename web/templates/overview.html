@@ -47,6 +47,11 @@
                   <input type='hidden' name='gateway_topic' value='{{ house.mqtt_topic }}'>
                   <input type='submit' value='broadcast ping' class='add'>
                 </form>
+                <form method='post'>
+                  <input type='hidden' value='reset_temp_sensor_status' name='action'>
+                  <input type='hidden' name='house_id' value='{{ house.id }}'>
+                  <input type='submit' value='reset T sensors' class='clear'>
+                </form>
               </p>
               <p>
                 <form method='post'>
