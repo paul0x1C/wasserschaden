@@ -2,7 +2,7 @@ from models import *
 import time, random
 import paho.mqtt.client as mqtt
 
-mqtt_server = "10.8.0.1" # use your ip/hostname here
+mqtt_server = "mqtt.booth" # use your ip/hostname here
 c = mqtt.Client("python-fakemesh", clean_session = False)
 
 def generate_send_func(c, topic):
@@ -17,7 +17,8 @@ def on_message(mqttc, obj, msg):
     payload = msg.payload.decode()
     topic = msg.topic
     gateway = topic.split('/')[0]
-    gateways[gateway].handle_msg(topic, payload)
+    if gateway in gateways:
+        gateways[gateway].handle_msg(topic, payload)
 
 c.connect(mqtt_server, 1883)
 c.on_message = on_message;
