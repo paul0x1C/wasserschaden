@@ -34,13 +34,13 @@ module valve(){
          }
      }
 }
-translate([0,0,-out_thread_h]);
+translate([0,0,-out_thread_h])valve();
 c_x = 30;
 c_y = 24;
 c_z = 20;
 difference(){
     translate([-c_x/2,-c_y+6,0])
-    cube([c_x,c_y,c_z]);
+   color([1,0,0],0.8) cube([c_x,c_y,c_z]);
     translate([0,0,-out_thread_h])
     valve();
     
