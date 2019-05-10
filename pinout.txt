@@ -1,0 +1,4 @@
+D1 GPIO5: valve (HIGH == OPEN) (20K PULLDOWN)
+D2 GIPO4: info LED (HIGH == ON)
+D3 GIPO0: sense (green screw terminal) (330R PULLUP)
+D7 GIPO13: one wire temperature sensor (4K7 PULLUP)
