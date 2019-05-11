@@ -1,6 +1,6 @@
 EESchema Schematic File Version 4
 LIBS:wasserschaden-cache
-EELAYER 26 0
+EELAYER 29 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -131,7 +131,6 @@ NoConn ~ 3500 1950
 NoConn ~ 3500 2350
 NoConn ~ 3500 2450
 NoConn ~ 4500 2350
-NoConn ~ 4500 2050
 NoConn ~ 4500 1850
 Wire Wire Line
 	2600 2450 2600 2750
@@ -357,12 +356,6 @@ Wire Wire Line
 	3100 2150 3500 2150
 Wire Wire Line
 	3000 2250 3500 2250
-Wire Wire Line
-	3500 2050 3200 2050
-Wire Wire Line
-	3200 2050 3200 1700
-Wire Wire Line
-	3200 1700 3450 1700
 $Comp
 L wasserschaden-cache-2018-10-17-20-35-24:Screw_Terminal_01x02 J3
 U 1 1 5BE7342F
@@ -374,8 +367,6 @@ F 3 "" H 3950 800 50  0001 C CNN
 	1    3950 800 
 	0    -1   -1   0   
 $EndComp
-Wire Wire Line
-	3450 1100 3950 1100
 Wire Wire Line
 	4050 1050 4300 1050
 $Comp
@@ -404,9 +395,6 @@ F 3 "~" H 3950 1250 50  0001 C CNN
 	1    3950 1250
 	1    0    0    -1  
 $EndComp
-Connection ~ 3950 1100
-Wire Wire Line
-	3450 1100 3450 1700
 $Comp
 L power:+3.3V #PWR0101
 U 1 1 5BE93467
@@ -486,4 +474,16 @@ Wire Wire Line
 Wire Wire Line
 	4550 750  4950 750 
 Connection ~ 4950 750 
+NoConn ~ 3500 2050
+Wire Wire Line
+	4500 2050 4650 2050
+Wire Wire Line
+	4650 2050 4650 1450
+Wire Wire Line
+	4650 1450 3550 1450
+Wire Wire Line
+	3550 1450 3550 1000
+Wire Wire Line
+	3550 1000 3950 1000
+Connection ~ 3950 1000
 $EndSCHEMATC
