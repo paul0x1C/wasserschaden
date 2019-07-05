@@ -30,6 +30,8 @@ String msg_welcome = "welcome";
 
 const String from_gateway = String(MQTT_TOPIC)+"/from/gateway";
 
+unsigned long last_msg;
+
 IPAddress getlocalIP();
 
 IPAddress no_ip(0, 0, 0, 0);
@@ -59,6 +61,7 @@ void setup() {
     delay(100);
     digitalWrite(leds[i], LOW);
   }
+  last_msg = millis();
   Serial.begin(115200);
   digitalWrite(POWER_LED, HIGH);
   mesh.setRoot();
@@ -124,7 +127,12 @@ void mesh_led_off() {
 }
 
 void loop() {
-  ESP.wdtFeed();
+  if(millis() < last_msg){ //reset last_msg when millis overflows every ~50 days
+    last_msg = millis();
+  }
+  else if(millis() - last_msg > 1800000) { // half an hour
+    ESP.reset(); //reset the esp when the last mqtt message was received to long ago
+  }
   mesh.update();
   mqttClient.loop();
 
@@ -158,6 +166,7 @@ void receivedCallback(uint32_t from, String msg ) {
 }
 
 void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
+  last_msg = millis();
   digitalWrite(MQTT_RX_LED, HIGH);
   char* cleanPayload = (char*)malloc(length + 1);
   payload[length] = '\0';
