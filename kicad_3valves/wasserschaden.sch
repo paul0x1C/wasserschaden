@@ -15,10 +15,10 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:WeMos_mini U?
+L wasserschaden-cache-2018-10-17-20-35-24:WeMos_mini U2
 U 1 1 5B26FC39
 P 4000 2100
-F 0 "U?" H 4000 2600 60  0000 C CNN
+F 0 "U2" H 4000 2600 60  0000 C CNN
 F 1 "WeMos_mini" H 4000 1600 60  0000 C CNN
 F 2 "custom:wemos" H 4550 1400 60  0001 C CNN
 F 3 "" H 4550 1400 60  0000 C CNN
@@ -26,10 +26,10 @@ F 3 "" H 4550 1400 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:2N7000 IRFZ44N?
+L wasserschaden-cache-2018-10-17-20-35-24:2N7000 IRFZ44N1
 U 1 1 5B2A69C6
 P 2700 2250
-F 0 "IRFZ44N?" H 2950 2250 50  0000 L CNN
+F 0 "IRFZ44N1" H 2950 2250 50  0000 L CNN
 F 1 " " H 2900 2250 50  0000 L CNN
 F 2 "custom:irlz44n_vertical" H 2900 2175 50  0001 L CIN
 F 3 "" H 2700 2250 50  0001 L CNN
@@ -37,32 +37,32 @@ F 3 "" H 2700 2250 50  0001 L CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:Screw_Terminal_01x02 J?
+L wasserschaden-cache-2018-10-17-20-35-24:Screw_Terminal_01x02 J1
 U 1 1 5B2A6B15
 P 2250 2750
-F 0 "J?" H 2250 2850 50  0000 C CNN
+F 0 "J1" H 2250 2850 50  0000 C CNN
 F 1 "v1 out" H 2600 2700 50  0000 C CNN
-F 2 "Connectors_Terminal_Blocks:TerminalBlock_Altech_AK300-2_P5.00mm" H 2250 2750 50  0001 C CNN
+F 2 "custom:termina_2pin" H 2250 2750 50  0001 C CNN
 F 3 "" H 2250 2750 50  0001 C CNN
 	1    2250 2750
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:Screw_Terminal_01x02 J?
+L wasserschaden-cache-2018-10-17-20-35-24:Screw_Terminal_01x02 J2
 U 1 1 5B2A6B9D
 P 2450 3200
-F 0 "J?" H 2450 3300 50  0000 C CNN
+F 0 "J2" H 2450 3300 50  0000 C CNN
 F 1 "12V in" H 2750 3150 50  0000 C CNN
-F 2 "Connectors_Terminal_Blocks:TerminalBlock_Altech_AK300-2_P5.00mm" H 2450 3200 50  0001 C CNN
+F 2 "custom:termina_2pin" H 2450 3200 50  0001 C CNN
 F 3 "" H 2450 3200 50  0001 C CNN
 	1    2450 3200
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR0101
 U 1 1 5B2A6BE6
 P 2650 3200
-F 0 "#PWR?" H 2650 2950 50  0001 C CNN
+F 0 "#PWR0101" H 2650 2950 50  0001 C CNN
 F 1 "GND" H 2650 3050 50  0000 C CNN
 F 2 "" H 2650 3200 50  0001 C CNN
 F 3 "" H 2650 3200 50  0001 C CNN
@@ -70,10 +70,10 @@ F 3 "" H 2650 3200 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR0102
 U 1 1 5B2A6C2A
 P 3500 1850
-F 0 "#PWR?" H 3500 1600 50  0001 C CNN
+F 0 "#PWR0102" H 3500 1600 50  0001 C CNN
 F 1 "GND" H 3500 1700 50  0000 C CNN
 F 2 "" H 3500 1850 50  0001 C CNN
 F 3 "" H 3500 1850 50  0001 C CNN
@@ -81,10 +81,10 @@ F 3 "" H 3500 1850 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR0103
 U 1 1 5B2A6C5A
 P 2600 2050
-F 0 "#PWR?" H 2600 1800 50  0001 C CNN
+F 0 "#PWR0103" H 2600 1800 50  0001 C CNN
 F 1 "GND" H 2600 1900 50  0000 C CNN
 F 2 "" H 2600 2050 50  0001 C CNN
 F 3 "" H 2600 2050 50  0001 C CNN
@@ -92,10 +92,10 @@ F 3 "" H 2600 2050 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:D D?
+L wasserschaden-cache-2018-10-17-20-35-24:D D5
 U 1 1 5B2A6D63
 P 2850 2750
-F 0 "D?" H 2850 2850 50  0000 C CNN
+F 0 "D5" H 2850 2850 50  0000 C CNN
 F 1 " " H 2950 2850 50  0000 C CNN
 F 2 "Diodes_SMD:D_SMA_Handsoldering" H 2850 2750 50  0001 C CNN
 F 3 "" H 2850 2750 50  0001 C CNN
@@ -103,10 +103,10 @@ F 3 "" H 2850 2750 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-rescue:stepdown-wasserschaden-cache-2018-10-17-20-35-24 U?
+L wasserschaden-rescue:stepdown-wasserschaden-cache-2018-10-17-20-35-24 U1
 U 1 1 5B2A6F8D
 P 3800 3000
-F 0 "U?" H 3950 2950 60  0000 C CNN
+F 0 "U1" H 3950 2950 60  0000 C CNN
 F 1 "stepdown" H 4050 3000 60  0000 C CNN
 F 2 "custom:stepdown" H 3800 3000 60  0001 C CNN
 F 3 "" H 3800 3000 60  0001 C CNN
@@ -114,10 +114,10 @@ F 3 "" H 3800 3000 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR0104
 U 1 1 5B2A7077
 P 3400 2900
-F 0 "#PWR?" H 3400 2650 50  0001 C CNN
+F 0 "#PWR0104" H 3400 2650 50  0001 C CNN
 F 1 "GND" V 3400 2700 50  0000 C CNN
 F 2 "" H 3400 2900 50  0001 C CNN
 F 3 "" H 3400 2900 50  0001 C CNN
@@ -140,10 +140,10 @@ Wire Wire Line
 Wire Wire Line
 	3000 2650 3000 2750
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:+12V #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:+12V #PWR0105
 U 1 1 5B2A7A00
 P 2450 2650
-F 0 "#PWR?" H 2450 2500 50  0001 C CNN
+F 0 "#PWR0105" H 2450 2500 50  0001 C CNN
 F 1 "+12V" H 2450 2790 50  0000 C CNN
 F 2 "" H 2450 2650 50  0001 C CNN
 F 3 "" H 2450 2650 50  0001 C CNN
@@ -151,10 +151,10 @@ F 3 "" H 2450 2650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:+12V #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:+12V #PWR0106
 U 1 1 5B2A7A20
 P 2650 3100
-F 0 "#PWR?" H 2650 2950 50  0001 C CNN
+F 0 "#PWR0106" H 2650 2950 50  0001 C CNN
 F 1 "+12V" H 2650 3240 50  0000 C CNN
 F 2 "" H 2650 3100 50  0001 C CNN
 F 3 "" H 2650 3100 50  0001 C CNN
@@ -162,10 +162,10 @@ F 3 "" H 2650 3100 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:+12V #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:+12V #PWR0107
 U 1 1 5B2A7A40
 P 3400 3050
-F 0 "#PWR?" H 3400 2900 50  0001 C CNN
+F 0 "#PWR0107" H 3400 2900 50  0001 C CNN
 F 1 "+12V" V 3400 3250 50  0000 C CNN
 F 2 "" H 3400 3050 50  0001 C CNN
 F 3 "" H 3400 3050 50  0001 C CNN
@@ -173,10 +173,10 @@ F 3 "" H 3400 3050 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:R R?
+L wasserschaden-cache-2018-10-17-20-35-24:R R5
 U 1 1 5B2A7CB0
 P 3000 2400
-F 0 "R?" V 3080 2400 50  0000 C CNN
+F 0 "R5" V 3080 2400 50  0000 C CNN
 F 1 "20K" V 3000 2400 50  0000 C CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" V 2930 2400 50  0001 C CNN
 F 3 "" H 3000 2400 50  0001 C CNN
@@ -184,10 +184,10 @@ F 3 "" H 3000 2400 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR0108
 U 1 1 5B2A7CE4
 P 3000 2550
-F 0 "#PWR?" H 3000 2300 50  0001 C CNN
+F 0 "#PWR0108" H 3000 2300 50  0001 C CNN
 F 1 "GND" H 3000 2400 50  0000 C CNN
 F 2 "" H 3000 2550 50  0001 C CNN
 F 3 "" H 3000 2550 50  0001 C CNN
@@ -195,10 +195,10 @@ F 3 "" H 3000 2550 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR0109
 U 1 1 5B2A9F12
 P 4700 2900
-F 0 "#PWR?" H 4700 2650 50  0001 C CNN
+F 0 "#PWR0109" H 4700 2650 50  0001 C CNN
 F 1 "GND" V 4700 2700 50  0000 C CNN
 F 2 "" H 4700 2900 50  0001 C CNN
 F 3 "" H 4700 2900 50  0001 C CNN
@@ -206,10 +206,10 @@ F 3 "" H 4700 2900 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:LED D?
+L wasserschaden-cache-2018-10-17-20-35-24:LED D3
 U 1 1 5B2BDC1C
 P 2550 900
-F 0 "D?" H 2550 1000 50  0000 C CNN
+F 0 "D3" H 2550 1000 50  0000 C CNN
 F 1 "v1" H 2550 800 50  0000 C CNN
 F 2 "LEDs:LED_D3.0mm" H 2550 900 50  0001 C CNN
 F 3 "" H 2550 900 50  0001 C CNN
@@ -217,10 +217,10 @@ F 3 "" H 2550 900 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:R R?
+L wasserschaden-cache-2018-10-17-20-35-24:R R3
 U 1 1 5B2BDCBD
 P 2550 1200
-F 0 "R?" V 2630 1200 50  0000 C CNN
+F 0 "R3" V 2630 1200 50  0000 C CNN
 F 1 "1K" V 2550 1200 50  0000 C CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" V 2480 1200 50  0001 C CNN
 F 3 "" H 2550 1200 50  0001 C CNN
@@ -228,10 +228,10 @@ F 3 "" H 2550 1200 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR0110
 U 1 1 5B2BDCFD
 P 2550 1350
-F 0 "#PWR?" H 2550 1100 50  0001 C CNN
+F 0 "#PWR0110" H 2550 1100 50  0001 C CNN
 F 1 "GND" H 2550 1200 50  0000 C CNN
 F 2 "" H 2550 1350 50  0001 C CNN
 F 3 "" H 2550 1350 50  0001 C CNN
@@ -240,10 +240,10 @@ F 3 "" H 2550 1350 50  0001 C CNN
 $EndComp
 Connection ~ 3000 2250
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:LED D?
+L wasserschaden-cache-2018-10-17-20-35-24:LED D1
 U 1 1 5B2C19FD
 P 1950 900
-F 0 "D?" H 1950 1000 50  0000 C CNN
+F 0 "D1" H 1950 1000 50  0000 C CNN
 F 1 "LED" H 1950 800 50  0000 C CNN
 F 2 "LEDs:LED_D3.0mm" H 1950 900 50  0001 C CNN
 F 3 "" H 1950 900 50  0001 C CNN
@@ -251,10 +251,10 @@ F 3 "" H 1950 900 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:R R?
+L wasserschaden-cache-2018-10-17-20-35-24:R R1
 U 1 1 5B2C1A03
 P 1950 1200
-F 0 "R?" V 2030 1200 50  0000 C CNN
+F 0 "R1" V 2030 1200 50  0000 C CNN
 F 1 "1K" V 1950 1200 50  0000 C CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" V 1880 1200 50  0001 C CNN
 F 3 "" H 1950 1200 50  0001 C CNN
@@ -262,10 +262,10 @@ F 3 "" H 1950 1200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR0111
 U 1 1 5B2C1A09
 P 1950 1350
-F 0 "#PWR?" H 1950 1100 50  0001 C CNN
+F 0 "#PWR0111" H 1950 1100 50  0001 C CNN
 F 1 "GND" H 1950 1200 50  0000 C CNN
 F 2 "" H 1950 1350 50  0001 C CNN
 F 3 "" H 1950 1350 50  0001 C CNN
@@ -273,10 +273,10 @@ F 3 "" H 1950 1350 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:LED D?
+L wasserschaden-cache-2018-10-17-20-35-24:LED D2
 U 1 1 5B2C1D4C
 P 2250 900
-F 0 "D?" H 2250 1000 50  0000 C CNN
+F 0 "D2" H 2250 1000 50  0000 C CNN
 F 1 "info" H 2250 800 50  0000 C CNN
 F 2 "LEDs:LED_D3.0mm" H 2250 900 50  0001 C CNN
 F 3 "" H 2250 900 50  0001 C CNN
@@ -284,10 +284,10 @@ F 3 "" H 2250 900 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:R R?
+L wasserschaden-cache-2018-10-17-20-35-24:R R2
 U 1 1 5B2C1D52
 P 2250 1200
-F 0 "R?" V 2330 1200 50  0000 C CNN
+F 0 "R2" V 2330 1200 50  0000 C CNN
 F 1 "240" V 2250 1200 50  0000 C CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" V 2180 1200 50  0001 C CNN
 F 3 "" H 2250 1200 50  0001 C CNN
@@ -295,10 +295,10 @@ F 3 "" H 2250 1200 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR0112
 U 1 1 5B2C1D58
 P 2250 1350
-F 0 "#PWR?" H 2250 1100 50  0001 C CNN
+F 0 "#PWR0112" H 2250 1100 50  0001 C CNN
 F 1 "GND" H 2250 1200 50  0000 C CNN
 F 2 "" H 2250 1350 50  0001 C CNN
 F 3 "" H 2250 1350 50  0001 C CNN
@@ -306,10 +306,10 @@ F 3 "" H 2250 1350 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:+3V3 #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:+3V3 #PWR0113
 U 1 1 5B2C1F93
 P 1950 750
-F 0 "#PWR?" H 1950 600 50  0001 C CNN
+F 0 "#PWR0113" H 1950 600 50  0001 C CNN
 F 1 "+3.3V" H 1950 890 50  0000 C CNN
 F 2 "" H 1950 750 50  0001 C CNN
 F 3 "" H 1950 750 50  0001 C CNN
@@ -317,10 +317,10 @@ F 3 "" H 1950 750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Jumper:SolderJumper_2_Open JP?
+L Jumper:SolderJumper_2_Open JP1
 U 1 1 5BCFAE3F
 P 4750 2350
-F 0 "JP?" V 4704 2418 50  0000 L CNN
+F 0 "JP1" V 4704 2418 50  0000 L CNN
 F 1 "deepsleep" H 4550 2450 50  0000 L CNN
 F 2 "custom:jumper" H 4750 2350 50  0001 C CNN
 F 3 "~" H 4750 2350 50  0001 C CNN
@@ -343,12 +343,12 @@ NoConn ~ 6200 -3400
 NoConn ~ 6800 -3300
 Connection ~ 2450 2650
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:Screw_Terminal_01x02 J?
+L wasserschaden-cache-2018-10-17-20-35-24:Screw_Terminal_01x02 J3
 U 1 1 5BE7342F
 P 3950 800
-F 0 "J?" H 3950 900 50  0000 C CNN
+F 0 "J3" H 3950 900 50  0000 C CNN
 F 1 "sense" V 4050 800 50  0000 C CNN
-F 2 "Connectors_Terminal_Blocks:TerminalBlock_Altech_AK300-2_P5.00mm" H 3950 800 50  0001 C CNN
+F 2 "custom:termina_2pin" H 3950 800 50  0001 C CNN
 F 3 "" H 3950 800 50  0001 C CNN
 	1    3950 800 
 	0    -1   -1   0   
@@ -356,10 +356,10 @@ $EndComp
 Wire Wire Line
 	4050 1050 4300 1050
 $Comp
-L power:GND #PWR?
+L power:GND #PWR0114
 U 1 1 5BE7483F
 P 4300 1050
-F 0 "#PWR?" H 4300 800 50  0001 C CNN
+F 0 "#PWR0114" H 4300 800 50  0001 C CNN
 F 1 "GND" H 4305 877 50  0000 C CNN
 F 2 "" H 4300 1050 50  0001 C CNN
 F 3 "" H 4300 1050 50  0001 C CNN
@@ -371,10 +371,10 @@ Wire Wire Line
 Wire Wire Line
 	4050 1050 4050 1000
 $Comp
-L Device:R R?
+L Device:R R7
 U 1 1 5BE92986
 P 3950 1250
-F 0 "R?" H 4020 1296 50  0000 L CNN
+F 0 "R7" H 4020 1296 50  0000 L CNN
 F 1 "330" H 4020 1205 50  0000 L CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" V 3880 1250 50  0001 C CNN
 F 3 "~" H 3950 1250 50  0001 C CNN
@@ -382,10 +382,10 @@ F 3 "~" H 3950 1250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:+3.3V #PWR?
+L power:+3.3V #PWR0115
 U 1 1 5BE93467
 P 3950 1400
-F 0 "#PWR?" H 3950 1250 50  0001 C CNN
+F 0 "#PWR0115" H 3950 1250 50  0001 C CNN
 F 1 "+3.3V" V 3965 1528 50  0000 L CNN
 F 2 "" H 3950 1400 50  0001 C CNN
 F 3 "" H 3950 1400 50  0001 C CNN
@@ -400,10 +400,10 @@ Connection ~ 2600 2750
 Wire Wire Line
 	3000 2250 2900 2250
 $Comp
-L Sensor_Temperature:DS18B20 U?
+L Sensor_Temperature:DS18B20 U3
 U 1 1 5C092FAF
 P 4950 1050
-F 0 "U?" V 4676 1050 50  0000 C CNN
+F 0 "U3" V 4676 1050 50  0000 C CNN
 F 1 "DS18B20" V 4600 1050 50  0000 C CNN
 F 2 "custom:temperature_sensor" H 3950 800 50  0001 C CNN
 F 3 "http://datasheets.maximintegrated.com/en/ds/DS18B20.pdf" H 4800 1300 50  0001 C CNN
@@ -411,10 +411,10 @@ F 3 "http://datasheets.maximintegrated.com/en/ds/DS18B20.pdf" H 4800 1300 50  00
 	0    1    -1   0   
 $EndComp
 $Comp
-L power:+3.3V #PWR?
+L power:+3.3V #PWR0116
 U 1 1 5C093158
 P 5250 750
-F 0 "#PWR?" H 5250 600 50  0001 C CNN
+F 0 "#PWR0116" H 5250 600 50  0001 C CNN
 F 1 "+3.3V" H 5265 923 50  0000 C CNN
 F 2 "" H 5250 750 50  0001 C CNN
 F 3 "" H 5250 750 50  0001 C CNN
@@ -422,10 +422,10 @@ F 3 "" H 5250 750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR?
+L power:GND #PWR0117
 U 1 1 5C0931D7
 P 4650 1050
-F 0 "#PWR?" H 4650 800 50  0001 C CNN
+F 0 "#PWR0117" H 4650 800 50  0001 C CNN
 F 1 "GND" H 4650 900 50  0000 C CNN
 F 2 "" H 4650 1050 50  0001 C CNN
 F 3 "" H 4650 1050 50  0001 C CNN
@@ -433,10 +433,10 @@ F 3 "" H 4650 1050 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:R R?
+L Device:R R8
 U 1 1 5C09361D
 P 5100 750
-F 0 "R?" H 4950 800 50  0000 L CNN
+F 0 "R8" H 4950 800 50  0000 L CNN
 F 1 "4K7" H 5000 700 50  0000 L CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" V 5030 750 50  0001 C CNN
 F 3 "~" H 5100 750 50  0001 C CNN
@@ -447,10 +447,10 @@ Wire Wire Line
 	5250 1050 5250 750 
 Connection ~ 5250 750 
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:+3V3 #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:+3V3 #PWR0118
 U 1 1 5D2E6701
 P 4700 3050
-F 0 "#PWR?" H 4700 2900 50  0001 C CNN
+F 0 "#PWR0118" H 4700 2900 50  0001 C CNN
 F 1 "+3.3V" V 4700 3300 50  0000 C CNN
 F 2 "" H 4700 3050 50  0001 C CNN
 F 3 "" H 4700 3050 50  0001 C CNN
@@ -458,10 +458,10 @@ F 3 "" H 4700 3050 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:+3V3 #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:+3V3 #PWR0119
 U 1 1 5D2E75DE
 P 4500 1750
-F 0 "#PWR?" H 4500 1600 50  0001 C CNN
+F 0 "#PWR0119" H 4500 1600 50  0001 C CNN
 F 1 "+3.3V" H 4500 1890 50  0000 C CNN
 F 2 "" H 4500 1750 50  0001 C CNN
 F 3 "" H 4500 1750 50  0001 C CNN
@@ -495,10 +495,10 @@ info
 Text GLabel 4500 2050 2    50   Input ~ 0
 sense
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:LED D?
+L wasserschaden-cache-2018-10-17-20-35-24:LED D4
 U 1 1 5D2E609D
 P 2800 900
-F 0 "D?" H 2800 1000 50  0000 C CNN
+F 0 "D4" H 2800 1000 50  0000 C CNN
 F 1 "v2" H 2800 800 50  0000 C CNN
 F 2 "LEDs:LED_D3.0mm" H 2800 900 50  0001 C CNN
 F 3 "" H 2800 900 50  0001 C CNN
@@ -506,10 +506,10 @@ F 3 "" H 2800 900 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:R R?
+L wasserschaden-cache-2018-10-17-20-35-24:R R4
 U 1 1 5D2E60A3
 P 2800 1200
-F 0 "R?" V 2880 1200 50  0000 C CNN
+F 0 "R4" V 2880 1200 50  0000 C CNN
 F 1 "1K" V 2800 1200 50  0000 C CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" V 2730 1200 50  0001 C CNN
 F 3 "" H 2800 1200 50  0001 C CNN
@@ -517,10 +517,10 @@ F 3 "" H 2800 1200 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR0120
 U 1 1 5D2E60A9
 P 2800 1350
-F 0 "#PWR?" H 2800 1100 50  0001 C CNN
+F 0 "#PWR0120" H 2800 1100 50  0001 C CNN
 F 1 "GND" H 2800 1200 50  0000 C CNN
 F 2 "" H 2800 1350 50  0001 C CNN
 F 3 "" H 2800 1350 50  0001 C CNN
@@ -530,10 +530,10 @@ $EndComp
 Text GLabel 2800 750  1    50   Output ~ 0
 v2
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:LED D?
+L wasserschaden-cache-2018-10-17-20-35-24:LED D6
 U 1 1 5D2E6F5C
 P 3050 900
-F 0 "D?" H 3050 1000 50  0000 C CNN
+F 0 "D6" H 3050 1000 50  0000 C CNN
 F 1 "v3" H 3050 800 50  0000 C CNN
 F 2 "LEDs:LED_D3.0mm" H 3050 900 50  0001 C CNN
 F 3 "" H 3050 900 50  0001 C CNN
@@ -541,10 +541,10 @@ F 3 "" H 3050 900 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:R R?
+L wasserschaden-cache-2018-10-17-20-35-24:R R6
 U 1 1 5D2E6F62
 P 3050 1200
-F 0 "R?" V 3130 1200 50  0000 C CNN
+F 0 "R6" V 3130 1200 50  0000 C CNN
 F 1 "1K" V 3050 1200 50  0000 C CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" V 2980 1200 50  0001 C CNN
 F 3 "" H 3050 1200 50  0001 C CNN
@@ -552,10 +552,10 @@ F 3 "" H 3050 1200 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR0121
 U 1 1 5D2E6F68
 P 3050 1350
-F 0 "#PWR?" H 3050 1100 50  0001 C CNN
+F 0 "#PWR0121" H 3050 1100 50  0001 C CNN
 F 1 "GND" H 3050 1200 50  0000 C CNN
 F 2 "" H 3050 1350 50  0001 C CNN
 F 3 "" H 3050 1350 50  0001 C CNN
@@ -565,10 +565,10 @@ $EndComp
 Text GLabel 3050 750  1    50   Output ~ 0
 v3
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:2N7000 IRFZ44N?
+L wasserschaden-cache-2018-10-17-20-35-24:2N7000 IRFZ44N2
 U 1 1 5D2EC1A0
 P 6100 1350
-F 0 "IRFZ44N?" H 6350 1350 50  0000 L CNN
+F 0 "IRFZ44N2" H 6350 1350 50  0000 L CNN
 F 1 " " H 6300 1350 50  0000 L CNN
 F 2 "custom:irlz44n_vertical" H 6300 1275 50  0001 L CIN
 F 3 "" H 6100 1350 50  0001 L CNN
@@ -576,21 +576,21 @@ F 3 "" H 6100 1350 50  0001 L CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:Screw_Terminal_01x02 J?
+L wasserschaden-cache-2018-10-17-20-35-24:Screw_Terminal_01x02 J4
 U 1 1 5D2EC1A6
 P 5650 1850
-F 0 "J?" H 5650 1950 50  0000 C CNN
+F 0 "J4" H 5650 1950 50  0000 C CNN
 F 1 "v2 out" H 6000 1800 50  0000 C CNN
-F 2 "Connectors_Terminal_Blocks:TerminalBlock_Altech_AK300-2_P5.00mm" H 5650 1850 50  0001 C CNN
+F 2 "custom:termina_2pin" H 5650 1850 50  0001 C CNN
 F 3 "" H 5650 1850 50  0001 C CNN
 	1    5650 1850
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR0122
 U 1 1 5D2EC1AC
 P 6000 1150
-F 0 "#PWR?" H 6000 900 50  0001 C CNN
+F 0 "#PWR0122" H 6000 900 50  0001 C CNN
 F 1 "GND" H 6000 1000 50  0000 C CNN
 F 2 "" H 6000 1150 50  0001 C CNN
 F 3 "" H 6000 1150 50  0001 C CNN
@@ -598,10 +598,10 @@ F 3 "" H 6000 1150 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:D D?
+L wasserschaden-cache-2018-10-17-20-35-24:D D7
 U 1 1 5D2EC1B2
 P 6250 1850
-F 0 "D?" H 6250 1950 50  0000 C CNN
+F 0 "D7" H 6250 1950 50  0000 C CNN
 F 1 " " H 6350 1950 50  0000 C CNN
 F 2 "Diodes_SMD:D_SMA_Handsoldering" H 6250 1850 50  0001 C CNN
 F 3 "" H 6250 1850 50  0001 C CNN
@@ -617,10 +617,10 @@ Wire Wire Line
 Wire Wire Line
 	6400 1750 6400 1850
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:+12V #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:+12V #PWR0123
 U 1 1 5D2EC1BC
 P 5850 1750
-F 0 "#PWR?" H 5850 1600 50  0001 C CNN
+F 0 "#PWR0123" H 5850 1600 50  0001 C CNN
 F 1 "+12V" H 5850 1890 50  0000 C CNN
 F 2 "" H 5850 1750 50  0001 C CNN
 F 3 "" H 5850 1750 50  0001 C CNN
@@ -628,10 +628,10 @@ F 3 "" H 5850 1750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:R R?
+L wasserschaden-cache-2018-10-17-20-35-24:R R9
 U 1 1 5D2EC1C2
 P 6400 1500
-F 0 "R?" V 6480 1500 50  0000 C CNN
+F 0 "R9" V 6480 1500 50  0000 C CNN
 F 1 "20K" V 6400 1500 50  0000 C CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" V 6330 1500 50  0001 C CNN
 F 3 "" H 6400 1500 50  0001 C CNN
@@ -639,10 +639,10 @@ F 3 "" H 6400 1500 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR0124
 U 1 1 5D2EC1C8
 P 6400 1650
-F 0 "#PWR?" H 6400 1400 50  0001 C CNN
+F 0 "#PWR0124" H 6400 1400 50  0001 C CNN
 F 1 "GND" H 6400 1500 50  0000 C CNN
 F 2 "" H 6400 1650 50  0001 C CNN
 F 3 "" H 6400 1650 50  0001 C CNN
@@ -663,10 +663,10 @@ v2
 Wire Wire Line
 	6400 1250 6400 1350
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:2N7000 IRFZ44N?
+L wasserschaden-cache-2018-10-17-20-35-24:2N7000 IRFZ44N3
 U 1 1 5D2F0BB9
 P 6100 2450
-F 0 "IRFZ44N?" H 6350 2450 50  0000 L CNN
+F 0 "IRFZ44N3" H 6350 2450 50  0000 L CNN
 F 1 " " H 6300 2450 50  0000 L CNN
 F 2 "custom:irlz44n_vertical" H 6300 2375 50  0001 L CIN
 F 3 "" H 6100 2450 50  0001 L CNN
@@ -674,21 +674,21 @@ F 3 "" H 6100 2450 50  0001 L CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:Screw_Terminal_01x02 J?
+L wasserschaden-cache-2018-10-17-20-35-24:Screw_Terminal_01x02 J5
 U 1 1 5D2F0BBF
 P 5650 2950
-F 0 "J?" H 5650 3050 50  0000 C CNN
+F 0 "J5" H 5650 3050 50  0000 C CNN
 F 1 "v3 out" H 6000 2900 50  0000 C CNN
-F 2 "Connectors_Terminal_Blocks:TerminalBlock_Altech_AK300-2_P5.00mm" H 5650 2950 50  0001 C CNN
+F 2 "custom:termina_2pin" H 5650 2950 50  0001 C CNN
 F 3 "" H 5650 2950 50  0001 C CNN
 	1    5650 2950
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR0125
 U 1 1 5D2F0BC5
 P 6000 2250
-F 0 "#PWR?" H 6000 2000 50  0001 C CNN
+F 0 "#PWR0125" H 6000 2000 50  0001 C CNN
 F 1 "GND" H 6000 2100 50  0000 C CNN
 F 2 "" H 6000 2250 50  0001 C CNN
 F 3 "" H 6000 2250 50  0001 C CNN
@@ -696,10 +696,10 @@ F 3 "" H 6000 2250 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:D D?
+L wasserschaden-cache-2018-10-17-20-35-24:D D8
 U 1 1 5D2F0BCB
 P 6250 2950
-F 0 "D?" H 6250 3050 50  0000 C CNN
+F 0 "D8" H 6250 3050 50  0000 C CNN
 F 1 " " H 6350 3050 50  0000 C CNN
 F 2 "Diodes_SMD:D_SMA_Handsoldering" H 6250 2950 50  0001 C CNN
 F 3 "" H 6250 2950 50  0001 C CNN
@@ -715,10 +715,10 @@ Wire Wire Line
 Wire Wire Line
 	6400 2850 6400 2950
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:+12V #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:+12V #PWR0126
 U 1 1 5D2F0BD5
 P 5850 2850
-F 0 "#PWR?" H 5850 2700 50  0001 C CNN
+F 0 "#PWR0126" H 5850 2700 50  0001 C CNN
 F 1 "+12V" H 5850 2990 50  0000 C CNN
 F 2 "" H 5850 2850 50  0001 C CNN
 F 3 "" H 5850 2850 50  0001 C CNN
@@ -726,10 +726,10 @@ F 3 "" H 5850 2850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:R R?
+L wasserschaden-cache-2018-10-17-20-35-24:R R10
 U 1 1 5D2F0BDB
 P 6400 2600
-F 0 "R?" V 6480 2600 50  0000 C CNN
+F 0 "R10" V 6480 2600 50  0000 C CNN
 F 1 "20K" V 6400 2600 50  0000 C CNN
 F 2 "Resistors_SMD:R_0603_HandSoldering" V 6330 2600 50  0001 C CNN
 F 3 "" H 6400 2600 50  0001 C CNN
@@ -737,10 +737,10 @@ F 3 "" H 6400 2600 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR?
+L wasserschaden-cache-2018-10-17-20-35-24:GND #PWR0127
 U 1 1 5D2F0BE1
 P 6400 2750
-F 0 "#PWR?" H 6400 2500 50  0001 C CNN
+F 0 "#PWR0127" H 6400 2500 50  0001 C CNN
 F 1 "GND" H 6400 2600 50  0000 C CNN
 F 2 "" H 6400 2750 50  0001 C CNN
 F 3 "" H 6400 2750 50  0001 C CNN
