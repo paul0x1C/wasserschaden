@@ -113,7 +113,8 @@ class Node(Base):
             session.commit()
             log("stored temperature {} for {}".format(value, self), 1)
         elif self.has_temperature_sensor:
-            log("{} sent temperature -127°C but should have a sensor", 3, 2)
+            self.hast_temperatur_sensor = False
+            log("{} sent temperature -127°C but should have a had sensor", 3, 2)
         self.last_temperature_update = now()
 
     @db_connect
