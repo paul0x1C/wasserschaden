@@ -81,8 +81,8 @@ class Node(Base):
     last_connection_change = Column(UTCDateTime, default = now())
     last_physical_attempt = Column(UTCDateTime, default = now())
     last_connection_attempt = Column(UTCDateTime, default = now())
-    physical_attemps = Column(Integer) # counts the attempts that were made to close/open the valve
-    connection_attemps = Column(Integer) # counts the ping attempts
+    physical_attempts = Column(Integer) # counts the attempts that were made to close/open the valve
+    connection_attempts = Column(Integer) # counts the ping attempts
     sense = Column(Boolean) # True if the node detects water
     sense_update = Column(UTCDateTime, default = now())
     has_sense_pin = Column(Boolean)
@@ -94,11 +94,11 @@ class Node(Base):
 
     def add_physical_attempt(self):
         self.last_physical_attempt = now()
-        self.physical_attemps += 1
+        self.physical_attempts += 1
 
     def add_connection_attempt(self):
         self.last_connection_attempt = now()
-        self.connection_attemps += 1
+        self.connection_attempts += 1
 
     @db_connect
     def add_temperature(self, value, session):
@@ -120,7 +120,7 @@ class Node(Base):
 
     @db_connect
     def set_physical_state(self, state_id, session, update_time = True):
-        self.physical_attemps = 0
+        self.physical_attempts = 0
         self.physical_state_id = state_id
         if update_time:
             self.last_physical_change = now()
@@ -140,7 +140,7 @@ class Node(Base):
         #     self.reported_offline = False
         #     alert = Alert(added = now(), content="Node %s in House '%s' on floor %s in flat '%s' is back onlin <3" % (self.id, self.flat.floor.house.name, self.flat.floor.level, self.flat.name))
         #     session.add(alert)
-        self.connection_attemps = 0
+        self.connection_attempts = 0
         self.connection_state_id = state_id
         log("Set connection_state of {} to {}".format(self, state_id), 2)
 
@@ -204,7 +204,7 @@ class Alert(Base): # messages to be sent to telegram group
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     priority = Column(Integer)
     added = Column(UTCDateTime, default = now())
-    sent = Column(UTCDateTime, default = now())
+    sent = Column(UTCDateTime, default = None)
     content = Column(Text(50000))
 
 class PhysicalState(Base):

@@ -114,11 +114,11 @@ def check_nodes(session):
             last_connection_attempt = (now() - node.last_connection_attempt).seconds
             log("starting state change for {}".format(node), 1, 0)
             if node.connection_state_id == 2:
-                if node.connection_attemps == 0:
+                if node.connection_attempts == 0:
                     if last_connection_change > 5:
                         node.send_mqtt_msg("ping")
                         node.add_connection_attempt()
-                elif node.connection_attemps < 3:
+                elif node.connection_attempts < 3:
                     if last_connection_attempt > 10:
                         node.send_mqtt_msg("ping")
                         node.add_connection_attempt()
@@ -126,7 +126,7 @@ def check_nodes(session):
                     if last_connection_attempt > 20:
                         node.set_connection_state(3)
             elif node.connection_state_id == 3:
-                if node.connection_attemps < 5:
+                if node.connection_attempts < 5:
                     if last_connection_attempt > 100:
                         node.send_mqtt_msg("ping")
                         node.add_connection_attempt()
@@ -135,28 +135,28 @@ def check_nodes(session):
                         node.send_mqtt_msg("ping")
                         node.add_connection_attempt()
             if node.physical_state_id == 2:
-                if node.physical_attemps == 0:
+                if node.physical_attempts == 0:
                     if last_physical_change > 5:
                         node.send_mqtt_msg("open")
                         node.add_physical_attempt()
-                elif node.physical_attemps < 3:
+                elif node.physical_attempts < 3:
                     if last_physical_attempt > 10:
                         node.send_mqtt_msg("open")
                         node.add_physical_attempt()
                 else:
                     node.ping()
-                    node.set_physical_state(1)
+                    # node.set_physical_state(1)
             elif node.physical_state_id == 4:
-                if node.physical_attemps == 0:
+                if node.physical_attempts == 0:
                     if last_physical_change > 5:
                         node.send_mqtt_msg("close")
                         node.add_physical_attempt()
-                elif node.physical_attemps < 3:
+                elif node.physical_attempts < 3:
                     if last_physical_attempt > 10:
                         node.send_mqtt_msg("close")
                         node.add_physical_attempt()
                 else:
-                    node.set_physical_state(1)
+                    # node.set_physical_state(1)
                     node.ping()
             elif node.physical_state_id == 3:
                 if node.house.duration <= last_physical_change:
