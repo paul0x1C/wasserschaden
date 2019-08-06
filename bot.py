@@ -166,7 +166,7 @@ def module_status():
 def send_alerts(bot, job, session):
     system_module.update(1)
     priority_setting = session.query(models.Setting).filter(models.Setting.id == 1).one().state
-    alerts = session.query(models.Alert).filter(models.Alert.priority >= priority_setting)
+    alerts = session.query(models.Alert).filter((models.Alert.priority >= priority_setting) & (models.Alert.sent == None))
     if alerts.count() > 0:
         to_send = []
         for alert in alerts:
@@ -178,7 +178,7 @@ def send_alerts(bot, job, session):
                     to_send.append([1, msg])
             else:
                 to_send.append([1, msg]) # this repitition is pretty ugly :(
-            session.delete(alert)
+            alert.sent = now()
         alert_msg = ""
         for entry in to_send:
             if entry[0] > 1:
