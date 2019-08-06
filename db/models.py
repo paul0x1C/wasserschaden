@@ -114,7 +114,8 @@ class Node(Base):
             log("stored temperature {} for {}".format(value, self), 1)
         elif self.has_temperature_sensor:
             self.has_temperature_sensor = False
-            log("{} sent temperature -127°C but should have a had sensor", 3, 2)
+            session.commit()
+            log("{} sent temperature -127°C but should have a had sensor".format(self), 3, 2)
         self.last_temperature_update = now()
 
     @db_connect
@@ -129,7 +130,7 @@ class Node(Base):
 
     # @db_connect
     def set_connection_state(self, state_id, update_time = True):
-        if update_time:
+        if update_time and self.connection_state_id is not state_id:
             self.last_connection_change = now()
         # if state_id == 3 and not self.reported_offline:
         #     alert = Alert(added = now(), content="Node %s in House '%s' on floor %s in flat '%s' not responding…" % (self.id, self.flat.floor.house.name, self.flat.floor.level, self.flat.name))
