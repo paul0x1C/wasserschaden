@@ -81,7 +81,7 @@ def check_houses(session):
             if house.gateway_state == 1:
                 if last_gateway_change > 90: # set gateway to disconnected when it's not responding for >90s
                     house.gateway_state = 2
-                    log("gateway in {} is not responding, setting all its nodes to offline".format(house), 1, 1)
+                    log("gateway in {} is not responding since 90s, setting all its nodes to offline".format(house), 2, 2)
                     for node in house.nodes:
                         node.set_connection_state(3)
             else:
