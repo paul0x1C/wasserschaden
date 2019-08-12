@@ -59,6 +59,11 @@ def overview(session):
         house_id = int(request.form.get('house_id'))
         house = session.query(models.House).filter(models.House.id == house_id).one()
         house.reset_temp_sensor_status()
+    elif request.form.get('action') == "flush_now":
+        content += "flush now"
+        house_id = int(request.form.get('house_id'))
+        house = session.query(models.House).filter(models.House.id == house_id).one()
+        house.init_flush()
     elif request.form.get('action') == "set_setting":
         set_setting(int(request.form.get('setting')), int(request.form.get('value')))
     elif request.form.get('action') == "set_new_node_flat":
