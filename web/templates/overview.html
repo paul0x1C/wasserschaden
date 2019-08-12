@@ -52,6 +52,11 @@
                   <input type='hidden' name='house_id' value='{{ house.id }}'>
                   <input type='submit' value='reset T sensors' class='clear'>
                 </form>
+                <form method='post'>
+                  <input type='hidden' value='flush_now' name='action'>
+                  <input type='hidden' name='house_id' value='{{ house.id }}'>
+                  <input type='submit' value='flush now' class='clear'>
+                </form>
               </p>
               <p>
                 <form method='post'>
