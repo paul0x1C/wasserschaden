@@ -37,6 +37,17 @@ class House(Base):
     def unlock(self):
         self.locked = False
 
+    @db_connect
+    def init_flush(self, session):
+        log("Initiating new flush for {}".format(self), 2, 1)
+        for node in self.nodes:
+            if session.query(Queue).filter(Queue.node_id == node.id).count() == 0: #check whether node is already queued
+                que = Queue(node_id = node.id, house_id = self.id, added = now())
+                session.add(que)
+            else:
+                log("Tried to add a node to {}'s queue, but it was already in the queue".format(self), 3, 2)
+        self.last_flush = now()
+
     def reset_temp_sensor_status(self):
         log("Reseting temperature sensor status", 2)
         for node in self.nodes:

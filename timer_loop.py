@@ -59,14 +59,7 @@ def check_houses(session):
         log("checking {}".format(house), 1, 0)
 
         if (now() - house.last_flush).seconds > house.interval and not house.interval == 0: # check if house needs to be flushed
-            log("Initiating new flush for {}".format(house), 2, 1)
-            for node in house.nodes:
-                if session.query(models.Queue).filter(models.Queue.node_id == node.id).count() == 0: #check whether node is already queued
-                    que = models.Queue(node_id = node.id, house_id = house.id, added = now())
-                    session.add(que)
-                else:
-                    log("Tried to add a node to {}'s queue, but it was already in the queue".format(house), 3, 2)
-            house.last_flush = now()
+            house.init_flush()
 
         if house.locked and (now() - house.locked_since).seconds > 150: # check if house is locked for a too long time
             if session.query(models.Node).filter((models.Node.physical_state_id > 1)).count() == 0:
