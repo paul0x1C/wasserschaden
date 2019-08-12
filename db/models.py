@@ -142,7 +142,8 @@ class Node(Base):
     # @db_connect
     def set_connection_state(self, state_id, update_time = True):
         if update_time and self.connection_state_id is not state_id:
-            self.last_connection_change = now()
+            if not (self.connection_state_id in [2,3] or state_id in [2,3]):
+                self.last_connection_change = now()
         # if state_id == 3 and not self.reported_offline:
         #     alert = Alert(added = now(), content="Node %s in House '%s' on floor %s in flat '%s' not responding…" % (self.id, self.flat.floor.house.name, self.flat.floor.level, self.flat.name))
         #     session.add(alert)
