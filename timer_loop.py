@@ -69,8 +69,9 @@ def check_houses(session):
             house.last_flush = now()
 
         if house.locked and (now() - house.locked_since).seconds > 150: # check if house is locked for a too long time
-            house.unlock()
-            log("Lock for house {} timed out!".format(house), 3, 2)
+            if session.query(models.Node).filter((models.Node.physical_state_id > 1)).count() == 0:
+                house.unlock()
+                log("Lock for house {} timed out!".format(house), 3, 2)
         if not house.gateway_updated:
             house.gateway_updated = datetime.datetime(1,1,1)
         last_gateway_change = (now() - house.gateway_updated).seconds
@@ -143,9 +144,13 @@ def check_nodes(session):
                     if last_physical_attempt > 10:
                         node.send_mqtt_msg("open")
                         node.add_physical_attempt()
-                else:
+                elif node.physical_attempts == 3:
                     node.ping()
-                    # node.set_physical_state(1)
+                    node.add_physical_attempt()
+                if node.connection_state_id == 1:
+                    if last_physical_attempt > 20:
+                        node.send_mqtt_msg("open")
+                        node.add_physical_attempt()
             elif node.physical_state_id == 4:
                 if node.physical_attempts == 0:
                     if last_physical_change > 5:
@@ -155,9 +160,13 @@ def check_nodes(session):
                     if last_physical_attempt > 10:
                         node.send_mqtt_msg("close")
                         node.add_physical_attempt()
-                else:
-                    # node.set_physical_state(1)
+                elif node.physical_attempts == 3:
                     node.ping()
+                    node.add_physical_attempt()
+                if node.connection_state_id == 1:
+                    if last_physical_attempt > 20:
+                        node.send_mqtt_msg("close")
+                        node.add_physical_attempt()
             elif node.physical_state_id == 3:
                 if node.house.duration <= last_physical_change:
                     node.close_valve()
