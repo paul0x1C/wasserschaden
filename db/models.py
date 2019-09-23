@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from db.wrapper import *
 from . import connection
-from actions import log, logger, now
+from actions import log, logger, now, broadcast_ping
 
 import datetime, os
 
@@ -40,6 +40,7 @@ class House(Base):
     @db_connect
     def init_flush(self, session):
         log("Initiating new flush for {}".format(self), 2, 1)
+        broadcast_ping(self.mqtt_topic)
         for node in self.nodes:
             if session.query(Queue).filter(Queue.node_id == node.id).count() == 0: #check whether node is already queued
                 que = Queue(node_id = node.id, house_id = self.id, added = now())
