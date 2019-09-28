@@ -1,7 +1,14 @@
-#telegram bot api-key file
+# gerber,drill files
+*.gbr
+*.drl
+
+# zip folders
+*.zip
+
+# telegram bot api-key file
 key.py
 
-#arduino wifi credentials
+# arduino wifi credentials
 arduino/wasserschaden_bridge/settings.cpp
 arduino/wasserschaden_basic/settings.cpp
 
