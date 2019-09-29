@@ -65,7 +65,7 @@ void setup() {
   Serial.begin(115200);
   digitalWrite(POWER_LED, HIGH);
   mesh.setRoot();
-  mesh.setDebugMsgTypes( ERROR | STARTUP | CONNECTION );
+  mesh.setDebugMsgTypes( ERROR | STARTUP | CONNECTION | COMMUNICATION );
 
   mesh.init( MESH_PREFIX, MESH_PASSWORD, MESH_PORT, WIFI_AP_STA, 4);
   mesh.onReceive(&receivedCallback);
@@ -168,19 +168,19 @@ void receivedCallback(uint32_t from, String msg ) {
 void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
   last_msg = millis();
   digitalWrite(MQTT_RX_LED, HIGH);
-  char* cleanPayload = (char*)malloc(length + 1);
+  
+  char* cleanPayload = (char*)malloc(length+1);
   payload[length] = '\0';
-  memcpy(cleanPayload, payload, length + 1);
+  memcpy(cleanPayload, payload, length+1);
   String msg = String(cleanPayload);
   free(cleanPayload);
 
   String targetStr = String(topic).substring(String(MQTT_TOPIC).length()+4);
-  Serial.println("targetStr:" + targetStr);
   if (targetStr == "gateway")
   {
     if (msg == "getNodes")
     {
-      //Serial.println( mesh.subConnectionJson().c_str());
+      Serial.println( mesh.subConnectionJson().c_str());
       mqttClient.publish(from_gateway.c_str(), mesh.subConnectionJson().c_str());
     }else if(msg == "ping")
     {
@@ -190,6 +190,7 @@ void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
   }
    else if(targetStr == "broadcast") 
   {
+    Serial.println("broadcasting to mesh: " + msg);
     mesh.sendBroadcast(msg);
   }
   else
@@ -197,6 +198,7 @@ void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
     uint32_t target = strtoul(targetStr.c_str(), NULL, 10);
     if (mesh.isConnected(target))
     {
+      Serial.println("sending " + msg+ " to " + target);
       mesh.sendSingle(target, msg);
     }
     else

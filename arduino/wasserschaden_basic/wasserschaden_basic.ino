@@ -14,9 +14,12 @@ const int opened_value = HIGH;
 const int closed_value = LOW;
 
 //timeouts for actions when no bridge is found
-const int ping_timeout = 30000;
-const int reset_timeout = 60000;
+const int last_msg_timeout = 60000;
+const int attempt_timeout = 5000;
 boolean con_resent = false;
+int bridge_ping_attempts = 0;
+long last_bridge_msg = millis();
+long last_bridge_attempt = millis();
 
 String msg_open = "opening";
 String msg_close = "closing";
@@ -27,6 +30,7 @@ String msg_sense = "sense";
 boolean blink_state = false;
 boolean first_time_adjust = true;
 boolean is_open = false;
+boolean from_bridge;
 
 uint32_t bridge = 0;
 
@@ -47,6 +51,7 @@ Task pingBlink(100, 6, &blink);
 
 // Needed for painless library
 void receivedCallback( uint32_t from, String &msg ) {
+  from_bridge = true;
   Serial.printf("startHere: Received from %u msg=%s\n", from, msg.c_str());
   if(msg == "open"){
     bridge = from;
@@ -59,7 +64,8 @@ void receivedCallback( uint32_t from, String &msg ) {
   }else if(msg == "ping"){
     bridge = from;
     mesh.sendSingle(from, msg_ping);
-    pingBlink.enable();
+    Serial.println("ping");
+    //pingBlink.enable();
   }else if(msg == "temp"){
     bridge = from;
     sensors.requestTemperatures();
@@ -72,7 +78,12 @@ void receivedCallback( uint32_t from, String &msg ) {
     mesh.sendSingle(from, "v:" + String(is_open));
   }else if(msg == "welcome"){
     bridge = from;
-  } 
+  }else{
+    from_bridge = false;
+  }
+  if (from_bridge){
+    last_bridge_msg = millis();
+  }
 }
 void blink(){
   if (pingBlink.isLastIteration()){
@@ -87,13 +98,6 @@ void blink(){
   }
 }
 
-void newConnectionCallback(uint32_t nodeId) {
-    Serial.printf("--> startHere: New Connection, nodeId = %u\n", nodeId);
-}
-
-void changedConnectionCallback() {
-    Serial.printf("Changed connections %s\n",mesh.subConnectionJson().c_str());
-}
 
 void nodeTimeAdjustedCallback(int32_t offset) {
     Serial.printf("Adjusted time %u. Offset = %d\n", mesh.getNodeTime(),offset);
@@ -127,17 +131,15 @@ void close_valve(){
   is_open = false;
 }
 void setup() {
-  ESP.wdtEnable(5000);
-  close_valve();
   Serial.begin(115200);
+  Serial.println("entering setup");
+  close_valve();
   
-  mesh.setDebugMsgTypes( ERROR | STARTUP ); 
+  mesh.setDebugMsgTypes( ERROR | STARTUP | CONNECTION ); 
   
   mesh.init( MESH_PREFIX, MESH_PASSWORD, &userScheduler, 5555, WIFI_AP_STA, 4); //defined in extra file thats not on github
   mesh.setContainsRoot();
   mesh.onReceive(&receivedCallback);
-  mesh.onNewConnection(&newConnectionCallback);
-  mesh.onChangedConnections(&changedConnectionCallback);
   mesh.onNodeTimeAdjusted(&nodeTimeAdjustedCallback);
 
   sensors.begin();
@@ -150,6 +152,7 @@ void setup() {
   pingBlink.setIterations(2);
   pingBlink.enable();
   running_since = millis();
+  Serial.println("setup finished");
 }
 
 boolean sense_water(){
@@ -157,15 +160,26 @@ boolean sense_water(){
 }
 
 void loop() {
-  ESP.wdtFeed();
   userScheduler.execute();
   mesh.update();
-  if(bridge == 0){
-    if(millis() - running_since > reset_timeout){
-      ESP.reset();
-    }else if(millis() - running_since > ping_timeout and !con_resent){
-      mesh.sendBroadcast(msg_connected);
-      con_resent = true;
+  
+  if(last_bridge_msg > millis()){
+    last_bridge_msg = millis();
+  }else if(millis() - last_bridge_msg > last_msg_timeout){
+    if(last_bridge_attempt > millis()){
+      last_bridge_attempt = millis();
+    }else if(millis() - last_bridge_attempt > attempt_timeout){
+      if (bridge_ping_attempts < 3) {
+        Serial.println("resending connected msg");
+        mesh.sendBroadcast(msg_connected);
+        bridge_ping_attempts++;
+      }
+      last_bridge_attempt = millis();
     }
+  }else{
+    bridge_ping_attempts = 0;
+  }
+  if (bridge_ping_attempts >= 3){
+     ESP.reset();
   }
 }
