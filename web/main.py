@@ -151,6 +151,12 @@ def auto_update(session): # returns all the self updateing stuff, is called ever
     for node in nodes:
         result['bgColor'].append(("Nco" + str(node.id), node.physical_state.color))
         result['boColor'].append(("Nco" + str(node.id), node.connection_state.color))
+        if node.has_sense_pin:
+            result['html'].append(("Nhs" + str(node.id), "💧"))
+            if node.sense:
+                result['html'].append(("Nds" + str(node.id), "🚨"))
+            else:
+                result['html'].append(("Nds" + str(node.id), "💹"))
     for house in houses:
         result['html'].append(("Hst" + str(house.id), house.gateway_state))
         result['html'].append(("Hsi" + str(house.id), house.gateway_updated.strftime("%a %d.%m. %H:%M:%S")))

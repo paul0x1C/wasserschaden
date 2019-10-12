@@ -19,7 +19,13 @@
                   <div class='flat_name'>{{ flat.name }}</div>
                   <div class='row'>
                       {% for node in flat.nodes %}
-                      <div class='node' id='Nco{{ node.id }}' style="background-color:{{ node.physical_state.color }}; border-color:{{node.connection_state.color}}"><a href='node_info?node_id={{ node.id }}'>{{ node.id }}</a></div>
+                      <div class='node' id='Nco{{ node.id }}' style="background-color:{{ node.physical_state.color }}; border-color:{{node.connection_state.color}}">
+                        <b id='Nhs{{ node.id }}'></b>
+                        <a href='node_info?node_id={{ node.id }}'>
+                            {{ node.id }}
+                        </a>
+                        <b id='Nds{{ node.id }}'></b>
+                      </div>
                       {% endfor %}
                       <form method='post'>
                         <input type='hidden' value='set_new_node_flat' name='action'>

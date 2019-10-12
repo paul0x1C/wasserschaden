@@ -67,9 +67,11 @@ def on_message(mqttc, obj, msg, session):
                     if key == "t":
                         node.add_temperature(float(value))
                     elif key == "s":
-                        node.sense = bool(value)
+                        node.sense = bool(int(value))
                         node.sense_update = now()
                         node.has_sense_pin = True
+                        if node.sense:
+                            log("{} in {} on {} in {} detected water!".format(node, node.flat, node.flat.floor, node.house), 1, 6)
                     elif key == "v":
                         if value == "0":
                             if not node.physical_state_id in [1,4]:
