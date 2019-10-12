@@ -66,6 +66,39 @@ def set_priority(bot, update):
         update.message.reply_text("priority set to %i" % priority)
 
 @db_connect
+@access_conrol
+def status(bot, update, session):
+    msg = []
+    for house in session.query(models.House):
+        msg.append(house)
+        msg.append([])
+        for floor in house.floors:
+            msg[-1].append(floor)
+            msg[-1].append([])
+            for flat in floor.flats:
+                msg[-1][-1].append(flat)
+                msg[-1][-1].append([])
+                for node in flat.nodes:
+                    msg[-1][-1][-1].append(node.connection_state.emoji + node.physical_state.emoji + str(node.id))
+                    if node.has_sense_pin:
+                        if node.sense:
+                            msg[-1][-1][-1][-1] += "🚨"
+                        else:
+                            msg[-1][-1][-1][-1] += "💹"
+                    msg[-1][-1][-1][-1] += " rtt~" + str(int(node.average_response_time()*1000)) + "ms"
+    msg_text = unfold_msg_list(msg)
+    update.message.reply_text(msg_text)
+
+def unfold_msg_list(stack, spacing = 0):
+    msg = ""
+    for part in stack:
+        if isinstance(part, list):
+            msg += unfold_msg_list(part, spacing+3)
+        else:
+            msg += "\n" + " "*spacing + str(part)
+    return msg
+
+@db_connect
 def button(bot, update, session):
     data = update.callback_query.data
     data = data.split('|')
@@ -205,6 +238,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("list_houses", list_houses))
     dp.add_handler(CommandHandler("set_priority", set_priority))
+    dp.add_handler(CommandHandler("status", status))
     dp.add_handler(CallbackQueryHandler(button))
 
     dp.add_handler(MessageHandler(Filters.text, msg))
