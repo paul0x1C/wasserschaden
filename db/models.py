@@ -190,8 +190,8 @@ class Node(Base):
         self.send_mqtt_msg("ping")
 
     @db_connect
-    def average_response_time(self, session):
-        reports = session.query(Report).filter(Report.node_id == self.id).order_by(Report.id.desc()).limit(100)
+    def average_response_time(self, session, limit = 10):
+        reports = session.query(Report).filter(Report.node_id == self.id).order_by(Report.id.desc()).limit(limit)
         response_times = []
         last_report = None
         for report in reports:
