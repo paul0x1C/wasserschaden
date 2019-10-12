@@ -107,6 +107,7 @@ def check_nodes(session):
             last_physical_attempt = (now() - node.last_physical_attempt).seconds
             last_connection_attempt = (now() - node.last_connection_attempt).seconds
             log("starting state change for {}".format(node), 1, 0)
+
             if node.connection_state_id == 2:
                 if node.connection_attempts == 0:
                     if last_connection_change > 5:
@@ -128,6 +129,7 @@ def check_nodes(session):
                     if last_connection_attempt > 3600:
                         node.send_mqtt_msg("ping")
                         node.add_connection_attempt()
+
             if node.physical_state_id == 2:
                 if node.physical_attempts == 0:
                     if last_physical_change > 5:

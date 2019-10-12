@@ -145,6 +145,12 @@ class Node(Base):
         if update_time and self.connection_state_id is not state_id:
             if not (self.connection_state_id in [2,3] and state_id in [2,3]):
                 self.last_connection_change = now()
+                if state_id == 3:
+                    log("{} went offline".format(self), 2, 2)
+                    self.reported_offline = True
+        if self.reported_offline and state_id is not 3:
+            log("{} is back online".format(self), 2, 2)
+            self.reported_offline = False
         # if state_id == 3 and not self.reported_offline:
         #     alert = Alert(added = now(), content="Node %s in House '%s' on floor %s in flat '%s' not responding…" % (self.id, self.flat.floor.house.name, self.flat.floor.level, self.flat.name))
         #     session.add(alert)
