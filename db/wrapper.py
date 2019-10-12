@@ -5,17 +5,16 @@ from datetime import datetime,timezone
 
 class UTCDateTime(types.TypeDecorator):
 
-    impl = types.DateTime
+    impl = types.BigInteger
+    # impl = dialects.mysql.DATETIME
 
     def process_bind_param(self, value, engine):
         if value is not None:
-            return value.astimezone(timezone.utc)
+            return value.astimezone(timezone.utc).timestamp() * 1000
 
     def process_result_value(self, value, engine):
         if value is not None:
-            return datetime(value.year, value.month, value.day,
-                            value.hour, value.minute, value.second,
-                            value.microsecond).replace(tzinfo=timezone.utc).astimezone()
+            return datetime.utcfromtimestamp(value/1000).replace(tzinfo=timezone.utc).astimezone()
 
 def db_connect(func):
     def inner(*args, **kwargs):
