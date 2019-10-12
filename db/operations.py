@@ -2,21 +2,9 @@
 
 import logging, datetime
 from . import models
+from db.wrapper import *
 
 logger = logging.getLogger(__name__)
-
-def db_connect(func):
-    def inner(*args, **kwargs):
-        session = models.connection.Session()
-        try:
-            func(*args, session=session, **kwargs)
-            session.commit()
-        except:
-            session.rollback()
-            raise
-        finally:
-            session.close()
-    return inner
 
 @db_connect
 def add_house(name,gps,session):
