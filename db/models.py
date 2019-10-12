@@ -231,6 +231,7 @@ class PhysicalState(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
     color = Column(String(8))
+    emoji = Column(String(5))
     def __repr__(self):
         return "<PhysicalState id=%i, name='%s'>" % (self.id, self.name)
 
@@ -239,6 +240,7 @@ class ConnectionState(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
     color = Column(String(8))
+    emoji = Column(String(50))
     def __repr__(self):
         return "<ConnectionState id=%i, name='%s'>" % (self.id, self.name)
 
