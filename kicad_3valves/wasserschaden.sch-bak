@@ -737,7 +737,7 @@ U 1 1 5DA4CC0B
 P 6100 1350
 F 0 "Q2" H 6306 1304 50  0000 L CNN
 F 1 "IRLZ44N" H 6306 1395 50  0000 L CNN
-F 2 "TO_SOT_Packages_THT:TO-220-3_Vertical" H 6350 1275 50  0001 L CIN
+F 2 "Package_TO_SOT_THT:TO-220-3_Vertical" H 6350 1275 50  0001 L CIN
 F 3 "http://www.irf.com/product-info/datasheets/data/irlz44n.pdf" H 6100 1350 50  0001 L CNN
 	1    6100 1350
 	-1   0    0    1   
@@ -748,7 +748,7 @@ U 1 1 5DA4E395
 P 6100 2450
 F 0 "Q3" H 6306 2404 50  0000 L CNN
 F 1 "IRLZ44N" H 6306 2495 50  0000 L CNN
-F 2 "TO_SOT_Packages_THT:TO-220-3_Vertical" H 6350 2375 50  0001 L CIN
+F 2 "Package_TO_SOT_THT:TO-220-3_Vertical" H 6350 2375 50  0001 L CIN
 F 3 "http://www.irf.com/product-info/datasheets/data/irlz44n.pdf" H 6100 2450 50  0001 L CNN
 	1    6100 2450
 	-1   0    0    1   
@@ -759,7 +759,7 @@ U 1 1 5DA4FA22
 P 2700 2250
 F 0 "Q1" H 2906 2204 50  0000 L CNN
 F 1 "IRLZ44N" H 2906 2295 50  0000 L CNN
-F 2 "TO_SOT_Packages_THT:TO-220-3_Vertical" H 2950 2175 50  0001 L CIN
+F 2 "Package_TO_SOT_THT:TO-220-3_Vertical" H 2950 2175 50  0001 L CIN
 F 3 "http://www.irf.com/product-info/datasheets/data/irlz44n.pdf" H 2700 2250 50  0001 L CNN
 	1    2700 2250
 	-1   0    0    1   

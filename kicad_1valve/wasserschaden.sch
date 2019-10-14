@@ -26,17 +26,6 @@ F 3 "" H 4550 1400 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L wasserschaden-cache-2018-10-17-20-35-24:2N7000 IRFZ44N1
-U 1 1 5B2A69C6
-P 2700 2250
-F 0 "IRFZ44N1" H 2950 2250 50  0000 L CNN
-F 1 " " H 2900 2250 50  0000 L CNN
-F 2 "custom:irlz44n_vertical" H 2900 2175 50  0001 L CIN
-F 3 "" H 2700 2250 50  0001 L CNN
-	1    2700 2250
-	-1   0    0    1   
-$EndComp
-$Comp
 L wasserschaden-cache-2018-10-17-20-35-24:Screw_Terminal_01x02 J1
 U 1 1 5B2A6B15
 P 2250 2750
@@ -498,4 +487,15 @@ Text GLabel 3500 2150 0    50   Input ~ 0
 info
 Text GLabel 4500 2050 2    50   Input ~ 0
 sense
+$Comp
+L Transistor_FET:IRLZ44N Q1
+U 1 1 5DA4CAD4
+P 2700 2250
+F 0 "Q1" H 2906 2204 50  0000 L CNN
+F 1 "IRLZ44N" H 2906 2295 50  0000 L CNN
+F 2 "TO_SOT_Packages_THT:TO-220-3_Vertical" H 2950 2175 50  0001 L CIN
+F 3 "http://www.irf.com/product-info/datasheets/data/irlz44n.pdf" H 2700 2250 50  0001 L CNN
+	1    2700 2250
+	-1   0    0    1   
+$EndComp
 $EndSCHEMATC
