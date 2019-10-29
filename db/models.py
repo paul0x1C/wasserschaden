@@ -148,7 +148,7 @@ class Node(Base):
                 if state_id == 3:
                     log("{} went offline".format(self), 2, 2)
                     self.reported_offline = True
-        if self.reported_offline and state_id is not 3:
+        if self.reported_offline and state_id is 1:
             log("{} is back online".format(self), 2, 2)
             self.reported_offline = False
         # if state_id == 3 and not self.reported_offline:
