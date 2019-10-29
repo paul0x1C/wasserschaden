@@ -46,11 +46,11 @@
             <input type='hidden' name='house_id' value='{{ house.id }}'>
             <input type='submit' value='add' class='add'>
           </form>
-          <div class = "gateway">
-              <p> Gateway '{{ house.mqtt_topic }}': <b id='{{"Hst" + str(house.id)}}'>{{ house.gateway_state }}</b> since <b id='{{"Hsi" + str(house.id)}}'>{{ house.gateway_updated }}</b>
+          <div class = "bridge">
+              <p> bridge '{{ house.mqtt_topic }}': <b id='{{"Hst" + str(house.id)}}'>{{ house.bridge_state }}</b> since <b id='{{"Hsi" + str(house.id)}}'>{{ house.bridge_updated }}</b>
                 <form method='post'>
                   <input type='hidden' value='broadcast_ping' name='action'>
-                  <input type='hidden' name='gateway_topic' value='{{ house.mqtt_topic }}'>
+                  <input type='hidden' name='bridge_topic' value='{{ house.mqtt_topic }}'>
                   <input type='submit' value='broadcast ping' class='add'>
                 </form>
                 <form method='post'>
