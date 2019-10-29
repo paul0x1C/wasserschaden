@@ -30,22 +30,24 @@ def on_message(mqttc, obj, msg, session):
     except: # bridge not known
         log("Got message from not matching bridge '{}'".format(bridge), 3)
     else: # bridge known
-        house.gateway_updated = now()
-        if from_node == "gateway":
+        house.bridge_updated = now()
+        if from_node == "bridge":
             if payload == "dead":
-                house.gateway_state = 2
-                log("gateway in {} went offline".format(house), 3, 2)
+                house.bridge_state = 2
+                log("bridge in {} went offline".format(house), 3, 2)
+            elif payload == "rejected":
+                log("bridge in {} rejected a message".format(house), 3, 4)
             else:
-                if house.gateway_state > 1:
-                    log("gateway in {} is back online, broadcasting ping".format(house), 2, house.gateway_state) # send alert depending on alert state (see timer_loop>check_houses)
+                if house.bridge_state > 1:
+                    log("bridge in {} is back online, broadcasting ping".format(house), 2, house.bridge_state) # send alert depending on alert state (see timer_loop>check_houses)
                     broadcast_ping(house.mqtt_topic)
-                house.gateway_state = 1
+                house.bridge_state = 1
                 if payload == "Ready!":
-                    log("gateway for {} is ready".format(house), 2)
+                    log("bridge for {} is ready".format(house), 2)
                 elif payload == "pong":
-                    log("gateway for {} reponded to ping".format(house), 2)
+                    log("bridge for {} reponded to ping".format(house), 2)
         else:
-            house.gateway_state = 1 # message from node in a house implies that the gateway is still connected
+            house.bridge_state = 1 # message from node in a house implies that the bridge is still connected
             from_node = int(from_node) # must be a node, and node ids are int
             if session.query(models.Node).filter(models.Node.id == from_node).count() == 1: # check if node exists
                 node = session.query(models.Node).filter(models.Node.id == from_node).one()

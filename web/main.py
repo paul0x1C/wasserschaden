@@ -26,8 +26,8 @@ def overview(session):
             duration = int(request.form.get('duration')),
             locked = False,
             locked_since = now(),
-            gateway_last_attempt = now(),
-            gateway_state = 0
+            bridge_last_attempt = now(),
+            bridge_state = 0
         )
         content += "added house"
         session.add(house)
@@ -53,7 +53,7 @@ def overview(session):
                 session.delete(que)
     elif request.form.get('action') == "broadcast_ping":
         content += "broadcast_ping"
-        broadcast_ping(request.form.get('gateway_topic'))
+        broadcast_ping(request.form.get('bridge_topic'))
     elif request.form.get('action') == "reset_temp_sensor_status":
         content += "reset temperature sensor status"
         house_id = int(request.form.get('house_id'))
@@ -158,8 +158,8 @@ def auto_update(session): # returns all the self updateing stuff, is called ever
             else:
                 result['html'].append(("Nds" + str(node.id), "💹"))
     for house in houses:
-        result['html'].append(("Hst" + str(house.id), house.gateway_state))
-        result['html'].append(("Hsi" + str(house.id), house.gateway_updated.strftime("%a %d.%m. %H:%M:%S")))
+        result['html'].append(("Hst" + str(house.id), house.bridge_state))
+        result['html'].append(("Hsi" + str(house.id), house.bridge_updated.strftime("%a %d.%m. %H:%M:%S")))
         result['html'].append(("Hqu" + str(house.id), queue_length(house)))
         result['html'].append(("Hlk" + str(house.id), house.locked))
         if house.interval > 0 and house.last_flush:
