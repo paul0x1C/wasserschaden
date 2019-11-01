@@ -28,9 +28,12 @@ char* message_buff;
 String msg_ping = "ping";
 String msg_welcome = "welcome";
 
-const String from_gateway = String(MQTT_TOPIC)+"/from/gateway";
+const String from_bridge = String(MQTT_TOPIC)+"/from/bridge";
 
 unsigned long last_msg;
+
+int open_nodes = 0;
+unsigned long last_open_msg;
 
 IPAddress getlocalIP();
 
@@ -65,7 +68,7 @@ void setup() {
   Serial.begin(115200);
   digitalWrite(POWER_LED, HIGH);
   mesh.setRoot();
-  mesh.setDebugMsgTypes( ERROR | STARTUP | CONNECTION | COMMUNICATION );
+  mesh.setDebugMsgTypes( ERROR | STARTUP | CONNECTION );
 
   mesh.init( MESH_PREFIX, MESH_PASSWORD, MESH_PORT, WIFI_AP_STA, 4);
   mesh.onReceive(&receivedCallback);
@@ -102,7 +105,7 @@ void mqttConnect() {
   if (mqttClient.connect(String("pmC_"+String(MQTT_TOPIC)).c_str())) {
     digitalWrite(MQTT_LED, HIGH);
     Serial.println("connected to mqtt");
-    mqttClient.publish(from_gateway.c_str(), "Ready!");
+    mqttClient.publish(from_bridge.c_str(), "Ready!");
     mqttClient.subscribe(String(String(MQTT_TOPIC)+"/to/#").c_str(), 0);
     reconnect.disable();
   } else {
@@ -162,6 +165,12 @@ void receivedCallback(uint32_t from, String msg ) {
   mesh_blink.enable();
   if(msg == "online"){
     mesh.sendSingle(from, msg_welcome);
+  }else if(msg == "closing")
+  {
+    if(open_nodes > 0)
+    {
+      open_nodes -= 1;
+    }
   }
 }
 
@@ -176,36 +185,69 @@ void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
   free(cleanPayload);
 
   String targetStr = String(topic).substring(String(MQTT_TOPIC).length()+4);
-  if (targetStr == "gateway")
+  if (targetStr == "bridge")
   {
     if (msg == "getNodes")
     {
       Serial.println( mesh.subConnectionJson().c_str());
-      mqttClient.publish(from_gateway.c_str(), mesh.subConnectionJson().c_str());
+      mqttClient.publish(from_bridge.c_str(), mesh.subConnectionJson().c_str());
     }else if(msg == "ping")
     {
       Serial.println("ping recived, sending pong");
-      mqttClient.publish(from_gateway.c_str(), "pong");
+      mqttClient.publish(from_bridge.c_str(), "pong");
     }
   }
    else if(targetStr == "broadcast") 
   {
-    Serial.println("broadcasting to mesh: " + msg);
-    mesh.sendBroadcast(msg);
+    if(msg != "open") // let's just don't broadcast open msgs
+    {
+      Serial.println("broadcasting to mesh: " + msg);
+      mesh.sendBroadcast(msg);
+    }else{
+      String pubtopic = String(MQTT_TOPIC)+"/from/bridge";
+      mqttClient.publish(pubtopic.c_str(), "rejected");
+      Serial.println("rejected broadcast");
+    }
   }
   else
   {
     uint32_t target = strtoul(targetStr.c_str(), NULL, 10);
     if (mesh.isConnected(target))
     {
-      Serial.println("sending " + msg+ " to " + target);
-      mesh.sendSingle(target, msg);
-    }
-    else
-    {
-      String pubtopic = String(MQTT_TOPIC)+"/from/" + targetStr;
-      mqttClient.publish(pubtopic.c_str(), "offline");
-    }
+      if (msg == "open")
+      {
+        if(millis() < last_open_msg){ // reset last_open_msg when millis overflows every ~50 days
+            last_open_msg = millis();
+        }
+        else if(millis() - last_open_msg > 120000) // check if last open msg happened 2 minutes ago
+        {
+          open_nodes = 0;
+        }
+        if(open_nodes == 0)
+        {
+          last_open_msg = millis();
+          open_nodes += 1;
+          Serial.println("sending " + msg+ " to " + target);
+          mesh.sendSingle(target, msg);
+        }
+        else // reject open command, since there might be more open nodes
+        {
+          String pubtopic = String(MQTT_TOPIC)+"/from/bridge";
+          mqttClient.publish(pubtopic.c_str(), "rejected");
+          Serial.println("rejected open command");
+        }
+      }
+      else
+      {
+       mesh.sendSingle(target, msg);
+       Serial.println("sending " + msg+ " to " + target);
+      }
+   }
+   else
+   {
+    String pubtopic = String(MQTT_TOPIC)+"/from/" + targetStr;
+    mqttClient.publish(pubtopic.c_str(), "offline");
+   }
   }
   mqtt_blink.enable();
 }
