@@ -95,9 +95,9 @@ class Node(Base):
     last_connection_attempt = Column(UTCDateTime, default = now())
     physical_attempts = Column(Integer) # counts the attempts that were made to close/open the valve
     connection_attempts = Column(Integer) # counts the ping attempts
-    sense = Column(Boolean) # True if the node detects water
+    sense = Column(Boolean, default = False) # True if the node detects water
     sense_update = Column(UTCDateTime, default = now())
-    has_sense_pin = Column(Boolean)
+    has_sense_pin = Column(Boolean, default = False)
     last_temperature_update = Column(UTCDateTime, default = now())
     has_temperature_sensor = Column(Boolean)
     last_temeparture_request = Column(UTCDateTime, default = now())
@@ -204,7 +204,10 @@ class Node(Base):
                 if report.physical_state_id == 4:
                     response_times.append((last_report.time - report.time).total_seconds())
             last_report = report
-        return sum(response_times)/len(response_times)
+        if len(response_times) > 0:
+            return sum(response_times)/len(response_times)
+        else:
+            return 0
 
     def __repr__(self):
         return "<Node id=%i>" % (self.id)
