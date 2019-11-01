@@ -8,7 +8,7 @@
 const int flushTime = 150000;
 const int valve_pin = D1;
 const int status_pin = D2;
-const int sense_pin = D3;
+const int sense_pin = D6; // version >=8: D7; else: D3
 const int temperature_pin = D7;
 const int opened_value = HIGH;
 const int closed_value = LOW;
@@ -20,6 +20,10 @@ boolean con_resent = false;
 int bridge_ping_attempts = 0;
 long last_bridge_msg = millis();
 long last_bridge_attempt = millis();
+
+long last_sense_msg = millis();
+boolean sense_state = false;
+boolean last_sent_sense_state = false;
 
 String msg_open = "opening";
 String msg_close = "closing";
@@ -65,7 +69,7 @@ void receivedCallback( uint32_t from, String &msg ) {
     bridge = from;
     mesh.sendSingle(from, msg_ping);
     Serial.println("ping");
-    //pingBlink.enable();
+    pingBlink.enable();
   }else if(msg == "temp"){
     bridge = from;
     sensors.requestTemperatures();
@@ -162,6 +166,26 @@ boolean sense_water(){
 void loop() {
   userScheduler.execute();
   mesh.update();
+  
+  if(sense_water()){
+    sense_state = true;
+    if(last_sense_msg > millis()){
+      last_sense_msg = millis();
+    }else if(millis() - last_sense_msg > 20000){
+      last_sense_msg = millis();
+      mesh.sendSingle(bridge, "s:" + String(sense_state));
+    }
+  }else{
+    sense_state = false;
+  }
+
+  if (sense_state != last_sent_sense_state){
+    if(millis() - last_sense_msg > 2000){
+      mesh.sendSingle(bridge, "s:" + String(sense_state));
+      last_sent_sense_state = sense_state;
+      last_sense_msg = millis();
+    }
+  }
   
   if(last_bridge_msg > millis()){
     last_bridge_msg = millis();
