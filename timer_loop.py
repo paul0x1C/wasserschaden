@@ -27,7 +27,7 @@ def loop():
 
 @db_connect
 def poll_temperatures(session):
-    nodes = session.query(models.Node).filter(models.Node.has_temperature_sensor)
+    nodes = session.query(models.Node).filter(models.Node.has_temperature_sensor & (models.Node.connection_state_id == 1))
     interval = session.query(models.Setting).filter(models.Setting.id == 2).one().state
     for node in nodes:
         if (now() - node.last_temeparture_request).seconds >= 10:
