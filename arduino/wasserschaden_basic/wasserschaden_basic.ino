@@ -168,6 +168,9 @@ void loop() {
   mesh.update();
   
   if(sense_water()){
+    if(is_open){
+      close_valve();
+    }
     sense_state = true;
     if(last_sense_msg > millis()){
       last_sense_msg = millis();
