@@ -115,7 +115,7 @@ def button(bot, update, session):
             house = session.query(models.House).filter(models.House.id == int(data[1])).first()
             keyboard = []
             msg = house.name
-            msg += """Interval (s): {}\nDuration (s): {}\nLast Flush: {}\nAdress: {}\nNodes: {}\nfloors: {}
+            msg += """\nInterval (s): {}\nDuration (s): {}\nLast Flush: {}\nAdress: {}\nNodes: {}\nfloors: {}
             """.format(house.interval, house.duration, house.last_flush, house.adress, len(house.nodes), len(house.floors))
             floors = session.query(models.Floor).filter(models.Floor.house_id == house.id).order_by(models.Floor.level.desc())
             for floor in floors:
@@ -242,7 +242,29 @@ def send_alerts(bot, job, session):
                 alert_msg += "\n({}x) {}".format(entry[0], entry[1])
             else:
                 alert_msg += "\n{}".format(entry[1])
-        send(bot, alert_msg)
+        if len(to_send) == 1: # only do this when sending a single msg
+            text = to_send[0][1]
+            keyboard = []
+            try:
+                for i in text.split('<')[1:]:
+                    representer = i.split('>')[0] # try to find representers
+                    if "id=" in representer:
+                        object_id = representer.split("id=")[1].split(",")[0] # extract the id
+                        if representer[:5] == "House":
+                            house = session.query(models.House).filter(models.House.id == object_id).one()
+                            keyboard.append([InlineKeyboardButton(representer, callback_data = "H|%s" % house.id)])
+                        elif representer[:4] == "Flat":
+                            flat = session.query(models.Flat).filter(models.Flat.id == object_id).one()
+                            keyboard.append([InlineKeyboardButton(representer, callback_data = "F|%s" % flat.id)])
+                        elif representer[:4] == "Node":
+                            node = session.query(models.Node).filter(models.Node.id == object_id).one()
+                            keyboard.append([InlineKeyboardButton(representer, callback_data = "N|%s" % node.id)])
+            except:
+                log("alert reply buttons produced an exception", 3)
+            bot.sendMessage(chat_id, text, reply_markup=InlineKeyboardMarkup(keyboard))
+
+        else:
+            send(bot, alert_msg)
 
 def send(bot, text):
     while len(text) > 3000:
