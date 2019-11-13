@@ -115,13 +115,8 @@ def button(bot, update, session):
             house = session.query(models.House).filter(models.House.id == int(data[1])).first()
             keyboard = []
             msg = house.name
-            msg += """
-            \nInterval (s): {}
-            Duration (s): {}
-            Last Flush: {}
-            Adress: {}
-            Nodes: {}
-            floors: {}""".format(house.interval, house.duration, house.last_flush, house.adress, len(house.nodes), len(house.floors))
+            msg += """Interval (s): {}\nDuration (s): {}\nLast Flush: {}\nAdress: {}\nNodes: {}\nfloors: {}
+            """.format(house.interval, house.duration, house.last_flush, house.adress, len(house.nodes), len(house.floors))
             floors = session.query(models.Floor).filter(models.Floor.house_id == house.id).order_by(models.Floor.level.desc())
             for floor in floors:
                 keyboard.append([InlineKeyboardButton("floor %s" % floor.level, callback_data = "F|%s" % floor.id)])
@@ -157,6 +152,17 @@ def button(bot, update, session):
             node = session.query(models.Node).filter(models.Node.id == int(data[1])).one()
             node.ping()
             bot.sendMessage(chat_id, "pinged node")
+        elif data[0] == "Nq": # queue node
+            node = session.query(models.Node).filter(models.Node.id == int(data[1])).one()
+            que = models.Queue(node_id = node.id, house_id = node.house.id, added = now())
+            session.add(que)
+            bot.sendMessage(chat_id, "queued {}".format(node))
+        elif data[0] == "Ns": # set has_sense_plate for node
+            node = session.query(models.Node).filter(models.Node.id == int(data[1])).one()
+            node.has_sense_plate = bool(int(data[2]))
+            session.commit()
+            msg, reply_markup = node_info_msg(int(data[1]))
+            bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg, reply_markup=reply_markup)
         elif data[0] == "Hp": # ping whole house
             house = session.query(models.House).filter(models.House.id == int(data[1])).one()
             broadcast_ping(house.mqtt_topic)
@@ -199,6 +205,11 @@ def node_info_msg(node_id, session):
     keyboard = []
     keyboard.append([InlineKeyboardButton("reload " + now().strftime("%a %d.%m. %H:%M:%S"), callback_data = "N|%s" % node.id)])
     keyboard.append([InlineKeyboardButton("ping", callback_data = "Np|%s" % node.id)])
+    keyboard.append([InlineKeyboardButton("add to queue", callback_data = "Nq|%s" % node.id)])
+    if node.has_sense_plate:
+        keyboard.append([InlineKeyboardButton("no sense plate", callback_data = "Ns|%s|0" % node.id)])
+    else:
+        keyboard.append([InlineKeyboardButton("has sense plate", callback_data = "Ns|%s|1" % node.id)])
     keyboard.append([InlineKeyboardButton("🔙", callback_data = "f|%s" % node.flat.id)])
     reply_markup = InlineKeyboardMarkup(keyboard)
     return msg, reply_markup
