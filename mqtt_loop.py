@@ -74,12 +74,21 @@ def on_message(mqttc, obj, msg, session):
                             changed = True
                         node.sense = bool(int(value))
                         node.sense_update = now()
-                        node.has_sense_plate = True
-                        if changed:
-                            if node.sense:
-                                log("{} in {} on {} in {} detected water!".format(node, node.flat, node.flat.floor, node.house), 1, 6)
-                            else:
-                                log("{} in {} on {} in {} stopped detecting water…".format(node, node.flat, node.flat.floor, node.house), 1, 6)
+                        print((now() - node.initial_connection).seconds)
+                        if (now() - node.initial_connection).seconds < 120: # node send something witin 120s of it's initoal connection
+                            if node.has_sense_plate == False:
+                                node.has_sense_plate = True
+                                log("{} (un)detected water within 2m of it's initial connection, setting has_sense_plate=True".format(node), 1, 1)
+                        else:
+                            if changed:
+                                if not node.has_sense_plate:
+                                    ps = " ⚠️ but it should not even have a sense_plate?!"
+                                else:
+                                    ps = ""
+                                if node.sense:
+                                    log("{} in {} on {} in {} detected water!{}".format(node, node.flat, node.flat.floor, node.house, ps), 1, 6)
+                                else:
+                                    log("{} in {} on {} in {} stopped detecting water…{}".format(node, node.flat, node.flat.floor, node.house, ps), 1, 6)
                     elif key == "v":
                         if value == "0":
                             if not node.physical_state_id in [1,4]:
