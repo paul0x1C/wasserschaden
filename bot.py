@@ -22,11 +22,16 @@ priority_emojis = ["", "ℹ","❔","❓","⚠️","❌","🔥","☄️","💥","
 
 def access_conrol(func):
     def inner(*args, **kwargs):
-        if args[1].message.chat_id == chat_id:
+        if args[1].message == None:
+            a_chat_id = args[1].callback_query.message.chat_id
+            from_user = args[1].callback_query.message.from_user
+        else:
+            a_chat_id = args[1].message.chat_id
+            from_user = args[1].message.from_user
+        if a_chat_id == chat_id:
             return func(*args, **kwargs)
         else:
-            args[1].message.reply_text('nope')
-            log("Blocked acces for {}".format(args[1].message.from_user), 3, 0)
+            log("Blocked acces for {}".format(from_user), 3, 0)
     return inner
 
 @access_conrol
@@ -99,6 +104,7 @@ def unfold_msg_list(stack, spacing = 0):
     return msg
 
 @db_connect
+@access_conrol
 def button(bot, update, session):
     data = update.callback_query.data
     data = data.split('|')
@@ -145,15 +151,7 @@ def button(bot, update, session):
             reply_markup = InlineKeyboardMarkup(keyboard)
             bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg, reply_markup=reply_markup)
         elif data[0] == "N":
-            node = session.query(models.Node).filter(models.Node.id == int(data[1])).one()
-            msg = str(node)
-            msg += "\n" + node.connection_state.name
-            msg += "\n" + node.physical_state.name
-            keyboard = []
-            keyboard.append([InlineKeyboardButton("reload " + now().strftime("%a %d.%m. %H:%M:%S"), callback_data = "N|%s" % node.id)])
-            keyboard.append([InlineKeyboardButton("ping", callback_data = "Np|%s" % node.id)])
-            keyboard.append([InlineKeyboardButton("🔙", callback_data = "f|%s" % node.flat.id)])
-            reply_markup = InlineKeyboardMarkup(keyboard)
+            msg, reply_markup = node_info_msg(int(data[1]))
             bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg, reply_markup=reply_markup)
         elif data[0] == "Np": # ping node
             node = session.query(models.Node).filter(models.Node.id == int(data[1])).one()
@@ -189,6 +187,21 @@ def button(bot, update, session):
             set_setting(1, int(data[1]))
             msg = "alert priority set to {}".format(data[1])
             bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg)
+
+@db_connect
+def node_info_msg(node_id, session):
+    node = session.query(models.Node).filter(models.Node.id == node_id).one()
+    msg = str(node)
+    msg += "\n" + node.connection_state.name
+    msg += "\n" + node.physical_state.name
+    msg += "\nhas temp sensor: {}".format(node.has_temperature_sensor)
+    msg += "\nhas water sensor: {}".format(node.has_sense_pin)
+    keyboard = []
+    keyboard.append([InlineKeyboardButton("reload " + now().strftime("%a %d.%m. %H:%M:%S"), callback_data = "N|%s" % node.id)])
+    keyboard.append([InlineKeyboardButton("ping", callback_data = "Np|%s" % node.id)])
+    keyboard.append([InlineKeyboardButton("🔙", callback_data = "f|%s" % node.flat.id)])
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    return msg, reply_markup
 
 @db_connect
 @access_conrol
