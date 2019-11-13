@@ -85,7 +85,7 @@ def status(bot, update, session):
                 msg[-1][-1].append([])
                 for node in flat.nodes:
                     msg[-1][-1][-1].append(node.connection_state.emoji + node.physical_state.emoji + str(node.id))
-                    if node.has_sense_pin:
+                    if node.has_sense_plate:
                         if node.sense:
                             msg[-1][-1][-1][-1] += "🚨"
                         else:
@@ -195,7 +195,7 @@ def node_info_msg(node_id, session):
     msg += "\n" + node.connection_state.name
     msg += "\n" + node.physical_state.name
     msg += "\nhas temp sensor: {}".format(node.has_temperature_sensor)
-    msg += "\nhas water sensor: {}".format(node.has_sense_pin)
+    msg += "\nhas water sensor: {}".format(node.has_sense_plate)
     keyboard = []
     keyboard.append([InlineKeyboardButton("reload " + now().strftime("%a %d.%m. %H:%M:%S"), callback_data = "N|%s" % node.id)])
     keyboard.append([InlineKeyboardButton("ping", callback_data = "Np|%s" % node.id)])

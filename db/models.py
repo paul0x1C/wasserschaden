@@ -85,6 +85,7 @@ class Node(Base):
     house_id = Column(Integer, ForeignKey('houses.id'))
     house = relationship("House", foreign_keys=[house_id], backref="nodes")
     name = Column(String(50))
+    initial_connection = Column(UTCDateTime, default = now())
     connection_state_id = Column(Integer, ForeignKey('connection_states.id'))
     connection_state = relationship("ConnectionState", foreign_keys=[connection_state_id], backref="nodes")
     physical_state_id = Column(Integer, ForeignKey('physical_states.id'))
@@ -97,7 +98,7 @@ class Node(Base):
     connection_attempts = Column(Integer) # counts the ping attempts
     sense = Column(Boolean, default = False) # True if the node detects water
     sense_update = Column(UTCDateTime, default = now())
-    has_sense_pin = Column(Boolean, default = False)
+    has_sense_plate = Column(Boolean, default = False)
     last_temperature_update = Column(UTCDateTime, default = now())
     has_temperature_sensor = Column(Boolean)
     last_temeparture_request = Column(UTCDateTime, default = now())

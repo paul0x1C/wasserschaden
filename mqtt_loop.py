@@ -74,7 +74,7 @@ def on_message(mqttc, obj, msg, session):
                             changed = True
                         node.sense = bool(int(value))
                         node.sense_update = now()
-                        node.has_sense_pin = True
+                        node.has_sense_plate = True
                         if changed:
                             if node.sense:
                                 log("{} in {} on {} in {} detected water!".format(node, node.flat, node.flat.floor, node.house), 1, 6)
