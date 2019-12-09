@@ -74,7 +74,6 @@ def on_message(mqttc, obj, msg, session):
                             changed = True
                         node.sense = bool(int(value))
                         node.sense_update = now()
-                        print((now() - node.initial_connection).seconds)
                         if (now() - node.initial_connection).seconds < 120: # node send something witin 120s of it's initoal connection
                             if node.has_sense_plate == False:
                                 node.has_sense_plate = True
@@ -110,13 +109,14 @@ def on_message(mqttc, obj, msg, session):
                                         last_connection_change = now(),
                                         last_physical_attempt = now(),
                                         last_connection_attempt = now(),
+                                        initial_connection = now(),
                                         house_id = flat.floor.house_id,
                                         has_temperature_sensor = False
                                     )
                     session.add(new_node)
                     session.commit()
                     new_node.send_mqtt_msg("temp")
-                    log("Node {} connected for the first time! Addded to flat '{}'".format(from_node, flat.name), 2, 1)
+                    log("Node {} connected for the first time! Addded to flat '{}'".format(new_node, flat), 2, 1)
                 else:
                     log("Couldn't add node {} because new_node_flat for {} is not set".format(from_node, house), 3, 2)
 
