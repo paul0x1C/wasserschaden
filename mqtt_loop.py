@@ -43,7 +43,7 @@ def on_message(mqttc, obj, msg, session):
                     broadcast_ping(house.mqtt_topic)
                 house.bridge_state = 1
                 if payload == "Ready!":
-                    log("bridge for {} is ready".format(house), 2)
+                    log("bridge in {} connected to mqtt".format(house), 2, 3)
                 elif payload == "pong":
                     log("bridge for {} reponded to ping".format(house), 2)
         else:
