@@ -88,6 +88,17 @@
               <input type='hidden' value='{{ house.id}}' name='house_id'>
               <input type='submit' value='save'>
             </form>
+            <p>
+              <form method='get', action='report'>
+                <select name="month">
+                  {% for month in months[house.id] %}
+                  <option value="{{ month }}">{{ month }}</option>
+                  {% endfor %}
+                </select>
+                <input type='hidden' value='{{ house.id}}' name='house_id'>
+                <input type='submit' value='generate reports'>
+            </form>
+          </p>
           </div>
       </div>
     {% endfor %}

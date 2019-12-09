@@ -71,13 +71,22 @@ def overview(session):
     houses = session.query(models.House)
     system_modules = session.query(models.Module)
     n_nodes = session.query(models.Node).count() # number of nodes, so the js can check wether new nodes connected
+    months = {}
+    for house in houses: # add list of months with reports for every house
+        months[house.id] = []
+        for node in house.nodes:
+            for report in node.reports:
+                month = report.time.strftime("%y-%m")
+                if not month in months[house.id]:
+                    months[house.id].append(month)
+
     return content+render_template('overview.html',
                                     system_modules=system_modules,
                                     base_template = 'base.html',
                                     houses = houses, sorted=sorted,
                                     attrgetter=attrgetter, node_id=0,
                                     int=int, str=str,
-                                    n_nodes=n_nodes
+                                    n_nodes=n_nodes, months = months
                                 )
 
 @app.route('/node_info', methods=['GET', 'POST'])
@@ -115,28 +124,32 @@ def csv(session): # generates csv for display in excel
         if report.node.flat.floor.house.id == int(house_id):
             reports.append(report)
     nodes = []
+    # for report in reports:
+    #     if not report.node in nodes:
+    #         nodes.append(report.node)
+    rows = ["time, house, floor, flat, node, state"]
+    # for node in nodes:
+    #     column.append("%s: %s-%s" % (node.flat.floor.level, node.flat.name, node.id))
+    last_report = None
     for report in reports:
-        if not report.node in nodes:
-            nodes.append(report.node)
-    column = ["time"]
-    for node in nodes:
-        column.append("%s: %s-%s" % (node.flat.floor.level, node.flat.name, node.id))
-    columns.append(column)
-    for report in reports:
-        if report.physical_state_id in [3,4]:
-            column = [str(report.time)]
-            for x in range(nodes.index(report.node)):
-                column.append("-")
+        if report.physical_state_id in [3,1]:
+            # column = [str(report.time)]
+            # for x in range(nodes.index(report.node)):
+            #     column.append("-")
             if report.physical_state_id == 3:
-                column.append("open")
-            elif report.physical_state_id == 4:
-                column.append("close")
-            for x in range(len(nodes) - (nodes.index(report.node)+1)):
-                column.append("-")
-            columns.append(column)
-    csv_string = ""
-    for column in columns:
-        csv_string += ",".join(column) + "\n"
+                report_text = "open"
+            elif report.physical_state_id == 1:
+                report_text = "close"
+            # for x in range(len(nodes) - (nodes.index(report.node)+1)):
+            #     column.append("-")
+            new_report = True
+            if not last_report == None:
+                if last_report.physical_state_id == report.physical_state_id and last_report.node.id == report.node.id:
+                    new_report = False
+            if new_report:
+                rows.append("{}, {}, {}, {}, {}, {}".format(report.time, report.node.house.name, report.node.flat.floor.level, report.node.flat.name, report.node.id, report_text))
+            last_report = report
+    csv_string = "\n".join(rows)
     return Response(csv_string, mimetype="text/csv")
 
 @app.route('/auto_update')
@@ -170,6 +183,54 @@ def auto_update(session): # returns all the self updateing stuff, is called ever
         result['html'].append(("Mst" + str(module.id), module.status))
         result['html'].append(("Msi" + str(module.id), module.updated.strftime("%a %d.%m. %H:%M:%S")))
     return jsonify(result)
+
+@app.route('/report', methods=['GET'])
+@db_connect
+def report(session): # generate report views
+    house = session.query(models.House).filter(models.House.id == int(request.args.get('house_id'))).one()
+    start = datetime.datetime.strptime(request.args.get('month'), "%y-%m").replace(tzinfo=datetime.timezone.utc).astimezone()
+    try:
+      end = start.replace(month=start.month+1)
+    except ValueError:
+      if start.month == 12:
+        end = start.replace(year=start.year+1, month=1)
+      else:
+        raise
+    days = range((end-start).days)
+    dates = []
+    for day in days:
+        dates.append(start + datetime.timedelta(days = day))
+    nodes = {}
+    for node in house.nodes:
+        nodes[node.id] = {}
+        nodes[node.id]["name"] = str(node.id)
+        nodes[node.id]["dates"] = []
+        for date in dates:
+            nodes[node.id]["dates"].append(datetime.timedelta(seconds=0))
+        last_rreport = False
+        for report in node.reports:
+            if start <= report.time < end:
+                if not last_rreport == False:
+                    if last_rreport.time.day == report.time.day:
+                        if report.physical_state_id == 4:
+                            if last_rreport.physical_state_id == 3:
+                                nodes[node.id]["dates"][report.time.day-1] += (report.time - last_rreport.time)
+                if report.physical_state_id in [3,4]:
+                    last_rreport = report
+        nnow = now()
+        for date in dates:
+            if node.initial_connection > date or date > nnow:
+                nodes[node.id]["dates"][date.day-1] = False
+
+    return render_template('report.html',
+                            base_template = 'base.html',
+                            house = house,
+                            start = start,
+                            end = end,
+                            month_name = start.strftime("%B"), str=str,
+                            dates = dates,
+                            nodes = nodes
+                        )
 
 @app.route('/delete', methods=['POST','GET'])
 @db_connect

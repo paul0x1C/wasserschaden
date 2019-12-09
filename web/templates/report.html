@@ -1,0 +1,103 @@
+<style>
+  .box.floor {
+      position: relative;
+      /* width: 100%; */
+      background-color: #fff;
+      border: 1px solid #ccc;
+      font-size: 120%;
+      display: inline-block;
+      text-align: left;
+      margin-bottom: 0px;
+  }
+  .box{
+      position: absolute,
+      /* width: 100%; */
+      background-color: #fff;
+      /* border: 1px solid #ccc; */
+      /* font-size: 100%; */
+      display: inline-block;
+      text-align: center;
+      margin-bottom: 0px;
+      vertical-align: middle;
+  }
+  .box.flat {
+      background-color: #fff;
+  }
+  .box.nodes {
+      background-color: #fff;
+      border: 1px solid #ccc;
+  }
+  .box.node {
+      background-color: #fff;
+  }
+  .box.dates {
+    padding-left: 200px;
+  }
+  .name{
+    position: absolute,
+    width: 5px;
+    display: inline-block;
+  }
+  .name.floor {
+    width: 15px;
+    text-align: right;
+  }
+  .name.flat {
+    width: 45px;
+    text-align: right;
+  }
+  .name.node {
+    width: 130px;
+    text-align: right;
+  }
+  .day {
+    display: inline-block;
+    width: 45px;
+  }
+  .day.false {
+    background-color: #fcc;
+  }
+  .day.true {
+    background-color: #afa;
+  }
+</style>
+<font face="cantarell">
+<h1>{{ house.name }} ~ {{ month_name }}</h1>
+
+<div class = "box floor"><div class = "name floor"></div>  <div class = "box flats"><div class = "box flat"><div class = "name flat">Wohnung</div>    <div class = "box nodes"><div class = "box node"><div class = "name node">Node</div>
+{% for date in dates %}
+<div class = "day date">{{ date.day }}</div>
+{% endfor %}
+</div></div></div></div></div>
+
+{% for floor in house.floors %}
+<div class = "box floor">
+  <div class = "name floor">{{ floor.level }}</div>
+  <div class = "box flats">
+    {% for flat in floor.flats %}
+      <div class = "box flat">
+        <div class = "name flat">{{ flat.name }}</div>
+        <div class = "box nodes">
+          {% for node in flat.nodes %}
+          <div class = "box node">
+              <div class = "name node">{{ nodes[node.id]['name'] }}</div>
+              {% for date in nodes[node.id]['dates'] %}
+                {% if date == False %}
+                  <div class = "day"> - </div>
+                {% elif date %}
+                  <div class = "day true">{{ date.seconds }}s</div>
+                {% else %}
+                  <div class = "day false">0s</div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          <br />
+          {% endfor %}
+        </div>
+      </div>
+      <br />
+    {% endfor %}
+  </div>
+</div>
+{% endfor %}
+</font>
