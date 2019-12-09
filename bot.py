@@ -73,8 +73,26 @@ def set_priority(bot, update):
 @db_connect
 @access_conrol
 def status(bot, update, session):
+    msg_text, reply_markup = gen_status_msg()
+    update.message.reply_text(msg_text, reply_markup=reply_markup)
+
+@db_connect
+@access_conrol
+def clean_alerts(bot, update, session):
+    priority_setting = session.query(models.Setting).filter(models.Setting.id == 1).one().state
+    alerts = session.query(models.Alert).filter((models.Alert.priority < priority_setting) & (models.Alert.sent == None))
+    counter = 0
+    for alert in alerts:
+        alert.sent = now()
+        counter += 1
+    update.message.reply_text("set {} alerts to sent".format(counter))
+
+@db_connect
+def gen_status_msg(session):
     msg = []
+    keyboard = []
     for house in session.query(models.House):
+        keyboard.append([InlineKeyboardButton("ping {}".format(house), callback_data = "Hp|%s" % house.id)])
         msg.append(house)
         msg.append([])
         for floor in house.floors:
@@ -91,8 +109,9 @@ def status(bot, update, session):
                         else:
                             msg[-1][-1][-1][-1] += "💹"
                     msg[-1][-1][-1][-1] += " rtt~" + str(int(node.average_response_time()*1000)) + "ms"
-    msg_text = unfold_msg_list(msg)
-    update.message.reply_text(msg_text)
+    keyboard.append([InlineKeyboardButton("reload " + now().strftime("%a %d.%m. %H:%M:%S"), callback_data = "S")])
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    return unfold_msg_list(msg), reply_markup
 
 def unfold_msg_list(stack, spacing = 0):
     msg = ""
@@ -121,6 +140,9 @@ def button(bot, update, session):
             for floor in floors:
                 keyboard.append([InlineKeyboardButton("floor %s" % floor.level, callback_data = "F|%s" % floor.id)])
             keyboard.append([InlineKeyboardButton("boradcast ping", callback_data = "Hp|%s" % house.id)])
+            keyboard.append([InlineKeyboardButton("flush now", callback_data = "Hf|%s" % house.id)])
+            keyboard.append([InlineKeyboardButton("clear queue", callback_data = "Hc|%s" % house.id)])
+            keyboard.append([InlineKeyboardButton("show queue", callback_data = "Hq|%s" % house.id)])
             keyboard.append([InlineKeyboardButton("node stats", callback_data = "Hs|%s" % house.id)])
             reply_markup = InlineKeyboardMarkup(keyboard)
             bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg, reply_markup=reply_markup)
@@ -167,6 +189,32 @@ def button(bot, update, session):
             house = session.query(models.House).filter(models.House.id == int(data[1])).one()
             broadcast_ping(house.mqtt_topic)
             bot.sendMessage(chat_id, "broadcasting ping")
+        elif data[0] == "Hc": # clear que
+            house = session.query(models.House).filter(models.House.id == int(data[1])).one()
+            queue = session.query(models.Queue)
+            counter = 0
+            for que in queue:
+                if que.node.flat.floor.house.id == house.id:
+                    session.delete(que)
+                    counter += 1
+            bot.sendMessage(chat_id, "deleted {} entries from {}'s queue".format(counter, house))
+        elif data[0] == "Hq": # show house que
+            keyboard = []
+            house = session.query(models.House).filter(models.House.id == int(data[1])).one()
+            queue = session.query(models.Queue)
+            msg = "Queue of {}".format(house)
+            for que in queue:
+                if que.node.flat.floor.house.id == house.id:
+                    msg += "\n{}{}{}".format(que.node.connection_state.emoji, que.node.physical_state.emoji,que.node.id)
+            keyboard.append([InlineKeyboardButton("clear queue", callback_data = "Hc|%s" % house.id)])
+            keyboard.append([InlineKeyboardButton("refresh", callback_data = "Hq|%s" % house.id)])
+            keyboard.append([InlineKeyboardButton("🔙", callback_data = "H|%s" % house.id)])
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg, reply_markup=reply_markup)
+        elif data[0] == "Hf": # initiate flush for house
+            house = session.query(models.House).filter(models.House.id == int(data[1])).one()
+            house.init_flush()
+            bot.sendMessage(chat_id, "initiated flush for {}".format(house))
         elif data[0] == "Hs": # return node stats
             house = session.query(models.House).filter(models.House.id == int(data[1])).one()
             states = {}
@@ -193,6 +241,9 @@ def button(bot, update, session):
             set_setting(1, int(data[1]))
             msg = "alert priority set to {}".format(data[1])
             bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg)
+        elif data[0] == "S": # resend status msg
+            msg, reply_markup = gen_status_msg()
+            bot.editMessageText(message_id=message_id, chat_id=chat_id, text=msg, reply_markup=reply_markup)
 
 @db_connect
 def node_info_msg(node_id, session):
@@ -284,6 +335,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("list_houses", list_houses))
     dp.add_handler(CommandHandler("set_priority", set_priority))
+    dp.add_handler(CommandHandler("clean_alerts", clean_alerts))
     dp.add_handler(CommandHandler("status", status))
     dp.add_handler(CallbackQueryHandler(button))
 
