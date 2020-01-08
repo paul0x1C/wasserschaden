@@ -1,0 +1,20 @@
+EESchema-LIBRARY Version 2.4
+#encoding utf-8
+#
+# stepdown-wasserschaden-cache-2018-10-17-20-35-24-wasserschaden-rescue
+#
+DEF stepdown-wasserschaden-cache-2018-10-17-20-35-24-wasserschaden-rescue U 0 40 Y Y 1 F N
+F0 "U" 250 0 60 H V C CNN
+F1 "stepdown-wasserschaden-cache-2018-10-17-20-35-24-wasserschaden-rescue" 250 100 60 H V C CNN
+F2 "" 0 0 60 H I C CNN
+F3 "" 0 0 60 H I C CNN
+DRAW
+S -200 200 700 -150 0 1 0 N
+X GND 1 -400 100 200 R 50 50 1 1 I
+X GND 2 900 100 200 L 50 50 1 1 I
+X IN 3 -400 -50 200 R 50 50 1 1 I
+X OUT 4 900 -50 200 L 50 50 1 1 I
+ENDDRAW
+ENDDEF
+#
+#End Library

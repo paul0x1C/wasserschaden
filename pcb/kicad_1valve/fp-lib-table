@@ -1,0 +1,5 @@
+(fp_lib_table
+  (lib (name Desktop)(type KiCad)(uri /home/paul/Desktop.pretty)(options "")(descr "")(disabled))
+  (lib (name test_wemos)(type KiCad)(uri "$(KIPRJMOD)/test_wemos.pretty")(options "")(descr "")(disabled))
+  (lib (name stepdown)(type KiCad)(uri /home/paul/nextcloud/0zeug/kicad/wasserschaden/stepdown.pretty)(options "")(descr "")(disabled))
+)

@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name wasserschaden-rescue)(type Legacy)(uri ${KIPRJMOD}/wasserschaden-rescue.lib)(options "")(descr ""))
+  (lib (name wasserschaden-cache)(type Legacy)(uri /home/paul/nextcloud/0zeug/kicad/wasserschaden-ar/wasserschaden-cache.lib)(options "")(descr ""))
+)
